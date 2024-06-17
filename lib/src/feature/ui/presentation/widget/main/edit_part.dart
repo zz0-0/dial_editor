@@ -35,61 +35,57 @@ class _EditPartState extends ConsumerState<EditPart> {
       markdownWidgetList = Render().renderList(nodes);
     }
 
-    return Scaffold(
-      appBar: AppBar(),
-      body: ListView.builder(
-        itemCount: markdownWidgetList.length,
-        itemBuilder: (context, index) {
-          return Row(
-            children: [
-              SizedBox(
-                width: 30,
-                child: Text("${index + 1}"),
-              ),
-              Expanded(
-                child: index == editingLineIndex
-                    ? EditableText(
-                        controller: controller,
-                        focusNode: focusNode,
-                        style: currentTextStyle,
-                        cursorColor: Colors.blue,
-                        backgroundCursorColor: Colors.white,
-                        onEditingComplete: () {
-                          setState(() {
-                            markdownWidgetList[index] = Render().render(
-                              md.Document().parse(controller.text)[0],
-                            );
-                            editingLineIndex = -1;
-                            controller.clear();
-                            currentTextStyle = const TextStyle();
-                          });
-                        },
-                      )
-                    : GestureDetector(
-                        onTapUp: (details) {
-                          setState(() {
-                            editingLineIndex = index;
+    return ListView.builder(
+      itemCount: markdownWidgetList.length,
+      itemBuilder: (context, index) {
+        return Row(
+          children: [
+            SizedBox(
+              width: 30,
+              child: Text("${index + 1}"),
+            ),
+            Expanded(
+              child: index == editingLineIndex
+                  ? EditableText(
+                      controller: controller,
+                      focusNode: focusNode,
+                      style: currentTextStyle,
+                      cursorColor: Colors.blue,
+                      backgroundCursorColor: Colors.white,
+                      onEditingComplete: () {
+                        setState(() {
+                          markdownWidgetList[index] = Render().render(
+                            md.Document().parse(controller.text)[0],
+                          );
+                          editingLineIndex = -1;
+                          controller.clear();
+                          currentTextStyle = const TextStyle();
+                        });
+                      },
+                    )
+                  : GestureDetector(
+                      onTapUp: (details) {
+                        setState(() {
+                          editingLineIndex = index;
 
-                            controller.text = nodes[index].textContent;
-                            controller.selection = TextSelection.collapsed(
-                              offset: controller.text.length,
-                            );
-                            currentTextStyle =
-                                markdownWidgetList[index].style ??
-                                    const TextStyle();
-                          });
-                          WidgetsBinding.instance
-                              .addPostFrameCallback((timeStamp) {
-                            focusNode.requestFocus();
-                          });
-                        },
-                        child: markdownWidgetList[index],
-                      ),
-              ),
-            ],
-          );
-        },
-      ),
+                          controller.text = nodes[index].textContent;
+                          controller.selection = TextSelection.collapsed(
+                            offset: controller.text.length,
+                          );
+                          currentTextStyle = markdownWidgetList[index].style ??
+                              const TextStyle();
+                        });
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) {
+                          focusNode.requestFocus();
+                        });
+                      },
+                      child: markdownWidgetList[index],
+                    ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
