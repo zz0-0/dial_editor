@@ -1,11 +1,13 @@
-import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/provider/directory_provider.dart';
+import 'dart:io';
+
 import 'package:dial_editor/src/feature/ui/presentation/widget/main/render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown/markdown.dart' as md;
 
 class EditPart extends ConsumerStatefulWidget {
-  const EditPart({super.key});
+  final File file;
+  const EditPart({super.key, required this.file});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _EditPartState();
@@ -28,12 +30,10 @@ class _EditPartState extends ConsumerState<EditPart> {
 
   @override
   Widget build(BuildContext context) {
-    final file = ref.watch(fileProvider);
+    // final file = ref.watch(fileProvider);
 
-    if (file != null) {
-      nodes = md.Document().parse(file.readAsStringSync());
-      markdownWidgetList = Render().renderList(nodes);
-    }
+    nodes = md.Document().parse(widget.file.readAsStringSync());
+    markdownWidgetList = Render().renderList(nodes);
 
     return ListView.builder(
       itemCount: markdownWidgetList.length,
