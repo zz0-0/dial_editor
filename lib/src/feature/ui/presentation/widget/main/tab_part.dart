@@ -14,23 +14,14 @@ class TabPart extends ConsumerStatefulWidget {
 
 class _TabPartState extends ConsumerState<TabPart>
     with TickerProviderStateMixin {
-  List<File> openedFiles = [];
+  Set<File> openedFiles = {};
   TabController? tabController;
-  // final List<Widget> editPartList = [];
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 0, vsync: this);
   }
-
-  // @override
-  // void didUpdateWidget(covariant TabPart oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //   if (openedFiles.length != tabController?.length) {
-  //     tabController = TabController(length: openedFiles.length, vsync: this);
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -40,13 +31,15 @@ class _TabPartState extends ConsumerState<TabPart>
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(fileProvider, (prev, now) {
-      setState(() {
-        if (now != null && prev?.path != now.path) {
-          ref.read(openedFilesProvider.notifier).addFile(now);
-        }
-      });
-    });
+    // ref.listen(fileProvider, (prev, now) {
+    //   setState(() {
+    //     ref.read(openedFilesProvider.notifier).addFile(now!);
+    //     // print(ref.watch(openedFilesProvider));
+    //   });
+    // });
+
+    // final file = ref.watch(fileProvider);
+    // ref.read(openedFilesProvider.notifier).addFile(file!);
 
     final openedFiles = ref.watch(openedFilesProvider);
 
@@ -61,27 +54,33 @@ class _TabPartState extends ConsumerState<TabPart>
         controller: tabController,
         tabs: openedFiles
             .map(
-              (file) => Tab(text: file.path.split(Platform.pathSeparator).last),
+              (file) => Tab(text: file.split(Platform.pathSeparator).last),
             )
             .toList(),
       ),
       body: TabBarView(
         controller: tabController,
-        children: openedFiles.map((file) => EditPart(file: file)).toList(),
+        children:
+            openedFiles.map((file) => EditPart(file: File(file))).toList(),
       ),
     );
   }
 }
 
-class OpenedFilesNotifier extends StateNotifier<List<File>> {
-  OpenedFilesNotifier() : super([]);
+class OpenedFilesNotifier extends StateNotifier<Set<String>> {
+  OpenedFilesNotifier() : super({});
 
-  void addFile(File file) {
-    state = [...state, file];
+  void addFile(String filePath) {
+    print(state);
+    if (!state.contains(filePath)) {
+      final current = Set<String>.from(state);
+      current.add(filePath);
+      state = current;
+    }
   }
 }
 
 final openedFilesProvider =
-    StateNotifierProvider<OpenedFilesNotifier, List<File>>((ref) {
+    StateNotifierProvider<OpenedFilesNotifier, Set<String>>((ref) {
   return OpenedFilesNotifier();
 });

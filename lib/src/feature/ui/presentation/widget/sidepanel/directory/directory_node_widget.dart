@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/provider/directory_provider.dart';
+import 'package:dial_editor/src/feature/ui/presentation/provider/top_bar_provider.dart';
+import 'package:dial_editor/src/feature/ui/presentation/widget/main/tab_part.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,9 +53,13 @@ class _DirectoryNodeWidgetState extends ConsumerState<DirectoryNodeWidget> {
                   : Material(
                       child: InkWell(
                         onTap: () {
+                          final file = File(widget.node.path!);
                           ref.read(fileProvider.notifier).update(
-                                (state) => File(widget.node.path!),
+                                (state) => file,
                               );
+                          ref
+                              .read(openedFilesProvider.notifier)
+                              .addFile(widget.node.path!);
                         },
                         child: Text(
                           widget.node.content!,
