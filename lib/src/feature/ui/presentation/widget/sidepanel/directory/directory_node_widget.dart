@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/provider/directory_provider.dart';
-import 'package:dial_editor/src/feature/ui/presentation/provider/top_bar_provider.dart';
 import 'package:dial_editor/src/feature/ui/presentation/widget/main/tab_part.dart';
 
 import 'package:flutter/material.dart';

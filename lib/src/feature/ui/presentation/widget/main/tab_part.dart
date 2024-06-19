@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/provider/directory_provider.dart';
 import 'package:dial_editor/src/feature/ui/presentation/widget/main/edit_part.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,7 +70,6 @@ class OpenedFilesNotifier extends StateNotifier<Set<String>> {
   OpenedFilesNotifier() : super({});
 
   void addFile(String filePath) {
-    print(state);
     if (!state.contains(filePath)) {
       final current = Set<String>.from(state);
       current.add(filePath);
