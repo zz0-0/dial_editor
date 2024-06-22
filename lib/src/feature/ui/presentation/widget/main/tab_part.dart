@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dial_editor/src/feature/ui/presentation/provider/edit_part_provider.dart';
 import 'package:dial_editor/src/feature/ui/presentation/widget/main/edit_part.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,16 +31,6 @@ class _TabPartState extends ConsumerState<TabPart>
 
   @override
   Widget build(BuildContext context) {
-    // ref.listen(fileProvider, (prev, now) {
-    //   setState(() {
-    //     ref.read(openedFilesProvider.notifier).addFile(now!);
-    //     // print(ref.watch(openedFilesProvider));
-    //   });
-    // });
-
-    // final file = ref.watch(fileProvider);
-    // ref.read(openedFilesProvider.notifier).addFile(file!);
-
     final openedFiles = ref.watch(openedFilesProvider);
 
     if (tabController?.length != openedFiles.length) {
@@ -53,7 +44,19 @@ class _TabPartState extends ConsumerState<TabPart>
         controller: tabController,
         tabs: openedFiles
             .map(
-              (file) => Tab(text: file.split(Platform.pathSeparator).last),
+              (file) => Tab(
+                child: Row(
+                  children: [
+                    Text(file.split(Platform.pathSeparator).last),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        ref.read(openedFilesProvider.notifier).removeFile(file);
+                      },
+                    ),
+                  ],
+                ),
+              ),
             )
             .toList(),
       ),
@@ -65,20 +68,3 @@ class _TabPartState extends ConsumerState<TabPart>
     );
   }
 }
-
-class OpenedFilesNotifier extends StateNotifier<Set<String>> {
-  OpenedFilesNotifier() : super({});
-
-  void addFile(String filePath) {
-    if (!state.contains(filePath)) {
-      final current = Set<String>.from(state);
-      current.add(filePath);
-      state = current;
-    }
-  }
-}
-
-final openedFilesProvider =
-    StateNotifierProvider<OpenedFilesNotifier, Set<String>>((ref) {
-  return OpenedFilesNotifier();
-});
