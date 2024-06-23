@@ -1,6 +1,6 @@
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/provider/directory_provider.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/sidepanel/directory/directory_node_widget.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/directory/directory_node_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

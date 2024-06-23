@@ -1,8 +1,8 @@
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/provider/directory_provider.dart';
-import 'package:dial_editor/src/feature/ui/presentation/provider/side_panel_provider.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/main/tab_part.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/sidepanel/directory/file_directory.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/topbar/topbar.dart';
+import 'package:dial_editor/src/feature/core/presentation/provider/side_panel_provider.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/main/tab_part.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/directory/file_directory.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/topbar/topbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

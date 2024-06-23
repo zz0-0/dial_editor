@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/feature/ui/presentation/provider/edit_part_provider.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/main/edit_part.dart';
+import 'package:dial_editor/src/feature/core/presentation/provider/edit_part_provider.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/main/edit_part.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
