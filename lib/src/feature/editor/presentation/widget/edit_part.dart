@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/feature/core/presentation/widget/main/render.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown/markdown.dart' as md;
