@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:markdown/markdown.dart' as md;
 
-class Render {
-  Render();
+class MarkdownRender {
+  MarkdownRender();
 
   Text render(md.Node node) {
     if (node is md.Element) {

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/feature/editor/presentation/widget/render.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/markdown_render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -22,6 +22,13 @@ class _EditPartState extends ConsumerState<EditPart> {
   int editingLineIndex = -1;
 
   @override
+  void initState() {
+    super.initState();
+    nodes = md.Document().parse(widget.file.readAsStringSync());
+    markdownWidgetList = MarkdownRender().renderList(nodes);
+  }
+
+  @override
   void dispose() {
     controller.dispose();
     focusNode.dispose();
@@ -30,11 +37,6 @@ class _EditPartState extends ConsumerState<EditPart> {
 
   @override
   Widget build(BuildContext context) {
-    // final file = ref.watch(fileProvider);
-
-    nodes = md.Document().parse(widget.file.readAsStringSync());
-    markdownWidgetList = Render().renderList(nodes);
-
     return ListView.builder(
       itemCount: markdownWidgetList.length,
       itemBuilder: (context, index) {
@@ -54,9 +56,9 @@ class _EditPartState extends ConsumerState<EditPart> {
                       backgroundCursorColor: Colors.white,
                       onEditingComplete: () {
                         setState(() {
-                          markdownWidgetList[index] = Render().render(
-                            md.Document().parse(controller.text)[0],
-                          );
+                          nodes[editingLineIndex] = md.Text(controller.text);
+                          markdownWidgetList[editingLineIndex] =
+                              MarkdownRender().render(nodes[editingLineIndex]);
                           editingLineIndex = -1;
                           controller.clear();
                           currentTextStyle = const TextStyle();

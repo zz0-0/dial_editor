@@ -1,5 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final openedFilesProvider =
+    StateNotifierProvider<OpenedFilesNotifier, Set<String>>((ref) {
+  return OpenedFilesNotifier();
+});
+
 class OpenedFilesNotifier extends StateNotifier<Set<String>> {
   OpenedFilesNotifier() : super({});
 
@@ -19,8 +24,3 @@ class OpenedFilesNotifier extends StateNotifier<Set<String>> {
     }
   }
 }
-
-final openedFilesProvider =
-    StateNotifierProvider<OpenedFilesNotifier, Set<String>>((ref) {
-  return OpenedFilesNotifier();
-});
