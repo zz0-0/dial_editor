@@ -1,16 +1,5 @@
 class Node {
-  String? nodeTag;
-  String? nodeText;
+  String text;
 
-  Node(this.nodeTag, this.nodeText);
-
-  String get tag => nodeTag!;
-  set tag(String tag) {
-    nodeTag = tag;
-  }
-
-  String get text => nodeText!;
-  set text(String text) {
-    nodeText = text;
-  }
+  Node(this.text);
 }
