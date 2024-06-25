@@ -1,9 +1,11 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/feature/editor/presentation/widget/markdown_render.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
+import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:markdown/markdown.dart' as md;
 
 class EditPart extends ConsumerStatefulWidget {
   final File file;
@@ -14,8 +16,9 @@ class EditPart extends ConsumerStatefulWidget {
 }
 
 class _EditPartState extends ConsumerState<EditPart> {
+  late Document document;
   List<Text> markdownWidgetList = [];
-  List<md.Node> nodes = [];
+  List<Node> nodes = [];
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   TextStyle currentTextStyle = const TextStyle();
@@ -24,7 +27,9 @@ class _EditPartState extends ConsumerState<EditPart> {
   @override
   void initState() {
     super.initState();
-    nodes = md.Document().parse(widget.file.readAsStringSync());
+    // nodes = Document().parse(widget.file.readAsStringSync());
+    document = DocumentCodec().encode(widget.file.readAsStringSync());
+    nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
   }
 
@@ -56,7 +61,7 @@ class _EditPartState extends ConsumerState<EditPart> {
                       backgroundCursorColor: Colors.white,
                       onEditingComplete: () {
                         setState(() {
-                          nodes[editingLineIndex] = md.Text(controller.text);
+                          nodes[editingLineIndex].text = controller.text;
                           markdownWidgetList[editingLineIndex] =
                               MarkdownRender().render(nodes[editingLineIndex]);
                           editingLineIndex = -1;
@@ -70,7 +75,7 @@ class _EditPartState extends ConsumerState<EditPart> {
                         setState(() {
                           editingLineIndex = index;
 
-                          controller.text = nodes[index].textContent;
+                          controller.text = nodes[index].text;
                           controller.selection = TextSelection.collapsed(
                             offset: controller.text.length,
                           );
