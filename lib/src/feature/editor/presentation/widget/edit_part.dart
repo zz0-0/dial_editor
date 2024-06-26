@@ -17,7 +17,7 @@ class EditPart extends ConsumerStatefulWidget {
 
 class _EditPartState extends ConsumerState<EditPart> {
   late Document document;
-  List<Text> markdownWidgetList = [];
+  List<Widget> markdownWidgetList = [];
   List<Node> nodes = [];
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -61,7 +61,7 @@ class _EditPartState extends ConsumerState<EditPart> {
                       backgroundCursorColor: Colors.white,
                       onEditingComplete: () {
                         setState(() {
-                          nodes[editingLineIndex].text = controller.text;
+                          nodes[editingLineIndex].updateText(controller.text);
                           markdownWidgetList[editingLineIndex] =
                               MarkdownRender().render(nodes[editingLineIndex]);
                           editingLineIndex = -1;
@@ -75,12 +75,12 @@ class _EditPartState extends ConsumerState<EditPart> {
                         setState(() {
                           editingLineIndex = index;
 
-                          controller.text = nodes[index].text;
+                          controller.text = nodes[index].rawText;
                           controller.selection = TextSelection.collapsed(
                             offset: controller.text.length,
                           );
-                          currentTextStyle = markdownWidgetList[index].style ??
-                              const TextStyle();
+                          currentTextStyle =
+                              nodes[index].style ?? const TextStyle();
                         });
                         WidgetsBinding.instance
                             .addPostFrameCallback((timeStamp) {
