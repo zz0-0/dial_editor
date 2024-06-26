@@ -25,4 +25,7 @@ abstract class Node {
   }
 
   Widget render();
+
+  @override
+  String toString();
 }

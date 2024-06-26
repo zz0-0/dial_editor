@@ -35,6 +35,11 @@ class Heading extends Node {
       style: style,
     );
   }
+
+  @override
+  String toString() {
+    return rawText;
+  }
 }
 
 void registerParsers() {

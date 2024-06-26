@@ -17,6 +17,7 @@ class EditPart extends ConsumerStatefulWidget {
 
 class _EditPartState extends ConsumerState<EditPart> {
   late Document document;
+  late String fileString;
   List<Widget> markdownWidgetList = [];
   List<Node> nodes = [];
   final TextEditingController controller = TextEditingController();
@@ -27,8 +28,8 @@ class _EditPartState extends ConsumerState<EditPart> {
   @override
   void initState() {
     super.initState();
-    // nodes = Document().parse(widget.file.readAsStringSync());
-    document = DocumentCodec().encode(widget.file.readAsStringSync());
+    fileString = widget.file.readAsStringSync();
+    document = DocumentCodec().encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
   }
@@ -64,6 +65,8 @@ class _EditPartState extends ConsumerState<EditPart> {
                           nodes[editingLineIndex].updateText(controller.text);
                           markdownWidgetList[editingLineIndex] =
                               MarkdownRender().render(nodes[editingLineIndex]);
+                          fileString = document.toString();
+                          widget.file.writeAsStringSync(fileString);
                           editingLineIndex = -1;
                           controller.clear();
                           currentTextStyle = const TextStyle();
