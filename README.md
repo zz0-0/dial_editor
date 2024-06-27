@@ -6,27 +6,30 @@
 
 ## 🚀 Features
 
-
-
-
 ## 🛠️ To-Do
 
-- [ ] **Markdown Support**
-  - [ ] **Markdown Parser**: Implement a parser for converting Markdown text into structured data.
-  - [ ] **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
-- [ ] **Rust Integration**: Incorporate Rust for performance improvements.
-- [ ] **Collaborative Editing**: Real-time collaboration with others.
-- [ ] **Export Options**: Enable users to export Markdown files to PDF, HTML, etc.
-- [ ] **Spell Check**: Implement functionality to ensure error-free Markdown.
-- [ ] **Version Control**: Track changes and allow users to revert to previous versions.
-- [ ] **Third Party Integration**: Integrate with third-party services or APIs for extended functionality.
-- [ ] **Blockchain Integration**: Explore integrating blockchain technology for data security and integrity.
-- [ ] **Live Preview**: See your Markdown rendered in real-time.
-- [ ] **Syntax Highlighting**: Easily distinguish between different elements of your Markdown.
-- [ ] **Customizable Themes**: Choose from a variety of themes to suit your style.
-- [ ] **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
-- [ ] **Support for Extensions**: Enhance the editor with additional functionalities.
-- [ ] **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
+- [ ]  **Markdown Support**
+  - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data.
+    - [X]  Heading
+  - [ ]  **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
+    - [X]  Heading
+- [X]  Auto Save
+- [ ]  File History
+- [X]  Dark theme: Theme switch
+  - [ ]  Choose from numerous color scheme
+- [ ]  **Rust Integration**: Incorporate Rust for performance improvements.
+- [ ]  **Collaborative Editing**: Real-time collaboration with others.
+- [ ]  **Export Options**: Enable users to export Markdown files to PDF, HTML, etc.
+- [ ]  **Spell Check**: Implement functionality to ensure error-free Markdown.
+- [ ]  **Version Control**: Track changes and allow users to revert to previous versions.
+- [ ]  **Third Party Integration**: Integrate with third-party services or APIs for extended functionality.
+- [ ]  **Blockchain Integration**: Explore integrating blockchain technology for data security and integrity.
+- [X]  **Live Preview**: See your Markdown rendered in real-time.
+- [ ]  **Syntax Highlighting**: Easily distinguish between different elements of your Markdown.
+- [ ]  **Customizable Themes**: Choose from a variety of themes to suit your style.
+- [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
+- [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
+- [ ]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
 
 ## 🖥️ Getting Started
 

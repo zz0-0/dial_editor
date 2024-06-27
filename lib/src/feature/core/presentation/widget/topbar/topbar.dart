@@ -1,3 +1,4 @@
+import 'package:dial_editor/src/feature/core/presentation/theme/theme_provider.dart';
 import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/side_panel_provider.dart';
 import 'package:dial_editor/src/feature/core/presentation/widget/topbar/top_bar_provider.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node_provider.dart';
@@ -14,6 +15,8 @@ class Topbar extends ConsumerStatefulWidget {
 class _TopbarState extends ConsumerState<Topbar> {
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = ref.watch(themeNotifierProvider);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -36,6 +39,12 @@ class _TopbarState extends ConsumerState<Topbar> {
                   ),
                   MenuItemButton(
                     onPressed: () {
+                      themeNotifier.switchThemeMode();
+                    },
+                    child: const MenuAcceleratorLabel('&Switch Theme'),
+                  ),
+                  MenuItemButton(
+                    onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Saved!'),
@@ -45,11 +54,6 @@ class _TopbarState extends ConsumerState<Topbar> {
                     child: const MenuAcceleratorLabel('&Save'),
                   ),
                   MenuItemButton(
-                    // showAboutDialog(
-                    //   context: context,
-                    //   applicationName: 'MenuBar Sample',
-                    //   applicationVersion: '1.0.0',
-                    // );
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
