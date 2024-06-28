@@ -1,4 +1,3 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class Node {
@@ -16,13 +15,13 @@ abstract class Node {
     _parsers[type] = parser;
   }
 
-  factory Node.parse(String line) {
-    for (final type in _parsers.keys) {
-      final node = _parsers[type]!(line);
-      return node;
-    }
-    return TextNode(line);
-  }
+  // factory Node.parse(String line) {
+  //   for (final type in _parsers.keys) {
+  //     final node = _parsers[type]!(line);
+  //     return node;
+  //   }
+  //   return TextNode(line);
+  // }
 
   Widget render();
 

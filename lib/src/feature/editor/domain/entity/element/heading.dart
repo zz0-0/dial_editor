@@ -5,7 +5,9 @@ class Heading extends Node {
   int level;
 
   Heading(this.level, String rawText, [String text = ""])
-      : super(rawText, text);
+      : super(rawText, text) {
+    // Node.registerParser('heading', Heading.parse);
+  }
 
   @override
   void updateText(String newText) {
@@ -14,18 +16,18 @@ class Heading extends Node {
     text = newText.replaceAll(regex, '').trim();
   }
 
-  factory Heading.parse(String line) {
-    final regex = RegExp("^#{1,6}");
+  // factory Heading.parse(String line) {
+  //   final regex = RegExp("^#{1,6}");
 
-    if (regex.matchAsPrefix(line) != null) {
-      final level = regex.allMatches(line).length;
-      final rawText = line;
-      final text = line.replaceAll(regex, '').trim();
-      return Heading(level, rawText, text);
-    }
+  //   if (regex.matchAsPrefix(line) != null) {
+  //     final level = regex.allMatches(line).length;
+  //     final rawText = line;
+  //     final text = line.replaceAll(regex, '').trim();
+  //     return Heading(level, rawText, text);
+  //   }
 
-    return Heading(1, "");
-  }
+  //   return Heading(1, "");
+  // }
 
   @override
   Widget render() {
@@ -40,8 +42,4 @@ class Heading extends Node {
   String toString() {
     return rawText;
   }
-}
-
-void registerParsers() {
-  Node.registerParser('heading', Heading.parse);
 }
