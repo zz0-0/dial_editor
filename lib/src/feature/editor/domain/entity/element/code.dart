@@ -10,7 +10,6 @@ class Code extends Node {
   Widget render() {
     style = const TextStyle(
       fontSize: 20,
-      color: Colors.black,
     );
     return Text(
       text,

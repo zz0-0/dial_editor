@@ -11,7 +11,6 @@ class HorizontalRule extends Node {
     style = const TextStyle(
       fontSize: 20,
       backgroundColor: Colors.yellow,
-      color: Colors.black,
     );
     return Text(
       text,

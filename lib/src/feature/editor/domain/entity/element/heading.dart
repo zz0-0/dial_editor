@@ -31,7 +31,7 @@ class Heading extends Node {
 
   @override
   Widget render() {
-    style = TextStyle(fontSize: 20 + level * 2, color: Colors.black);
+    style = TextStyle(fontSize: 20 + level * 2);
     return Text(
       text,
       style: style,

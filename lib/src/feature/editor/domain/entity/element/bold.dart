@@ -11,7 +11,6 @@ class Bold extends Node {
     style = const TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.bold,
-      color: Colors.black,
     );
     return Text(
       text,

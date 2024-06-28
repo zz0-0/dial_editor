@@ -11,7 +11,6 @@ class Italic extends Node {
     style = const TextStyle(
       fontSize: 20,
       fontStyle: FontStyle.italic,
-      color: Colors.black,
     );
     return Text(
       text,
