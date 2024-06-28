@@ -5,14 +5,14 @@ import 'package:dial_editor/src/feature/editor/presentation/widget/edit_part_pro
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TabPart extends ConsumerStatefulWidget {
-  const TabPart({super.key});
+class FileTabPart extends ConsumerStatefulWidget {
+  const FileTabPart({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TabPartState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _FileTabPartState();
 }
 
-class _TabPartState extends ConsumerState<TabPart>
+class _FileTabPartState extends ConsumerState<FileTabPart>
     with TickerProviderStateMixin {
   Set<File> openedFiles = {};
   TabController? tabController;

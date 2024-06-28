@@ -1,0 +1,30 @@
+import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/side_panel_provider.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/file_tab_part.dart';
+import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/screen/directory.dart';
+import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/screen/directory_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class FileBranch extends ConsumerStatefulWidget {
+  const FileBranch({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _FileBranchState();
+}
+
+class _FileBranchState extends ConsumerState<FileBranch> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 200,
+          child: ref.watch(sidePanelProvider) ? const Directory() : Container(),
+        ),
+        if (ref.watch(fileProvider) != null)
+          const Expanded(child: FileTabPart()),
+      ],
+    );
+  }
+}

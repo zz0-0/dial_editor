@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:layout/layout.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 
 class Sidebar extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -25,23 +26,17 @@ class _SidebarState extends ConsumerState<Sidebar> {
       );
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (context.layout.breakpoint > LayoutBreakpoint.sm) {
-          return NavigationSideBar(
+    return Platform.isWindows || Platform.isMacOS || Platform.isLinux
+        ? NavigationSideBar(
+            body: widget.navigationShell,
+            selectedIndex: widget.navigationShell.currentIndex,
+            onDestinationSelected: goBranch,
+          )
+        : NavigationBottomBar(
             body: widget.navigationShell,
             selectedIndex: widget.navigationShell.currentIndex,
             onDestinationSelected: goBranch,
           );
-        } else {
-          return NavigationBottomBar(
-            body: widget.navigationShell,
-            selectedIndex: widget.navigationShell.currentIndex,
-            onDestinationSelected: goBranch,
-          );
-        }
-      },
-    );
   }
 }
 
@@ -63,24 +58,36 @@ class NavigationSideBar extends ConsumerWidget {
       body: Row(
         children: [
           NavigationRail(
+            minWidth: 52,
             selectedIndex: selectedIndex,
             onDestinationSelected: onDestinationSelected,
-            labelType: NavigationRailLabelType.selected,
+            labelType: NavigationRailLabelType.none,
             destinations: const [
               NavigationRailDestination(
-                icon: Icon(Icons.favorite_border),
-                selectedIcon: Icon(Icons.favorite),
-                label: Text('Movies'),
+                icon: JustTheTooltip(
+                  content: Text("File"),
+                  preferredDirection: AxisDirection.right,
+                  child: Icon(Icons.favorite_border),
+                ),
+                selectedIcon: JustTheTooltip(
+                  content: Text("File"),
+                  preferredDirection: AxisDirection.right,
+                  child: Icon(Icons.favorite),
+                ),
+                label: Text(''),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.bookmark_border),
-                selectedIcon: Icon(Icons.book),
-                label: Text('Users'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.star_border),
-                selectedIcon: Icon(Icons.star),
-                label: Text('Favorites'),
+                icon: JustTheTooltip(
+                  content: Text("Setting"),
+                  preferredDirection: AxisDirection.right,
+                  child: Icon(Icons.star_border),
+                ),
+                selectedIcon: JustTheTooltip(
+                  content: Text("Setting"),
+                  preferredDirection: AxisDirection.right,
+                  child: Icon(Icons.star),
+                ),
+                label: Text(''),
               ),
             ],
           ),
@@ -117,17 +124,12 @@ class NavigationBottomBar extends ConsumerWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite_border),
             activeIcon: Icon(Icons.favorite),
-            label: 'Movies',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_border),
-            activeIcon: Icon(Icons.book),
-            label: 'Users',
+            label: 'File',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.star_border),
             activeIcon: Icon(Icons.star),
-            label: 'Favorites',
+            label: 'Setting',
           ),
         ],
       ),
