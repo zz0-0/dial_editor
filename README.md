@@ -31,6 +31,9 @@
 - [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
 - [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
 - [X]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
+- [ ]  Storyboard: Help construct the plot
+- [ ]  Music Composer: Daw
+- [ ]  Video Editing
 
 ## 🖥️ Getting Started
 

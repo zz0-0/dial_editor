@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/side_panel_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -62,32 +63,41 @@ class NavigationSideBar extends ConsumerWidget {
             selectedIndex: selectedIndex,
             onDestinationSelected: onDestinationSelected,
             labelType: NavigationRailLabelType.none,
-            destinations: const [
+            destinations: [
               NavigationRailDestination(
-                icon: JustTheTooltip(
+                icon: const JustTheTooltip(
                   content: Text("File"),
                   preferredDirection: AxisDirection.right,
                   child: Icon(Icons.favorite_border),
                 ),
                 selectedIcon: JustTheTooltip(
-                  content: Text("File"),
+                  content: const Text("File"),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.favorite),
+                  child: IconButton(
+                    icon: const Icon(Icons.favorite_sharp),
+                    onPressed: () {
+                      ref.read(emptySidePanelProvider.notifier).state =
+                          !ref.watch(emptySidePanelProvider);
+                    },
+                  ),
                 ),
-                label: Text(''),
+                label: const Text(''),
               ),
               NavigationRailDestination(
-                icon: JustTheTooltip(
+                icon: const JustTheTooltip(
                   content: Text("Setting"),
                   preferredDirection: AxisDirection.right,
                   child: Icon(Icons.star_border),
                 ),
                 selectedIcon: JustTheTooltip(
-                  content: Text("Setting"),
+                  content: const Text("Setting"),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.star),
+                  child: IconButton(
+                    icon: const Icon(Icons.star),
+                    onPressed: () {},
+                  ),
                 ),
-                label: Text(''),
+                label: const Text(''),
               ),
             ],
           ),

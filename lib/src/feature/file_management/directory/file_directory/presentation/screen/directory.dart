@@ -16,16 +16,19 @@ class _DirectoryState extends ConsumerState<Directory> {
   Widget build(BuildContext context) {
     final List<DirectoryNode> nodes = ref.watch(directoryNodeListProvider);
 
-    return ListView.builder(
-      clipBehavior: Clip.antiAlias,
-      shrinkWrap: true,
-      itemCount: nodes.length,
-      itemBuilder: (context, index) {
-        return DirectoryNodeWidget(
-          key: nodes[index].key,
-          node: nodes[index],
-        );
-      },
+    return SizedBox(
+      width: 200,
+      child: ListView.builder(
+        clipBehavior: Clip.antiAlias,
+        shrinkWrap: true,
+        itemCount: nodes.length,
+        itemBuilder: (context, index) {
+          return DirectoryNodeWidget(
+            key: nodes[index].key,
+            node: nodes[index],
+          );
+        },
+      ),
     );
   }
 }
