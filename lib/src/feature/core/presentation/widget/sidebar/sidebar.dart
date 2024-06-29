@@ -76,8 +76,9 @@ class NavigationSideBar extends ConsumerWidget {
                   child: IconButton(
                     icon: const Icon(Icons.favorite_sharp),
                     onPressed: () {
-                      ref.read(emptySidePanelProvider.notifier).state =
-                          !ref.watch(emptySidePanelProvider);
+                      ref
+                          .read(emptySidePanelProvider.notifier)
+                          .update((state) => !ref.read(emptySidePanelProvider));
                     },
                   ),
                 ),

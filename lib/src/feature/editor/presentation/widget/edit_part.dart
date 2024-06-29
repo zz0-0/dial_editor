@@ -54,12 +54,15 @@ class _EditPartState extends ConsumerState<EditPart> {
             ),
             Expanded(
               child: index == editingLineIndex
-                  ? EditableText(
+                  ? TextField(
                       controller: controller,
                       focusNode: focusNode,
                       style: currentTextStyle,
                       cursorColor: Colors.blue,
-                      backgroundCursorColor: Colors.white,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        fillColor: Colors.transparent,
+                      ),
                       onEditingComplete: () {
                         setState(() {
                           nodes[editingLineIndex].updateText(controller.text);
@@ -77,7 +80,6 @@ class _EditPartState extends ConsumerState<EditPart> {
                       onTapUp: (details) {
                         setState(() {
                           editingLineIndex = index;
-
                           controller.text = nodes[index].rawText;
                           controller.selection = TextSelection.collapsed(
                             offset: controller.text.length,

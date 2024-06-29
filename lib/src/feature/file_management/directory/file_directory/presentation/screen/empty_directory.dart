@@ -1,3 +1,5 @@
+import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/side_panel_provider.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/topbar/top_bar_provider.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,11 @@ class _EmptyDirectoryState extends ConsumerState<EmptyDirectory> {
           TextButton(
             onPressed: () {
               ref.read(directoryNodeListProvider.notifier).openFolder;
+              ref
+                  .read(emptySidePanelProvider.notifier)
+                  .update((state) => false);
+              ref.read(openFolderProvider.notifier).update((state) => true);
+              ref.read(sidePanelProvider.notifier).update((state) => true);
             },
             child: const Text("Open Folder"),
           ),
