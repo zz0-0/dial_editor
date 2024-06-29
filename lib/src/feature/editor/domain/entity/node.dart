@@ -1,11 +1,12 @@
 import 'package:flutter/widgets.dart';
 
 abstract class Node {
+  BuildContext context;
   String rawText;
   String text;
   TextStyle? style;
 
-  Node(this.rawText, [this.text = ""]);
+  Node(this.context, this.rawText, [this.text = ""]);
 
   void updateText(String newText);
 

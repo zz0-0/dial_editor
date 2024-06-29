@@ -2,9 +2,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Highlight extends Node {
-  Highlight(super.rawText, [super.text]) {
-    // Node.registerParser('highlight', Highlight.parse);
-  }
+  Highlight(super.context, super.rawText, [super.text]);
 
   @override
   Widget render() {
@@ -17,18 +15,6 @@ class Highlight extends Node {
       style: style,
     );
   }
-
-  // factory Highlight.parse(String line) {
-  //   final regex = RegExp('==(.*?)==');
-
-  //   if (regex.matchAsPrefix(line) != null) {
-  //     final rawText = line;
-  //     final text = line.replaceAll(regex, '').trim();
-  //     return Highlight(rawText, text);
-  //   }
-
-  //   return Highlight("");
-  // }
 
   @override
   void updateText(String newText) {

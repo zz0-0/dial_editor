@@ -29,9 +29,15 @@ class _EditPartState extends ConsumerState<EditPart> {
   void initState() {
     super.initState();
     fileString = widget.file.readAsStringSync();
-    document = DocumentCodec().encode(fileString);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
+    print(markdownWidgetList);
   }
 
   @override
@@ -84,8 +90,7 @@ class _EditPartState extends ConsumerState<EditPart> {
                           controller.selection = TextSelection.collapsed(
                             offset: controller.text.length,
                           );
-                          currentTextStyle =
-                              nodes[index].style ?? const TextStyle();
+                          currentTextStyle = nodes[index].style!;
                         });
                         WidgetsBinding.instance
                             .addPostFrameCallback((timeStamp) {

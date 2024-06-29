@@ -2,9 +2,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Bold extends Node {
-  Bold(super.rawText, [super.text]) {
-    // Node.registerParser('bold', Bold.parse);
-  }
+  Bold(super.context, super.rawText, [super.text]);
 
   @override
   Widget render() {
@@ -13,22 +11,10 @@ class Bold extends Node {
       fontWeight: FontWeight.bold,
     );
     return Text(
-      text,
+      rawText,
       style: style,
     );
   }
-
-  // factory Bold.parse(String line) {
-  //   final regex = RegExp(r'(\*\*|__)(.*?)\1');
-
-  //   if (regex.matchAsPrefix(line) != null) {
-  //     final rawText = line;
-  //     final text = line.replaceAll(regex, '').trim();
-  //     return Bold(rawText, text);
-  //   }
-
-  //   return Bold("");
-  // }
 
   @override
   void updateText(String newText) {

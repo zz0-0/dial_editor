@@ -19,6 +19,7 @@ class _DesktopEditorState extends ConsumerState<DesktopEditor> {
         body: Column(
           children: [
             const SizedBox(height: 20, child: Topbar()),
+            const Divider(thickness: 1, height: 1),
             Expanded(
               child: widget.child,
             ),

@@ -2,9 +2,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalRule extends Node {
-  HorizontalRule(super.rawText) {
-    // Node.registerParser('horizontalrule', HorizontalRule.parse);
-  }
+  HorizontalRule(super.context, super.rawText);
 
   @override
   Widget render() {
@@ -17,17 +15,6 @@ class HorizontalRule extends Node {
       style: style,
     );
   }
-
-  // factory HorizontalRule.parse(String line) {
-  //   final regex = RegExp(r'^\s*(---|\*\*\*|___)\s*$');
-
-  //   if (regex.matchAsPrefix(line) != null) {
-  //     final rawText = line;
-  //     return HorizontalRule(rawText);
-  //   }
-
-  //   return HorizontalRule("");
-  // }
 
   @override
   void updateText(String newText) {

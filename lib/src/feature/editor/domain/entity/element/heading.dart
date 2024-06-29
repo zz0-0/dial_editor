@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 
 class Heading extends Node {
   int level;
+  final regex = RegExp("^#{1,6}");
 
-  Heading(this.level, String rawText, [String text = ""])
-      : super(rawText, text) {
+  Heading(BuildContext context, this.level, String rawText, [String text = ""])
+      : super(context, rawText, text) {
     // Node.registerParser('heading', Heading.parse);
   }
 
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = RegExp("^#{1,6}");
+
     text = newText.replaceAll(regex, '').trim();
   }
 
@@ -31,7 +32,31 @@ class Heading extends Node {
 
   @override
   Widget render() {
-    style = TextStyle(fontSize: 20 + level * 2);
+    text = rawText.replaceAll(regex, '').trim();
+
+    final theme = Theme.of(context);
+    switch (level) {
+      case 1:
+        style = theme.textTheme.headlineLarge!
+            .copyWith(color: theme.textTheme.titleLarge!.color);
+      case 2:
+        style = theme.textTheme.headlineMedium!
+            .copyWith(color: theme.textTheme.titleLarge!.color);
+      case 3:
+        style = theme.textTheme.headlineSmall!
+            .copyWith(color: theme.textTheme.titleLarge!.color);
+      case 4:
+        style = theme.textTheme.titleLarge!
+            .copyWith(color: theme.textTheme.titleLarge!.color);
+      case 5:
+        style = theme.textTheme.titleMedium!
+            .copyWith(color: theme.textTheme.titleMedium!.color);
+      case 6:
+        style = theme.textTheme.titleSmall!
+            .copyWith(color: theme.textTheme.titleSmall!.color);
+      default:
+    }
+
     return Text(
       text,
       style: style,

@@ -2,7 +2,8 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class TextNode extends Node {
-  TextNode(String rawText) : super(rawText, rawText);
+  TextNode(BuildContext context, String rawText)
+      : super(context, rawText, rawText);
 
   @override
   void updateText(String newText) {
@@ -12,9 +13,6 @@ class TextNode extends Node {
 
   @override
   Widget render() {
-    return Text(
-      text,
-      style: style ?? const TextStyle(),
-    );
+    return Text(text, style: style);
   }
 }

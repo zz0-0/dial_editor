@@ -2,7 +2,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Link extends Node {
-  Link(super.rawText, String s);
+  Link(super.context, super.rawText, String s);
 
   @override
   Widget render() {

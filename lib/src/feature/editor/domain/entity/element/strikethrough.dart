@@ -2,7 +2,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Strikethrough extends Node {
-  Strikethrough(super.rawText);
+  Strikethrough(super.context, super.rawText);
 
   @override
   Widget render() {
