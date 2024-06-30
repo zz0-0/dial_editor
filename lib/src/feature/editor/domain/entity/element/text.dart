@@ -15,4 +15,9 @@ class TextNode extends Node {
   Widget render() {
     return Text(text, style: style);
   }
+
+  @override
+  String toString() {
+    return rawText;
+  }
 }

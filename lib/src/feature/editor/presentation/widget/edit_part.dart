@@ -104,6 +104,17 @@ class _EditPartState extends ConsumerState<EditPart> {
                         //   border: InputBorder.none,
                         //   fillColor: Colors.transparent,
                         // ),
+                        onChanged: (value) {
+                          setState(() {
+                            nodes[editingLineIndex].updateText(controller.text);
+                            markdownWidgetList[editingLineIndex] =
+                                MarkdownRender()
+                                    .render(nodes[editingLineIndex]);
+                            currentTextStyle = nodes[editingLineIndex].style ??
+                                const TextStyle();
+                          });
+                        },
+
                         onEditingComplete: () {
                           setState(() {
                             nodes[editingLineIndex].updateText(controller.text);

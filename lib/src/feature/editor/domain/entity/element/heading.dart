@@ -13,27 +13,12 @@ class Heading extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-
     text = newText.replaceAll(regex, '').trim();
+    level = regex.allMatches(newText).first.group(0)?.length ?? 1;
+    updateStyle();
   }
 
-  // factory Heading.parse(String line) {
-  //   final regex = RegExp("^#{1,6}");
-
-  //   if (regex.matchAsPrefix(line) != null) {
-  //     final level = regex.allMatches(line).length;
-  //     final rawText = line;
-  //     final text = line.replaceAll(regex, '').trim();
-  //     return Heading(level, rawText, text);
-  //   }
-
-  //   return Heading(1, "");
-  // }
-
-  @override
-  Widget render() {
-    text = rawText.replaceAll(regex, '').trim();
-
+  void updateStyle() {
     final theme = Theme.of(context);
     switch (level) {
       case 1:
@@ -56,7 +41,25 @@ class Heading extends Node {
             .copyWith(color: theme.textTheme.titleSmall!.color);
       default:
     }
+  }
 
+  // factory Heading.parse(String line) {
+  //   final regex = RegExp("^#{1,6}");
+
+  //   if (regex.matchAsPrefix(line) != null) {
+  //     final level = regex.allMatches(line).length;
+  //     final rawText = line;
+  //     final text = line.replaceAll(regex, '').trim();
+  //     return Heading(level, rawText, text);
+  //   }
+
+  //   return Heading(1, "");
+  // }
+
+  @override
+  Widget render() {
+    text = rawText.replaceAll(regex, '').trim();
+    updateStyle();
     return Text(
       text,
       style: style,

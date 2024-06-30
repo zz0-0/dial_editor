@@ -10,11 +10,11 @@ abstract class Node {
 
   void updateText(String newText);
 
-  static final Map<String, Node Function(String)> _parsers = {};
+  // static final Map<String, Node Function(String)> _parsers = {};
 
-  static void registerParser(String type, Node Function(String) parser) {
-    _parsers[type] = parser;
-  }
+  // static void registerParser(String type, Node Function(String) parser) {
+  //   _parsers[type] = parser;
+  // }
 
   // factory Node.parse(String line) {
   //   for (final type in _parsers.keys) {
