@@ -11,9 +11,17 @@
 - [ ]  **Markdown Support**
 
   - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data.
+
     - [X]  Heading
+    - [X]  Bold
+    - [X]  Italic
+    - [X]  Bold italic
   - [ ]  **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
+
     - [X]  Heading
+    - [X]  Bold
+    - [X]  Italic
+    - [X]  Bold italic
 - [X]  Auto Save
 - [ ]  File History
 - [X]  Dark theme: Theme switch

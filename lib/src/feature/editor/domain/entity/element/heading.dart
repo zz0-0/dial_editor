@@ -1,9 +1,10 @@
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Heading extends Node {
   int level;
-  final regex = RegExp("^#{1,6}");
+  final regex = headingRegex;
 
   Heading(BuildContext context, this.level, String rawText, [String text = ""])
       : super(context, rawText, text) {

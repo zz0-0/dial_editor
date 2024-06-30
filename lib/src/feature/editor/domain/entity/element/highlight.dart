@@ -1,4 +1,5 @@
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Highlight extends Node {
@@ -19,7 +20,7 @@ class Highlight extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = RegExp('==(.*?)==');
+    final regex = highlightRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
   }

@@ -2,8 +2,8 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class Bold extends Node {
-  Bold(super.context, super.rawText, [super.text]);
+class BoldItalic extends Node {
+  BoldItalic(super.context, super.rawText, [super.text]);
 
   @override
   Widget render() {
@@ -14,7 +14,7 @@ class Bold extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = boldRegex;
+    final regex = boldItalicRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
   }
@@ -25,16 +25,12 @@ class Bold extends Node {
     style = TextStyle(
       fontSize: theme.textTheme.bodyMedium!.fontSize,
       fontWeight: FontWeight.bold,
+      fontStyle: FontStyle.italic,
     );
   }
 
-  @override
-  String toString() {
-    return rawText;
-  }
-
   Widget _buildRichText() {
-    final regex = boldRegex;
+    final regex = boldItalicRegex;
     final matches = regex.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
@@ -57,7 +53,10 @@ class Bold extends Node {
 
       textSpans.add(
         TextSpan(
-          text: rawText.substring(match.start, match.end).replaceAll('**', ''),
+          text: rawText.substring(
+            match.start + 3,
+            match.end - 3,
+          ), // Remove the triple asterisks or underscores
           style: style,
         ),
       );
@@ -79,5 +78,10 @@ class Bold extends Node {
         children: textSpans,
       ),
     );
+  }
+
+  @override
+  String toString() {
+    return rawText;
   }
 }

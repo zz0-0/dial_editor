@@ -1,4 +1,5 @@
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Italic extends Node {
@@ -6,20 +7,14 @@ class Italic extends Node {
 
   @override
   Widget render() {
-    style = const TextStyle(
-      fontSize: 20,
-      fontStyle: FontStyle.italic,
-    );
-    return Text(
-      text,
-      style: style,
-    );
+    updateStyle();
+    return _buildRichText();
   }
 
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = RegExp(r'(\*|_)(.*?)\1');
+    final regex = italicRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
   }
@@ -31,6 +26,58 @@ class Italic extends Node {
 
   @override
   void updateStyle() {
-    // TODO: implement updateStyle
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.bodyMedium!.fontSize,
+      fontStyle: FontStyle.italic,
+    );
+  }
+
+  Widget _buildRichText() {
+    final regex = italicRegex;
+    final matches = regex.allMatches(rawText);
+    if (matches.isEmpty) {
+      return Text(
+        rawText,
+        style: style,
+      );
+    }
+
+    final textSpans = <TextSpan>[];
+    int currentPosition = 0;
+
+    for (final match in matches) {
+      if (match.start > currentPosition) {
+        textSpans.add(
+          TextSpan(
+            text: rawText.substring(currentPosition, match.start),
+          ),
+        );
+      }
+
+      textSpans.add(
+        TextSpan(
+          text: rawText.substring(match.start + 1, match.end - 1),
+          style: style,
+        ),
+      );
+
+      currentPosition = match.end;
+    }
+
+    if (currentPosition < rawText.length) {
+      textSpans.add(
+        TextSpan(
+          text: rawText.substring(currentPosition),
+        ),
+      );
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context).textTheme.bodyMedium,
+        children: textSpans,
+      ),
+    );
   }
 }
