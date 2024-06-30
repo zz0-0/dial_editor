@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/code.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/image.dart'
     as dial;
@@ -27,59 +26,59 @@ class StringToDocumentConverter extends Converter<String, Document> {
 
     final children = <Node>[];
 
-    bool isInCodeBlock = false;
-    List<String> codeBlockLines = [];
-
     for (final line in lines) {
-      if (line.startsWith('```')) {
-        isInCodeBlock = !isInCodeBlock;
-        if (!isInCodeBlock) {
-          children.add(Code(context, codeBlockLines.join('\n')));
-          codeBlockLines = [];
-        }
-        continue;
-      }
-
-      if (isInCodeBlock) {
-        codeBlockLines.add(line);
-        continue;
-      }
-
-      if (line.startsWith('>')) {
-        children.add(Quote(context, line.substring(1).trim()));
-      } else if (RegExp(r'^\d+\.\s').hasMatch(line)) {
-        children.add(OrderedList(context, line.substring(2).trim()));
-      } else if (line.startsWith('- ') || line.startsWith('* ')) {
-        children.add(UnorderedList(context, line.substring(2).trim()));
-      } else if (line.startsWith('#')) {
-        int level = 0;
-        while (line[level] == '#') {
-          level++;
-        }
-        children.add(
-          Heading(context, level, line),
-        );
-      } else if (RegExp(r'\*\*(.*?)\*\*').hasMatch(line) ||
-          RegExp('__(.*?)__').hasMatch(line)) {
-        children.add(Bold(context, line));
-      } else if (RegExp(r'\*(.*?)\*').hasMatch(line) ||
-          RegExp('_(.*?)_').hasMatch(line)) {
-        children.add(Italic(context, line));
-      } else if (RegExp('~~(.*?)~~').hasMatch(line)) {
-        children.add(Strikethrough(context, line));
-      } else if (RegExp(r'!\[(.*?)\]\((.*?)\)').hasMatch(line)) {
-        final match = RegExp(r'!\[(.*?)\]\((.*?)\)').firstMatch(line);
-        children.add(
-            dial.Image(context, match?.group(1) ?? '', match?.group(2) ?? ''));
-      } else if (RegExp(r'\[(.*?)\]\((.*?)\)').hasMatch(line)) {
-        final match = RegExp(r'\[(.*?)\]\((.*?)\)').firstMatch(line);
-        children
-            .add(Link(context, match?.group(1) ?? '', match?.group(2) ?? ''));
-      } else {
-        children.add(TextNode(context, line));
-      }
+      children.add(convertLine(line));
     }
 
     return Document(children: children);
+  }
+
+  Node convertLine(String line) {
+    // bool isInCodeBlock = false;
+    // List<String> codeBlockLines = [];
+
+    // if (line.startsWith('```')) {
+    //     isInCodeBlock = !isInCodeBlock;
+    //     if (!isInCodeBlock) {
+    //       return (Code(context, codeBlockLines.join('\n')));
+    //       codeBlockLines = [];
+    //     }
+    //     continue;
+    //   }
+
+    //   if (isInCodeBlock) {
+    //     codeBlockLines.add(line);
+    //     continue;
+    //   }
+
+    if (line.startsWith('>')) {
+      return Quote(context, line.substring(1).trim());
+    } else if (RegExp(r'^\d+\.\s').hasMatch(line)) {
+      return OrderedList(context, line.substring(2).trim());
+    } else if (line.startsWith('- ') || line.startsWith('* ')) {
+      return UnorderedList(context, line.substring(2).trim());
+    } else if (line.startsWith('#')) {
+      int level = 0;
+      while (line[level] == '#') {
+        level++;
+      }
+      return Heading(context, level, line);
+    } else if (RegExp(r'\*\*(.*?)\*\*').hasMatch(line) ||
+        RegExp('__(.*?)__').hasMatch(line)) {
+      return Bold(context, line);
+    } else if (RegExp(r'\*(.*?)\*').hasMatch(line) ||
+        RegExp('_(.*?)_').hasMatch(line)) {
+      return Italic(context, line);
+    } else if (RegExp('~~(.*?)~~').hasMatch(line)) {
+      return Strikethrough(context, line);
+    } else if (RegExp(r'!\[(.*?)\]\((.*?)\)').hasMatch(line)) {
+      final match = RegExp(r'!\[(.*?)\]\((.*?)\)').firstMatch(line);
+      return dial.Image(context, match?.group(1) ?? '', match?.group(2) ?? '');
+    } else if (RegExp(r'\[(.*?)\]\((.*?)\)').hasMatch(line)) {
+      final match = RegExp(r'\[(.*?)\]\((.*?)\)').firstMatch(line);
+      return Link(context, match?.group(1) ?? '', match?.group(2) ?? '');
+    } else {
+      return TextNode(context, line);
+    }
   }
 }

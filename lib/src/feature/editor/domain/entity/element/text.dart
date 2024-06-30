@@ -9,6 +9,7 @@ class TextNode extends Node {
   void updateText(String newText) {
     rawText = newText;
     text = newText;
+    updateStyle();
   }
 
   @override
@@ -19,5 +20,10 @@ class TextNode extends Node {
   @override
   String toString() {
     return rawText;
+  }
+
+  @override
+  void updateStyle() {
+    style = const TextStyle();
   }
 }

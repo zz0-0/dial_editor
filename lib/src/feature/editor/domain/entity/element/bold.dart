@@ -6,10 +6,6 @@ class Bold extends Node {
 
   @override
   Widget render() {
-    style = const TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-    );
     return Text(
       rawText,
       style: style,
@@ -21,6 +17,15 @@ class Bold extends Node {
     rawText = newText;
     final regex = RegExp(r'(\*\*|__)(.*?)\1');
     text = newText.replaceAll(regex, '').trim();
+    updateStyle();
+  }
+
+  @override
+  void updateStyle() {
+    style = const TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    );
   }
 
   @override

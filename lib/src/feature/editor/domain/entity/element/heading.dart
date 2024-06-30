@@ -18,6 +18,7 @@ class Heading extends Node {
     updateStyle();
   }
 
+  @override
   void updateStyle() {
     final theme = Theme.of(context);
     switch (level) {

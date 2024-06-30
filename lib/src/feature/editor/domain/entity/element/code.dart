@@ -20,10 +20,16 @@ class Code extends Node {
     rawText = newText;
     final regex = RegExp('```(.*?)```', dotAll: true);
     text = newText.replaceAll(regex, '').trim();
+    updateStyle();
   }
 
   @override
   String toString() {
     return rawText;
+  }
+
+  @override
+  void updateStyle() {
+    // TODO: implement updateStyle
   }
 }

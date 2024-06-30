@@ -24,6 +24,8 @@ abstract class Node {
   //   return TextNode(line);
   // }
 
+  void updateStyle();
+
   Widget render();
 
   @override

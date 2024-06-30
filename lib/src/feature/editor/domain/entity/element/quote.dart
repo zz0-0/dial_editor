@@ -13,5 +13,11 @@ class Quote extends Node {
   @override
   void updateText(String newText) {
     // TODO: implement updateText
+    updateStyle();
+  }
+
+  @override
+  void updateStyle() {
+    // TODO: implement updateStyle
   }
 }

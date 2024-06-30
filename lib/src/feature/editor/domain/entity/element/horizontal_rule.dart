@@ -19,10 +19,16 @@ class HorizontalRule extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
+    updateStyle();
   }
 
   @override
   String toString() {
     return rawText;
+  }
+
+  @override
+  void updateStyle() {
+    // TODO: implement updateStyle
   }
 }

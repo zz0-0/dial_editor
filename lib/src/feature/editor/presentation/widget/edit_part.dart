@@ -4,6 +4,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
+import 'package:dial_editor/src/feature/editor/util/string_to_document_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -73,7 +74,8 @@ class _EditPartState extends ConsumerState<EditPart> {
                     const Spacer(),
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          vertical: lineHeight == 19.0 ? 0.5 : 0),
+                        vertical: lineHeight == 19.0 ? 0.5 : 0,
+                      ),
                       child: Container(
                         alignment: Alignment.centerRight,
                         height: lineHeight,
@@ -106,7 +108,9 @@ class _EditPartState extends ConsumerState<EditPart> {
                         // ),
                         onChanged: (value) {
                           setState(() {
-                            nodes[editingLineIndex].updateText(controller.text);
+                            nodes[editingLineIndex] =
+                                StringToDocumentConverter(context)
+                                    .convertLine(value);
                             markdownWidgetList[editingLineIndex] =
                                 MarkdownRender()
                                     .render(nodes[editingLineIndex]);
