@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/side_panel_provider.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/topbar/top_bar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -76,9 +77,15 @@ class NavigationSideBar extends ConsumerWidget {
                   child: IconButton(
                     icon: const Icon(Icons.favorite_sharp),
                     onPressed: () {
-                      ref
-                          .read(emptySidePanelProvider.notifier)
-                          .update((state) => !ref.read(emptySidePanelProvider));
+                      if (ref.read(openFolderProvider)) {
+                        ref.read(sidePanelProvider.notifier).update(
+                              (state) => !ref.read(sidePanelProvider),
+                            );
+                      } else {
+                        ref.read(emptySidePanelProvider.notifier).update(
+                              (state) => !ref.read(emptySidePanelProvider),
+                            );
+                      }
                     },
                   ),
                 ),
