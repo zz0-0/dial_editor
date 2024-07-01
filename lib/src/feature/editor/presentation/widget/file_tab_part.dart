@@ -14,7 +14,6 @@ class FileTabPart extends ConsumerStatefulWidget {
 
 class _FileTabPartState extends ConsumerState<FileTabPart>
     with TickerProviderStateMixin {
-  Set<File> openedFiles = {};
   TabController? tabController;
 
   @override
@@ -32,33 +31,47 @@ class _FileTabPartState extends ConsumerState<FileTabPart>
   @override
   Widget build(BuildContext context) {
     final openedFiles = ref.watch(openedFilesProvider);
+    final String? selectedFile = ref.watch(selectedFileProvider);
 
     if (tabController?.length != openedFiles.length) {
       tabController = TabController(length: openedFiles.length, vsync: this);
     }
+
+    if (selectedFile != null) {
+      final selectedIndex = openedFiles.toList().indexOf(selectedFile);
+      if (selectedIndex != -1) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          tabController!.animateTo(selectedIndex);
+        });
+      }
+    }
+
+    final List<Widget> tabs = openedFiles
+        .map(
+          (file) => Tab(
+            child: Row(
+              children: [
+                Text(file.split(Platform.pathSeparator).last),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    ref.read(openedFilesProvider.notifier).removeFile(file);
+                  },
+                ),
+              ],
+            ),
+          ),
+        )
+        .toList();
+
+    tabController!.animateTo(openedFiles.length - 1);
 
     return Scaffold(
       appBar: TabBar(
         isScrollable: true,
         tabAlignment: TabAlignment.start,
         controller: tabController,
-        tabs: openedFiles
-            .map(
-              (file) => Tab(
-                child: Row(
-                  children: [
-                    Text(file.split(Platform.pathSeparator).last),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        ref.read(openedFilesProvider.notifier).removeFile(file);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            )
-            .toList(),
+        tabs: tabs,
       ),
       body: TabBarView(
         controller: tabController,
