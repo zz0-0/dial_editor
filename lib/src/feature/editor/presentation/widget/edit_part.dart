@@ -103,19 +103,19 @@ class _EditPartState extends ConsumerState<EditPart> {
             itemCount: markdownWidgetList.length,
             itemBuilder: (context, index) {
               return index == editingLineIndex
-                  ? EditableText(
+                  ? TextField(
                       controller: controllers[index],
-                      selectionColor: Colors.blue.withOpacity(0.3),
                       selectionControls: materialTextSelectionControls,
                       focusNode: focusNodes[index],
                       style: currentTextStyle,
                       cursorColor: Colors.blue,
-                      backgroundCursorColor: Colors.white,
-                      // decoration: const InputDecoration(
-                      //   border: InputBorder.none,
-                      //   fillColor: Colors.transparent,
-                      // ),
-
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        fillColor: Colors.transparent,
+                        isDense: true,
+                        filled: false,
+                      ),
                       onChanged: (value) {
                         setState(() {
                           nodes[editingLineIndex] =
@@ -127,7 +127,6 @@ class _EditPartState extends ConsumerState<EditPart> {
                               const TextStyle();
                         });
                       },
-
                       onEditingComplete: () {
                         setState(() {
                           nodes[editingLineIndex]
