@@ -21,8 +21,8 @@ class _EditPartState extends ConsumerState<EditPart> {
   late String fileString;
   List<Widget> markdownWidgetList = [];
   List<Node> nodes = [];
-  final TextEditingController controller = TextEditingController();
-  final FocusNode focusNode = FocusNode();
+  final List<TextEditingController> controllers = [];
+  final List<FocusNode> focusNodes = [];
   TextStyle currentTextStyle = const TextStyle();
   int editingLineIndex = -1;
 
@@ -38,12 +38,20 @@ class _EditPartState extends ConsumerState<EditPart> {
     document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
+    for (final node in nodes) {
+      controllers.add(TextEditingController(text: node.rawText));
+      focusNodes.add(FocusNode());
+    }
   }
 
   @override
   void dispose() {
-    controller.dispose();
-    focusNode.dispose();
+    for (final controller in controllers) {
+      controller.dispose();
+    }
+    for (final focusNode in focusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -91,69 +99,92 @@ class _EditPartState extends ConsumerState<EditPart> {
           ),
         ),
         Expanded(
-          child: SelectionArea(
-            child: ListView.builder(
-              itemCount: markdownWidgetList.length,
-              itemBuilder: (context, index) {
-                return index == editingLineIndex
-                    ? EditableText(
-                        controller: controller,
-                        focusNode: focusNode,
-                        style: currentTextStyle,
-                        cursorColor: Colors.blue,
-                        backgroundCursorColor: Colors.white,
-                        // decoration: const InputDecoration(
-                        //   border: InputBorder.none,
-                        //   fillColor: Colors.transparent,
-                        // ),
-                        onChanged: (value) {
-                          setState(() {
-                            nodes[editingLineIndex] =
-                                StringToDocumentConverter(context)
-                                    .convertLine(value);
-                            markdownWidgetList[editingLineIndex] =
-                                MarkdownRender()
-                                    .render(nodes[editingLineIndex]);
-                            currentTextStyle = nodes[editingLineIndex].style ??
-                                const TextStyle();
-                          });
-                        },
+          child: ListView.builder(
+            itemCount: markdownWidgetList.length,
+            itemBuilder: (context, index) {
+              return index == editingLineIndex
+                  ? EditableText(
+                      controller: controllers[index],
+                      selectionColor: Colors.blue.withOpacity(0.3),
+                      selectionControls: materialTextSelectionControls,
+                      focusNode: focusNodes[index],
+                      style: currentTextStyle,
+                      cursorColor: Colors.blue,
+                      backgroundCursorColor: Colors.white,
+                      // decoration: const InputDecoration(
+                      //   border: InputBorder.none,
+                      //   fillColor: Colors.transparent,
+                      // ),
 
-                        onEditingComplete: () {
-                          setState(() {
-                            nodes[editingLineIndex].updateText(controller.text);
-                            markdownWidgetList[editingLineIndex] =
-                                MarkdownRender()
-                                    .render(nodes[editingLineIndex]);
-                            fileString = document.toString();
-                            widget.file.writeAsStringSync(fileString);
-                            editingLineIndex = -1;
-                            controller.clear();
-                            currentTextStyle = const TextStyle();
-                          });
-                        },
-                      )
-                    : GestureDetector(
-                        onTapUp: (details) {
-                          setState(() {
-                            controller.clear();
-                            editingLineIndex = index;
-                            controller.text = nodes[index].rawText;
-                            controller.selection = TextSelection.collapsed(
-                              offset: controller.text.length,
+                      onChanged: (value) {
+                        setState(() {
+                          nodes[editingLineIndex] =
+                              StringToDocumentConverter(context)
+                                  .convertLine(value);
+                          markdownWidgetList[editingLineIndex] =
+                              MarkdownRender().render(nodes[editingLineIndex]);
+                          currentTextStyle = nodes[editingLineIndex].style ??
+                              const TextStyle();
+                        });
+                      },
+
+                      onEditingComplete: () {
+                        setState(() {
+                          nodes[editingLineIndex]
+                              .updateText(controllers[editingLineIndex].text);
+                          markdownWidgetList[editingLineIndex] =
+                              MarkdownRender().render(nodes[editingLineIndex]);
+
+                          if (editingLineIndex < nodes.length - 1) {
+                            editingLineIndex++;
+                            controllers[editingLineIndex].selection =
+                                TextSelection.collapsed(
+                              offset: controllers[editingLineIndex].text.length,
                             );
-                            currentTextStyle =
-                                nodes[index].style ?? const TextStyle();
-                          });
-                          WidgetsBinding.instance
-                              .addPostFrameCallback((timeStamp) {
-                            focusNode.requestFocus();
-                          });
-                        },
-                        child: markdownWidgetList[index],
-                      );
-              },
-            ),
+                            focusNodes[editingLineIndex].requestFocus();
+                          } else {
+                            // Add a new empty node for a new line
+                            nodes.add(
+                              StringToDocumentConverter(context)
+                                  .convertLine(""),
+                            );
+                            markdownWidgetList
+                                .add(MarkdownRender().render(nodes.last));
+                            editingLineIndex = nodes.length - 1;
+                            controllers.add(TextEditingController());
+                            focusNodes.add(FocusNode());
+                            editingLineIndex = nodes.length - 1;
+                          }
+
+                          fileString = document.toString();
+                          widget.file.writeAsStringSync(fileString);
+                          currentTextStyle = nodes[editingLineIndex].style ??
+                              const TextStyle();
+                        });
+                      },
+                    )
+                  : GestureDetector(
+                      onTapUp: (details) {
+                        setState(() {
+                          controllers[index].clear();
+                          editingLineIndex = index;
+                          controllers[editingLineIndex].text =
+                              nodes[index].rawText;
+                          controllers[editingLineIndex].selection =
+                              TextSelection.collapsed(
+                            offset: controllers[editingLineIndex].text.length,
+                          );
+                          currentTextStyle =
+                              nodes[index].style ?? const TextStyle();
+                        });
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) {
+                          focusNodes[editingLineIndex].requestFocus();
+                        });
+                      },
+                      child: markdownWidgetList[index],
+                    );
+            },
           ),
         ),
       ],
