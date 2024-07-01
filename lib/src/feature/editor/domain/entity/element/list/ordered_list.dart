@@ -20,4 +20,10 @@ class OrderedList extends Node {
   void updateStyle() {
     // TODO: implement updateStyle
   }
+
+  @override
+  Node createNewLine() {
+    // TODO: implement createNewLine
+    throw UnimplementedError();
+  }
 }

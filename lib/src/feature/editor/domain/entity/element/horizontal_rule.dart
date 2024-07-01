@@ -1,3 +1,4 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
@@ -30,5 +31,10 @@ class HorizontalRule extends Node {
   @override
   void updateStyle() {
     // TODO: implement updateStyle
+  }
+
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
   }
 }

@@ -54,7 +54,7 @@ class StringToDocumentConverter extends Converter<String, Document> {
     //   }
 
     if (line.startsWith('>')) {
-      return Quote(context, line.substring(1).trim());
+      return Quote(context, line);
     } else if (orderListRegex.hasMatch(line)) {
       return OrderedList(context, line.substring(2).trim());
     } else if (line.startsWith('- ') || line.startsWith('* ')) {

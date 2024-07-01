@@ -10,6 +10,15 @@ abstract class Node {
 
   void updateText(String newText);
 
+  void updateStyle();
+
+  Widget render();
+
+  Node createNewLine();
+
+  @override
+  String toString();
+
   // static final Map<String, Node Function(String)> _parsers = {};
 
   // static void registerParser(String type, Node Function(String) parser) {
@@ -23,11 +32,4 @@ abstract class Node {
   //   }
   //   return TextNode(line);
   // }
-
-  void updateStyle();
-
-  Widget render();
-
-  @override
-  String toString();
 }

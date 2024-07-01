@@ -2,22 +2,46 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Quote extends Node {
-  Quote(super.context, super.rawText);
+  Quote(super.context, super.rawText, [super.text]);
 
   @override
   Widget render() {
-    // TODO: implement render
-    throw UnimplementedError();
+    updateStyle();
+    return _buildRichText();
   }
 
   @override
   void updateText(String newText) {
-    // TODO: implement updateText
+    rawText = newText;
+    text = newText.replaceAll('>', '').trim();
     updateStyle();
   }
 
   @override
   void updateStyle() {
-    // TODO: implement updateStyle
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.bodyMedium!.fontSize,
+      fontStyle: FontStyle.italic,
+      color: Colors.grey,
+    );
+  }
+
+  @override
+  String toString() {
+    return rawText;
+  }
+
+  Widget _buildRichText() {
+    text = rawText.replaceAll('>', '').trim();
+    return Text(
+      text,
+      style: style,
+    );
+  }
+
+  @override
+  Quote createNewLine() {
+    return Quote(context, "> ");
   }
 }

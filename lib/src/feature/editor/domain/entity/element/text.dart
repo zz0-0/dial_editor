@@ -14,6 +14,7 @@ class TextNode extends Node {
 
   @override
   Widget render() {
+    updateStyle();
     return Text(text, style: style);
   }
 
@@ -25,5 +26,10 @@ class TextNode extends Node {
   @override
   void updateStyle() {
     style = const TextStyle();
+  }
+
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
   }
 }

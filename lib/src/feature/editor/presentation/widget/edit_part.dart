@@ -72,7 +72,7 @@ class _EditPartState extends ConsumerState<EditPart> {
           child: SizedBox(
             width: 30,
             child: ListView.builder(
-              itemCount: markdownWidgetList.length,
+              itemCount: nodes.length,
               itemBuilder: (context, index) {
                 final textStyle = (nodes[index].style ??
                     Theme.of(context).textTheme.bodyMedium)!;
@@ -135,30 +135,38 @@ class _EditPartState extends ConsumerState<EditPart> {
                               MarkdownRender().render(nodes[editingLineIndex]);
 
                           if (editingLineIndex < nodes.length - 1) {
+                            nodes[editingLineIndex + 1] =
+                                nodes[editingLineIndex].createNewLine();
+                            markdownWidgetList.add(
+                              MarkdownRender()
+                                  .render(nodes[editingLineIndex + 1]),
+                            );
                             editingLineIndex++;
                             controllers[editingLineIndex].selection =
                                 TextSelection.collapsed(
                               offset: controllers[editingLineIndex].text.length,
                             );
-                            focusNodes[editingLineIndex].requestFocus();
                           } else {
-                            // Add a new empty node for a new line
-                            nodes.add(
-                              StringToDocumentConverter(context)
-                                  .convertLine(""),
-                            );
+                            final newNode =
+                                nodes[editingLineIndex].createNewLine();
+                            nodes.add(newNode);
                             markdownWidgetList
                                 .add(MarkdownRender().render(nodes.last));
                             editingLineIndex = nodes.length - 1;
-                            controllers.add(TextEditingController());
+                            controllers.add(
+                              TextEditingController(text: newNode.rawText),
+                            );
                             focusNodes.add(FocusNode());
-                            editingLineIndex = nodes.length - 1;
                           }
 
                           fileString = document.toString();
                           widget.file.writeAsStringSync(fileString);
                           currentTextStyle = nodes[editingLineIndex].style ??
                               const TextStyle();
+                          WidgetsBinding.instance
+                              .addPostFrameCallback((timeStamp) {
+                            focusNodes[editingLineIndex].requestFocus();
+                          });
                         });
                       },
                     )

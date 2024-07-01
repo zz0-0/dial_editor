@@ -1,3 +1,4 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
@@ -79,5 +80,10 @@ class Strikethrough extends Node {
         children: textSpans,
       ),
     );
+  }
+
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
   }
 }
