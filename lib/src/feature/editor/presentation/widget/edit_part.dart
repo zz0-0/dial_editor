@@ -76,7 +76,7 @@ class _EditPartState extends ConsumerState<EditPart> {
               itemCount: nodes.length,
               itemBuilder: (context, index) {
                 final textStyle = (nodes[index].style ??
-                    Theme.of(context).textTheme.bodyMedium)!;
+                    Theme.of(context).textTheme.titleSmall)!;
                 final lineHeight = _getTextHeight(textStyle, nodes[index].text);
                 return Row(
                   children: [

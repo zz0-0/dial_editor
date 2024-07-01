@@ -24,7 +24,7 @@ class BoldItalic extends Node {
   void updateStyle() {
     final theme = Theme.of(context);
     style = TextStyle(
-      fontSize: theme.textTheme.bodyMedium!.fontSize,
+      fontSize: theme.textTheme.titleSmall!.fontSize,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.italic,
     );
@@ -75,7 +75,7 @@ class BoldItalic extends Node {
 
     return RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: Theme.of(context).textTheme.titleSmall,
         children: textSpans,
       ),
     );

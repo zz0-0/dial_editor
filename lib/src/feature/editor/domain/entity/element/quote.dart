@@ -21,7 +21,7 @@ class Quote extends Node {
   void updateStyle() {
     final theme = Theme.of(context);
     style = TextStyle(
-      fontSize: theme.textTheme.bodyMedium!.fontSize,
+      fontSize: theme.textTheme.titleSmall!.fontSize,
       fontStyle: FontStyle.italic,
       color: Colors.grey,
     );

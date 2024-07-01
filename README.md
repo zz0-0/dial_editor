@@ -8,38 +8,41 @@
 
 ## 🛠️ To-Do
 
+### Will Have
+
 - [ ]  **Markdown Support**
-
   - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data.
-
     - [X]  Heading
     - [X]  Bold
     - [X]  Italic
     - [X]  Bold italic
+    - [X]  Strikethrough
   - [ ]  **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
-
     - [X]  Heading
     - [X]  Bold
     - [X]  Italic
     - [X]  Bold italic
+    - [X]  Strikethrough
 - [X]  Auto Save
-- [ ]  File History
+- [X]  Undo/Redo
 - [X]  Dark theme: Theme switch
-
   - [ ]  Customizable Themes: Choose from a variety of themes to suit your style.
-- [ ]  **Rust Integration**: Incorporate Rust for performance improvements.
 - [ ]  **Collaborative Editing**: Real-time collaboration with others.
 - [ ]  **Export Options**: Enable users to export Markdown files to PDF, HTML, etc.
 - [ ]  **Spell Check**: Implement functionality to ensure error-free Markdown.
 - [ ]  **Version Control**: Track changes and allow users to revert to previous versions.
 - [ ]  **Third Party Integration**: Integrate with third-party services or APIs for extended functionality.
-- [ ]  **Blockchain Integration**: Explore integrating blockchain technology for data security and integrity.
 - [X]  **Live Preview**: See your Markdown rendered in real-time.
 - [ ]  **Syntax Highlighting**: Easily distinguish between different elements of your Markdown.
 - [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
 - [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
 - [X]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
-- [ ]  Storyboard: Help construct the plot
+
+### May have
+
+- [ ]  **Rust Integration**: Incorporate Rust for performance improvements.
+- [ ]  **Blockchain Integration**: Explore integrating blockchain technology for data security and integrity.
+- [ ] Storyboard: Help construct the plot
 - [ ]  Music Composer: Daw
 - [ ]  Video Editing
 

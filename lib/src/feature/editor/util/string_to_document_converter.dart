@@ -9,6 +9,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/element/image.dart'
 import 'package:dial_editor/src/feature/editor/domain/entity/element/italic.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/link.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/list/ordered_list.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/list/task_list.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/list/unordered_list.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/quote.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/strikethrough.dart';
@@ -55,10 +56,12 @@ class StringToDocumentConverter extends Converter<String, Document> {
 
     if (line.startsWith('>')) {
       return Quote(context, line);
+    } else if (taskListRegex.hasMatch(line)) {
+      return TaskList(context, line);
     } else if (orderListRegex.hasMatch(line)) {
-      return OrderedList(context, line.substring(2).trim());
-    } else if (line.startsWith('- ') || line.startsWith('* ')) {
-      return UnorderedList(context, line.substring(2).trim());
+      return OrderedList(context, line);
+    } else if (unorderedListRegex.hasMatch(line)) {
+      return UnorderedList(context, line);
     } else if (line.startsWith('#')) {
       int level = 0;
       while (line[level] == '#') {

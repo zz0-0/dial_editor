@@ -6,24 +6,38 @@ class UnorderedList extends Node {
 
   @override
   Widget render() {
-    // TODO: implement render
-    throw UnimplementedError();
+    updateStyle();
+    return _buildRichText();
   }
 
   @override
   void updateText(String newText) {
-    // TODO: implement updateText
+    rawText = newText;
     updateStyle();
   }
 
   @override
   void updateStyle() {
-    // TODO: implement updateStyle
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.titleSmall!.fontSize,
+    );
+  }
+
+  @override
+  String toString() {
+    return rawText;
   }
 
   @override
   Node createNewLine() {
-    // TODO: implement createNewLine
-    throw UnimplementedError();
+    return UnorderedList(context, "- ");
+  }
+
+  Widget _buildRichText() {
+    return Text(
+      rawText,
+      style: style,
+    );
   }
 }

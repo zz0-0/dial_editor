@@ -1,4 +1,5 @@
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class OrderedList extends Node {
@@ -6,24 +7,46 @@ class OrderedList extends Node {
 
   @override
   Widget render() {
-    // TODO: implement render
-    throw UnimplementedError();
+    updateStyle();
+    return _buildRichText();
   }
 
   @override
   void updateText(String newText) {
-    // TODO: implement updateText
+    rawText = newText;
     updateStyle();
   }
 
   @override
   void updateStyle() {
-    // TODO: implement updateStyle
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.titleSmall!.fontSize,
+    );
+  }
+
+  @override
+  String toString() {
+    return rawText;
   }
 
   @override
   Node createNewLine() {
-    // TODO: implement createNewLine
-    throw UnimplementedError();
+    final regex = orderListRegex;
+    final match = regex.firstMatch(rawText);
+    if (match != null) {
+      final currentNumber =
+          int.tryParse(match.group(0)!.trim().replaceFirst('.', '')) ?? 0;
+      final newNumber = currentNumber + 1;
+      return OrderedList(context, "$newNumber. ");
+    }
+    return OrderedList(context, "1. ");
+  }
+
+  Widget _buildRichText() {
+    return Text(
+      rawText,
+      style: style,
+    );
   }
 }

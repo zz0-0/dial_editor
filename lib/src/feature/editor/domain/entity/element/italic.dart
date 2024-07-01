@@ -29,7 +29,7 @@ class Italic extends Node {
   void updateStyle() {
     final theme = Theme.of(context);
     style = TextStyle(
-      fontSize: theme.textTheme.bodyMedium!.fontSize,
+      fontSize: theme.textTheme.titleSmall!.fontSize,
       fontStyle: FontStyle.italic,
     );
   }
@@ -76,7 +76,7 @@ class Italic extends Node {
 
     return RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: Theme.of(context).textTheme.titleSmall,
         children: textSpans,
       ),
     );
