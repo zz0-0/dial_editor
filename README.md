@@ -17,12 +17,22 @@
     - [X]  Italic
     - [X]  Bold italic
     - [X]  Strikethrough
+    - [X]  Unordered list
+    - [X]  Ordered list
+    - [X]  Task list
+    - [X]  Horizontal rule
+    - [X]  Emoji
   - [ ]  **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
     - [X]  Heading
     - [X]  Bold
     - [X]  Italic
     - [X]  Bold italic
     - [X]  Strikethrough
+    - [X]  Unordered list
+    - [X]  Ordered list
+    - [X]  Task list
+    - [X]  Horizontal rule
+    - [X]  Emoji
 - [X]  Auto Save
 - [X]  Undo/Redo
 - [X]  Dark theme: Theme switch
@@ -42,7 +52,7 @@
 
 - [ ]  **Rust Integration**: Incorporate Rust for performance improvements.
 - [ ]  **Blockchain Integration**: Explore integrating blockchain technology for data security and integrity.
-- [ ] Storyboard: Help construct the plot
+- [ ]  Storyboard: Help construct the plot
 - [ ]  Music Composer: Daw
 - [ ]  Video Editing
 

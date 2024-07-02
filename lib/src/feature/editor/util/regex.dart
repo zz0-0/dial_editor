@@ -9,3 +9,7 @@ final strikethroughRegex = RegExp('~~(.*?)~~');
 final imageRegex = RegExp(r'!\[(.*?)\]\((.*?)\)');
 final linkRegex = RegExp(r'\[(.*?)\]\((.*?)\)');
 final highlightRegex = RegExp('==(.*?)==');
+final subscriptRegex = RegExp(r'~(.*?)~');
+final superscriptRegex = RegExp(r'\^(.*?)\^');
+final horizontalRuleRegex = RegExp(r'^\s*([-*_]){3,}\s*$');
+final emojiRegex = RegExp(r':([a-zA-Z0-9_]+):');

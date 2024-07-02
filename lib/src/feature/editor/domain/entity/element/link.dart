@@ -1,29 +1,52 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Link extends Node {
-  Link(super.context, super.rawText, String s);
+  final String url;
+
+  Link(super.context, super.rawText, this.url);
 
   @override
   Widget render() {
-    // TODO: implement render
-    throw UnimplementedError();
+    updateStyle();
+    return _buildLink();
   }
 
   @override
   void updateText(String newText) {
-    // TODO: implement updateText
+    rawText = newText;
     updateStyle();
   }
 
   @override
   void updateStyle() {
-    // TODO: implement updateStyle
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.bodyMedium!.fontSize,
+      color: Colors.blue,
+      decoration: TextDecoration.underline,
+    );
   }
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return Link(context, "", "");
+  }
+
+  Widget _buildLink() {
+    return GestureDetector(
+      onTap: () {
+        // Handle link tap, e.g., open the URL in a browser
+      },
+      child: Text(
+        rawText,
+        style: style,
+      ),
+    );
+  }
+
+  @override
+  String toString() {
+    return '[$rawText]($url)';
   }
 }

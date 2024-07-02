@@ -3,38 +3,35 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalRule extends Node {
-  HorizontalRule(super.context, super.rawText);
+  HorizontalRule(BuildContext context) : super(context, '');
 
   @override
   Widget render() {
-    style = const TextStyle(
-      fontSize: 20,
-      backgroundColor: Colors.yellow,
-    );
-    return Text(
-      text,
-      style: style,
-    );
+    return _buildHorizontalRule();
   }
 
   @override
-  void updateText(String newText) {
-    rawText = newText;
-    updateStyle();
-  }
+  void updateText(String newText) {}
 
   @override
-  String toString() {
-    return rawText;
-  }
-
-  @override
-  void updateStyle() {
-    // TODO: implement updateStyle
-  }
+  void updateStyle() {}
 
   @override
   Node createNewLine() {
     return TextNode(context, "");
+  }
+
+  Widget _buildHorizontalRule() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      width: double.infinity,
+      height: 1.0,
+      color: Theme.of(context).dividerColor,
+    );
+  }
+
+  @override
+  String toString() {
+    return '---';
   }
 }

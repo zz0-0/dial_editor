@@ -1,4 +1,3 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
@@ -7,20 +6,13 @@ class Code extends Node {
 
   @override
   Widget render() {
-    style = const TextStyle(
-      fontSize: 20,
-    );
-    return Text(
-      text,
-      style: style,
-    );
+    updateStyle();
+    return _buildRichText();
   }
 
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = RegExp('```(.*?)```', dotAll: true);
-    text = newText.replaceAll(regex, '').trim();
     updateStyle();
   }
 
@@ -31,11 +23,25 @@ class Code extends Node {
 
   @override
   void updateStyle() {
-    // TODO: implement updateStyle
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.titleSmall!.fontSize,
+    );
   }
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return Code(context, '');
+  }
+
+  Widget _buildRichText() {
+    return Container(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        rawText,
+        style: style,
+      ),
+    );
   }
 }
