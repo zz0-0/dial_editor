@@ -2,7 +2,9 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Code extends Node {
-  Code(super.context, super.rawText, [super.text]);
+  Code(super.context, super.rawText, [super.text]) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

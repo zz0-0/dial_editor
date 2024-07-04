@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
 class EmojiNode extends Node {
-  EmojiNode(super.context, super.rawText);
+  EmojiNode(super.context, super.rawText) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

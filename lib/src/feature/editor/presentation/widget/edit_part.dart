@@ -4,6 +4,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
+import 'package:dial_editor/src/feature/editor/util/string_to_document_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,16 +69,11 @@ class _EditPartState extends ConsumerState<EditPart> {
             return Row(
               children: [
                 const Spacer(),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: lineHeight == 19.0 ? 0.5 : 0,
-                  ),
-                  child: Container(
-                    alignment: Alignment.centerRight,
-                    height: lineHeight,
-                    child: Text(
-                      "${index + 1}",
-                    ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  height: lineHeight,
+                  child: Text(
+                    "${index + 1}",
                   ),
                 ),
               ],
@@ -90,13 +86,15 @@ class _EditPartState extends ConsumerState<EditPart> {
 
   Widget _buildEditingArea() {
     return Expanded(
-      child: ListView.builder(
-        itemCount: nodes.length,
-        itemBuilder: (context, index) {
-          return index == editingLineIndex
-              ? _buildEditingWidget()
-              : _buildRenderingWidget(index);
-        },
+      child: SelectionArea(
+        child: ListView.builder(
+          itemCount: nodes.length,
+          itemBuilder: (context, index) {
+            return index == editingLineIndex
+                ? _buildEditingWidget()
+                : _buildRenderingWidget(index);
+          },
+        ),
       ),
     );
   }
@@ -155,7 +153,8 @@ class _EditPartState extends ConsumerState<EditPart> {
   }
 
   void _onDelete() {
-    if (nodes[editingLineIndex].text.isEmpty) {
+    if (nodes[editingLineIndex].text.isEmpty &&
+        nodes[editingLineIndex].controller.text.isEmpty) {
       if (editingLineIndex > 0) {
         setState(() {
           nodes.removeAt(editingLineIndex);
@@ -212,9 +211,14 @@ class _EditPartState extends ConsumerState<EditPart> {
 
   void _onChange(String value) {
     setState(() {
-      nodes[editingLineIndex].updateText(value);
+      nodes[editingLineIndex] =
+          StringToDocumentConverter(context).convertLine(value);
       markdownWidgetList[editingLineIndex] =
           MarkdownRender().render(nodes[editingLineIndex]);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        nodes[editingLineIndex].focusNode.requestFocus();
+      });
+      _updateDocument();
     });
   }
 

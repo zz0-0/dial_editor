@@ -15,6 +15,7 @@ class Heading extends Node {
     String text = "",
   ]) : super(context, rawText, style, text) {
     // Node.registerParser('heading', Heading.parse);
+    controller.text = rawText;
   }
 
   @override

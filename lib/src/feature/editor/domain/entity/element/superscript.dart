@@ -4,7 +4,9 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Superscript extends Node {
-  Superscript(super.context, super.rawText, [super.text]);
+  Superscript(super.context, super.rawText, [super.text]) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

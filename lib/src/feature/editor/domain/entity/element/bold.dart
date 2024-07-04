@@ -4,7 +4,9 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Bold extends Node {
-  Bold(super.context, super.rawText, [super.text]);
+  Bold(super.context, super.rawText, [super.text]) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

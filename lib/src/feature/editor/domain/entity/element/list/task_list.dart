@@ -3,7 +3,9 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class TaskList extends Node {
-  TaskList(super.context, super.rawText);
+  TaskList(super.context, super.rawText) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

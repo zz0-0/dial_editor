@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class Link extends Node {
   final String url;
 
-  Link(super.context, super.rawText, this.url);
+  Link(super.context, super.rawText, this.url) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

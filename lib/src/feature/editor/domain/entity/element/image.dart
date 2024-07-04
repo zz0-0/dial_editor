@@ -5,7 +5,9 @@ class ImageNode extends Node {
   final String altText;
   final String url;
 
-  ImageNode(super.context, super.rawText, this.url, this.altText);
+  ImageNode(super.context, super.rawText, this.url, this.altText) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

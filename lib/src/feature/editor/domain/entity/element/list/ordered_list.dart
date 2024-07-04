@@ -3,7 +3,9 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class OrderedList extends Node {
-  OrderedList(super.context, super.rawText);
+  OrderedList(super.context, super.rawText) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {

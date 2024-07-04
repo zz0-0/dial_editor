@@ -3,7 +3,9 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalRule extends Node {
-  HorizontalRule(BuildContext context) : super(context, '');
+  HorizontalRule(BuildContext context) : super(context, '') {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {
