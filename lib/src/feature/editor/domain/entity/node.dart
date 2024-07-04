@@ -4,9 +4,16 @@ abstract class Node {
   BuildContext context;
   String rawText;
   String text;
-  TextStyle? style;
+  TextStyle style;
+  TextEditingController controller = TextEditingController();
+  FocusNode focusNode = FocusNode();
 
-  Node(this.context, this.rawText, [this.text = ""]);
+  Node(
+    this.context,
+    this.rawText, [
+    this.style = const TextStyle(),
+    this.text = "",
+  ]);
 
   void updateText(String newText);
 

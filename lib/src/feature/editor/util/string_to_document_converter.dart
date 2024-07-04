@@ -82,7 +82,11 @@ class StringToDocumentConverter extends Converter<String, Document> {
     } else if (imageRegex.hasMatch(line)) {
       final match = imageRegex.firstMatch(line);
       return ImageNode(
-          context, line, match?.group(1) ?? '', match?.group(2) ?? '');
+        context,
+        line,
+        match?.group(1) ?? '',
+        match?.group(2) ?? '',
+      );
     } else if (linkRegex.hasMatch(line)) {
       final match = linkRegex.firstMatch(line);
       return Link(context, match?.group(1) ?? '', match?.group(2) ?? '');

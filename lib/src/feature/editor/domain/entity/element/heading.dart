@@ -7,8 +7,13 @@ class Heading extends Node {
   int level;
   final regex = headingRegex;
 
-  Heading(BuildContext context, this.level, String rawText, [String text = ""])
-      : super(context, rawText, text) {
+  Heading(
+    BuildContext context,
+    this.level,
+    String rawText, [
+    TextStyle style = const TextStyle(),
+    String text = "",
+  ]) : super(context, rawText, style, text) {
     // Node.registerParser('heading', Heading.parse);
   }
 

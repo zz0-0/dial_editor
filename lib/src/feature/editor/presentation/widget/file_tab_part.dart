@@ -63,8 +63,9 @@ class _FileTabPartState extends ConsumerState<FileTabPart>
           ),
         )
         .toList();
-
-    tabController!.animateTo(openedFiles.length - 1);
+    if (openedFiles.isNotEmpty) {
+      tabController!.animateTo(openedFiles.length - 1);
+    }
 
     return Scaffold(
       appBar: TabBar(
