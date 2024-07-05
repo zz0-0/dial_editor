@@ -36,14 +36,21 @@ class _EditPartState extends ConsumerState<EditPart> {
     document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
+    // for (final node in nodes) {
+    //   node.selectionCallback = _handleLineChange;
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Stack(
       children: [
-        _buildLineNumber(),
-        _buildEditingArea(),
+        Row(
+          children: [
+            _buildLineNumber(),
+            _buildEditingArea(),
+          ],
+        ),
       ],
     );
   }
@@ -116,32 +123,47 @@ class _EditPartState extends ConsumerState<EditPart> {
           _onArrowDown();
         }
 
+        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+            event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          _onArrowLeft(HardwareKeyboard().isShiftPressed);
+        }
+
+        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+            event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          _onArrowRight(HardwareKeyboard().isShiftPressed);
+        }
+
         return KeyEventResult.ignored;
       },
-      child: TextField(
-        controller: nodes[editingLineIndex].controller,
-        focusNode: nodes[editingLineIndex].focusNode,
-        cursorColor: Colors.blue,
-        style: nodes[editingLineIndex].style,
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          errorBorder: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          disabledBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
-          isDense: true,
-          fillColor: Colors.transparent,
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          contentPadding: EdgeInsets.zero,
+      child: GestureDetector(
+        onPanStart: (_) => nodes[editingLineIndex].isSelected = true,
+        onPanEnd: (_) => nodes[editingLineIndex].isSelected = false,
+        child: TextField(
+          controller: nodes[editingLineIndex].controller,
+          focusNode: nodes[editingLineIndex].focusNode,
+          cursorColor: Colors.blue,
+          style: nodes[editingLineIndex].style,
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            errorBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            focusedErrorBorder: InputBorder.none,
+            isDense: true,
+            fillColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            contentPadding: EdgeInsets.zero,
+          ),
+          onChanged: (value) {
+            _onChange(value);
+          },
+          onEditingComplete: () {
+            _onEditingComplete();
+          },
+          onTap: _clearSelection,
         ),
-        onChanged: (value) {
-          _onChange(value);
-        },
-        onEditingComplete: () {
-          _onEditingComplete();
-        },
       ),
     );
   }
@@ -216,6 +238,14 @@ class _EditPartState extends ConsumerState<EditPart> {
     }
   }
 
+  void _onArrowLeft(bool isShiftPressed) {
+    _handleArrowKey(true, isShiftPressed);
+  }
+
+  void _onArrowRight(bool isShiftPressed) {
+    _handleArrowKey(false, isShiftPressed);
+  }
+
   void _onChange(String value) {
     setState(() {
       nodes[editingLineIndex] =
@@ -261,4 +291,42 @@ class _EditPartState extends ConsumerState<EditPart> {
     fileString = document.toString();
     widget.file.writeAsStringSync(fileString);
   }
+
+  void _handleArrowKey(bool isLeft, bool isShiftPressed) {
+    if (isShiftPressed) {
+      _handleSelectionExtension(isLeft);
+    } else {
+      _moveCursor(isLeft);
+    }
+  }
+
+  void _handleSelectionExtension(bool isLeft) {
+    if (isLeft) {
+    } else {}
+  }
+
+  void _moveCursor(bool isLeft) {
+    final currentNode = nodes[editingLineIndex];
+    final selection = currentNode.controller.selection;
+
+    setState(() {
+      if (isLeft && selection.baseOffset == 0 && editingLineIndex > 0) {
+        editingLineIndex--;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[editingLineIndex].focusNode.requestFocus();
+        });
+      } else if (!isLeft &&
+          selection.baseOffset == currentNode.rawText.length &&
+          editingLineIndex < nodes.length - 1) {
+        if (editingLineIndex < nodes.length - 1) {
+          editingLineIndex++;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            nodes[editingLineIndex].focusNode.requestFocus();
+          });
+        }
+      }
+    });
+  }
+
+  void _clearSelection() {}
 }

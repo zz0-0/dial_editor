@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+typedef SelectionCallback = void Function(Node node, bool moveUp);
+
 abstract class Node {
   BuildContext context;
   String rawText;
@@ -8,7 +10,7 @@ abstract class Node {
   late TextEditingController controller;
   FocusNode focusNode = FocusNode();
   bool _initializing = true;
-  TextSelection previousSelection = const TextSelection.collapsed(offset: 0);
+  bool isSelected = false;
 
   Node(
     this.context,
@@ -35,15 +37,8 @@ abstract class Node {
     if (!_initializing && controller.text.isNotEmpty) {
       rawText = controller.text;
       updateText(rawText);
-      if (previousSelection.baseOffset != controller.selection.baseOffset ||
-          previousSelection.extentOffset != controller.selection.extentOffset) {
-        previousSelection = controller.selection;
-        _handleSelectionChange(controller.selection);
-      }
     }
   }
-
-  void _handleSelectionChange(TextSelection selection) {}
 
   void dispose() {
     controller.removeListener(_onTextChanged);
