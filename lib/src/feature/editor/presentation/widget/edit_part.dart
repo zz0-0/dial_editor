@@ -66,20 +66,17 @@ class _EditPartState extends ConsumerState<EditPart> {
           itemBuilder: (context, index) {
             final textStyle = nodes[index].style;
             final lineHeight = _getTextHeight(textStyle, nodes[index].text);
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0.5),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    height: lineHeight,
-                    child: Text(
-                      "${index + 1}",
-                    ),
+            return Row(
+              children: [
+                const Spacer(),
+                Container(
+                  alignment: Alignment.centerRight,
+                  height: lineHeight,
+                  child: Text(
+                    "${index + 1}",
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
@@ -101,62 +98,68 @@ class _EditPartState extends ConsumerState<EditPart> {
   }
 
   Widget _buildEditingWidget() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0.5),
-      child: Focus(
-        onFocusChange: (hasFocus) {},
-        onKeyEvent: (node, event) {
-          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-              event.logicalKey == LogicalKeyboardKey.backspace) {
-            _onDelete();
-          }
+    return Focus(
+      onFocusChange: (hasFocus) {},
+      onKeyEvent: (node, event) {
+        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+            event.logicalKey == LogicalKeyboardKey.backspace) {
+          _onDelete();
+        }
 
-          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-              event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _onArrowUp();
-          }
+        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+            event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          _onArrowUp();
+        }
 
-          if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-              event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            _onArrowDown();
-          }
+        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+            event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          _onArrowDown();
+        }
 
-          return KeyEventResult.ignored;
-        },
-        child: EditableText(
-          controller: nodes[editingLineIndex].controller,
-          style: nodes[editingLineIndex].style,
-          onChanged: (value) {
-            _onChange(value);
-          },
-          onEditingComplete: () {
-            _onEditingComplete();
-          },
-          focusNode: nodes[editingLineIndex].focusNode,
-          cursorColor: Colors.blue,
-          backgroundCursorColor: Colors.white,
+        return KeyEventResult.ignored;
+      },
+      child: TextField(
+        controller: nodes[editingLineIndex].controller,
+        focusNode: nodes[editingLineIndex].focusNode,
+        cursorColor: Colors.blue,
+        style: nodes[editingLineIndex].style,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          errorBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          focusedErrorBorder: InputBorder.none,
+          isDense: true,
+          fillColor: Colors.transparent,
+          focusColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          contentPadding: EdgeInsets.zero,
         ),
+        onChanged: (value) {
+          _onChange(value);
+        },
+        onEditingComplete: () {
+          _onEditingComplete();
+        },
       ),
     );
   }
 
   Widget _buildRenderingWidget(int index) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0.5),
-      child: GestureDetector(
-        onTapUp: (details) {
-          setState(() {
-            editingLineIndex = index;
-            nodes[editingLineIndex].controller.clear();
-            nodes[editingLineIndex].controller.text =
-                nodes[editingLineIndex].rawText;
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              nodes[editingLineIndex].focusNode.requestFocus();
-            });
+    return GestureDetector(
+      onTapUp: (details) {
+        setState(() {
+          editingLineIndex = index;
+          nodes[editingLineIndex].controller.clear();
+          nodes[editingLineIndex].controller.text =
+              nodes[editingLineIndex].rawText;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            nodes[editingLineIndex].focusNode.requestFocus();
           });
-        },
-        child: markdownWidgetList[index],
-      ),
+        });
+      },
+      child: markdownWidgetList[index],
     );
   }
 
@@ -182,8 +185,6 @@ class _EditPartState extends ConsumerState<EditPart> {
   void _onArrowUp() {
     if (editingLineIndex > 0) {
       setState(() {
-        nodes[editingLineIndex]
-            .updateText(nodes[editingLineIndex].controller.text);
         editingLineIndex--;
         nodes[editingLineIndex].controller.text =
             nodes[editingLineIndex].rawText;
@@ -201,8 +202,6 @@ class _EditPartState extends ConsumerState<EditPart> {
   void _onArrowDown() {
     if (editingLineIndex < nodes.length - 1) {
       setState(() {
-        nodes[editingLineIndex]
-            .updateText(nodes[editingLineIndex].controller.text);
         editingLineIndex++;
         nodes[editingLineIndex].controller.text =
             nodes[editingLineIndex].rawText;
@@ -232,8 +231,6 @@ class _EditPartState extends ConsumerState<EditPart> {
 
   void _onEditingComplete() {
     setState(() {
-      final node = nodes[editingLineIndex];
-      node.updateText(node.controller.text);
       markdownWidgetList[editingLineIndex] =
           MarkdownRender().render(nodes[editingLineIndex]);
 

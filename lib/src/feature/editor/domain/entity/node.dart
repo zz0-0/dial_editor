@@ -5,15 +5,23 @@ abstract class Node {
   String rawText;
   String text;
   TextStyle style;
-  TextEditingController controller = TextEditingController();
+  late TextEditingController controller;
   FocusNode focusNode = FocusNode();
+  bool _initializing = true;
+  TextSelection previousSelection = const TextSelection.collapsed(offset: 0);
 
   Node(
     this.context,
     this.rawText, [
     this.style = const TextStyle(),
     this.text = "",
-  ]);
+  ]) {
+    controller = TextEditingController(text: rawText);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.addListener(_onTextChanged);
+      _initializing = false;
+    });
+  }
 
   void updateText(String newText);
 
@@ -22,6 +30,26 @@ abstract class Node {
   Widget render();
 
   Node createNewLine();
+
+  void _onTextChanged() {
+    if (!_initializing && controller.text.isNotEmpty) {
+      rawText = controller.text;
+      updateText(rawText);
+      if (previousSelection.baseOffset != controller.selection.baseOffset ||
+          previousSelection.extentOffset != controller.selection.extentOffset) {
+        previousSelection = controller.selection;
+        _handleSelectionChange(controller.selection);
+      }
+    }
+  }
+
+  void _handleSelectionChange(TextSelection selection) {}
+
+  void dispose() {
+    controller.removeListener(_onTextChanged);
+    controller.dispose();
+    focusNode.dispose();
+  }
 
   @override
   String toString();
