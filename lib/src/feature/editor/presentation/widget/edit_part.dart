@@ -42,6 +42,14 @@ class _EditPartState extends ConsumerState<EditPart> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    for (final node in nodes) {
+      node.dispose();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -125,12 +133,12 @@ class _EditPartState extends ConsumerState<EditPart> {
 
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-          _onArrowLeft(HardwareKeyboard().isShiftPressed);
+          _onArrowLeft(HardwareKeyboard.instance.isShiftPressed);
         }
 
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.arrowRight) {
-          _onArrowRight(HardwareKeyboard().isShiftPressed);
+          _onArrowRight(HardwareKeyboard.instance.isShiftPressed);
         }
 
         return KeyEventResult.ignored;
@@ -301,8 +309,36 @@ class _EditPartState extends ConsumerState<EditPart> {
   }
 
   void _handleSelectionExtension(bool isLeft) {
-    if (isLeft) {
-    } else {}
+    final currentNode = nodes[editingLineIndex];
+    final selection = currentNode.controller.selection;
+    print(selection.extentOffset);
+    if (isLeft && selection.extentOffset == 0 && editingLineIndex > 0) {
+      setState(() {
+        editingLineIndex--;
+        nodes[editingLineIndex].controller.text =
+            nodes[editingLineIndex].rawText;
+        nodes[editingLineIndex].controller.selection = TextSelection(
+          baseOffset: nodes[editingLineIndex].controller.text.length,
+          extentOffset: nodes[editingLineIndex].controller.text.length,
+        );
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[editingLineIndex].focusNode.requestFocus();
+        });
+      });
+    } else if (!isLeft &&
+        selection.extentOffset == currentNode.rawText.length &&
+        editingLineIndex < nodes.length - 1) {
+      setState(() {
+        editingLineIndex++;
+        nodes[editingLineIndex].controller.text =
+            nodes[editingLineIndex].rawText;
+        nodes[editingLineIndex].controller.selection =
+            const TextSelection.collapsed(offset: 0);
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[editingLineIndex].focusNode.requestFocus();
+        });
+      });
+    }
   }
 
   void _moveCursor(bool isLeft) {
