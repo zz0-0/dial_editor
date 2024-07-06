@@ -22,7 +22,6 @@ class _EditPartState extends ConsumerState<EditPart> {
   late String fileString;
   List<Node> nodes = [];
   List<Widget> markdownWidgetList = [];
-  int editingLineIndex = -1;
 
   @override
   void initState() {
@@ -36,9 +35,6 @@ class _EditPartState extends ConsumerState<EditPart> {
     document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
-    // for (final node in nodes) {
-    //   node.selectionCallback = _handleLineChange;
-    // }
   }
 
   @override
@@ -104,53 +100,51 @@ class _EditPartState extends ConsumerState<EditPart> {
       child: ListView.builder(
         itemCount: nodes.length,
         itemBuilder: (context, index) {
-          return index == editingLineIndex
-              ? _buildEditingWidget()
+          return nodes[index].isEditing
+              ? _buildEditingWidget(index)
               : _buildRenderingWidget(index);
         },
       ),
     );
   }
 
-  Widget _buildEditingWidget() {
+  Widget _buildEditingWidget(int index) {
     return Focus(
       onFocusChange: (hasFocus) {},
       onKeyEvent: (node, event) {
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.backspace) {
-          _onDelete();
+          _onDelete(index);
         }
 
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          _onArrowUp();
+          _onArrowUp(index);
         }
 
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          _onArrowDown();
+          _onArrowDown(index);
         }
 
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-          _onArrowLeft(HardwareKeyboard.instance.isShiftPressed);
+          _onArrowLeft(index, HardwareKeyboard.instance.isShiftPressed);
         }
 
         if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
             event.logicalKey == LogicalKeyboardKey.arrowRight) {
-          _onArrowRight(HardwareKeyboard.instance.isShiftPressed);
+          _onArrowRight(index, HardwareKeyboard.instance.isShiftPressed);
         }
 
         return KeyEventResult.ignored;
       },
       child: GestureDetector(
-        onPanStart: (_) => nodes[editingLineIndex].isSelected = true,
-        onPanEnd: (_) => nodes[editingLineIndex].isSelected = false,
         child: TextField(
-          controller: nodes[editingLineIndex].controller,
-          focusNode: nodes[editingLineIndex].focusNode,
+          controller: nodes[index].controller,
+          focusNode: nodes[index].focusNode,
           cursorColor: Colors.blue,
-          style: nodes[editingLineIndex].style,
+          style: nodes[index].style,
           decoration: const InputDecoration(
             border: InputBorder.none,
             errorBorder: InputBorder.none,
@@ -165,12 +159,12 @@ class _EditPartState extends ConsumerState<EditPart> {
             contentPadding: EdgeInsets.zero,
           ),
           onChanged: (value) {
-            _onChange(value);
+            _onChange(index, value);
           },
           onEditingComplete: () {
-            _onEditingComplete();
+            _onEditingComplete(index);
           },
-          onTap: _clearSelection,
+          // onTap: () => _resetSelection(index),
         ),
       ),
     );
@@ -180,12 +174,14 @@ class _EditPartState extends ConsumerState<EditPart> {
     return GestureDetector(
       onTapUp: (details) {
         setState(() {
-          editingLineIndex = index;
-          nodes[editingLineIndex].controller.clear();
-          nodes[editingLineIndex].controller.text =
-              nodes[editingLineIndex].rawText;
+          for (int i = 0; i < nodes.length; i++) {
+            nodes[i].isEditing = false;
+          }
+          nodes[index].isEditing = true;
+          nodes[index].controller.clear();
+          nodes[index].controller.text = nodes[index].rawText;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            nodes[editingLineIndex].focusNode.requestFocus();
+            nodes[index].focusNode.requestFocus();
           });
         });
       },
@@ -193,18 +189,18 @@ class _EditPartState extends ConsumerState<EditPart> {
     );
   }
 
-  void _onDelete() {
-    if (nodes[editingLineIndex].text.isEmpty &&
-        nodes[editingLineIndex].controller.text.isEmpty) {
-      if (editingLineIndex > 0) {
+  void _onDelete(int index) {
+    if (nodes[index].text.isEmpty && nodes[index].controller.text.isEmpty) {
+      if (index > 0) {
         setState(() {
-          nodes.removeAt(editingLineIndex);
-          markdownWidgetList.removeAt(editingLineIndex);
-          editingLineIndex--;
+          nodes.removeAt(index);
+          markdownWidgetList.removeAt(index);
+          // index--;
+          nodes[index - 1].isEditing = true;
           fileString = document.toString();
           widget.file.writeAsStringSync(fileString);
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            nodes[editingLineIndex].focusNode.requestFocus();
+            nodes[index - 1].focusNode.requestFocus();
           });
           _updateDocument();
         });
@@ -212,84 +208,89 @@ class _EditPartState extends ConsumerState<EditPart> {
     }
   }
 
-  void _onArrowUp() {
-    if (editingLineIndex > 0) {
+  void _onArrowUp(int index) {
+    if (index > 0) {
       setState(() {
-        editingLineIndex--;
-        nodes[editingLineIndex].controller.text =
-            nodes[editingLineIndex].rawText;
-        nodes[editingLineIndex].controller.selection =
-            TextSelection.fromPosition(
-          TextPosition(offset: nodes[editingLineIndex].controller.text.length),
+        // index--;
+        nodes[index].isEditing = false;
+        nodes[index - 1].isEditing = true;
+        nodes[index].controller.text = nodes[index].rawText;
+        nodes[index].controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: nodes[index].controller.text.length),
         );
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[editingLineIndex].focusNode.requestFocus();
+          nodes[index - 1].focusNode.requestFocus();
         });
       });
     }
   }
 
-  void _onArrowDown() {
-    if (editingLineIndex < nodes.length - 1) {
+  void _onArrowDown(int index) {
+    if (index < nodes.length - 1) {
       setState(() {
-        editingLineIndex++;
-        nodes[editingLineIndex].controller.text =
-            nodes[editingLineIndex].rawText;
-        nodes[editingLineIndex].controller.selection =
-            TextSelection.fromPosition(
-          TextPosition(offset: nodes[editingLineIndex].controller.text.length),
+        // index++;
+        nodes[index].isEditing = false;
+        nodes[index + 1].isEditing = true;
+        nodes[index].controller.text = nodes[index].rawText;
+        nodes[index].controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: nodes[index].controller.text.length),
         );
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[editingLineIndex].focusNode.requestFocus();
+          nodes[index + 1].focusNode.requestFocus();
         });
       });
     }
   }
 
-  void _onArrowLeft(bool isShiftPressed) {
-    _handleArrowKey(true, isShiftPressed);
+  void _onArrowLeft(int index, bool isShiftPressed) {
+    _handleArrowKey(index, true, isShiftPressed);
   }
 
-  void _onArrowRight(bool isShiftPressed) {
-    _handleArrowKey(false, isShiftPressed);
+  void _onArrowRight(int index, bool isShiftPressed) {
+    _handleArrowKey(index, false, isShiftPressed);
   }
 
-  void _onChange(String value) {
+  void _onChange(int index, String value) {
+    final currentSelection = nodes[index].controller.selection;
     setState(() {
-      nodes[editingLineIndex] =
-          StringToDocumentConverter(context).convertLine(value);
-      markdownWidgetList[editingLineIndex] =
-          MarkdownRender().render(nodes[editingLineIndex]);
+      nodes[index] = StringToDocumentConverter(context).convertLine(value);
+      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
+      nodes[index].isEditing = true;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[editingLineIndex].focusNode.requestFocus();
+        nodes[index].controller.selection = TextSelection(
+          baseOffset: currentSelection.baseOffset,
+          extentOffset: currentSelection.extentOffset,
+        );
+        nodes[index].focusNode.requestFocus();
       });
       _updateDocument();
     });
   }
 
-  void _onEditingComplete() {
+  void _onEditingComplete(int index) {
     setState(() {
-      markdownWidgetList[editingLineIndex] =
-          MarkdownRender().render(nodes[editingLineIndex]);
+      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
 
-      final newNode = nodes[editingLineIndex].createNewLine();
+      final newNode = nodes[index].createNewLine();
 
-      if (editingLineIndex < nodes.length - 1) {
-        nodes.insert(editingLineIndex + 1, newNode);
+      if (index < nodes.length - 1) {
+        nodes.insert(index + 1, newNode);
         markdownWidgetList.insert(
-          editingLineIndex + 1,
-          MarkdownRender().render(nodes[editingLineIndex + 1]),
+          index + 1,
+          MarkdownRender().render(nodes[index + 1]),
         );
-        editingLineIndex++;
+        // index++;
+        nodes[index + 1].isEditing = true;
       } else {
         nodes.add(newNode);
         markdownWidgetList.add(
-          MarkdownRender().render(nodes[editingLineIndex + 1]),
+          MarkdownRender().render(nodes[index + 1]),
         );
-        editingLineIndex = nodes.length - 1;
+        nodes[nodes.length - 1].isEditing = true;
+        // index = nodes.length - 1;
       }
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[editingLineIndex].focusNode.requestFocus();
+        nodes[index + 1].focusNode.requestFocus();
       });
       _updateDocument();
     });
@@ -300,69 +301,59 @@ class _EditPartState extends ConsumerState<EditPart> {
     widget.file.writeAsStringSync(fileString);
   }
 
-  void _handleArrowKey(bool isLeft, bool isShiftPressed) {
+  void _handleArrowKey(int index, bool isLeft, bool isShiftPressed) {
     if (isShiftPressed) {
-      _handleSelectionExtension(isLeft);
+      _handleSelectionExtension(index, isLeft);
     } else {
-      _moveCursor(isLeft);
+      _moveCursor(index, isLeft);
     }
   }
 
-  void _handleSelectionExtension(bool isLeft) {
-    final currentNode = nodes[editingLineIndex];
+  void _handleSelectionExtension(int index, bool isLeft) {
+    final currentNode = nodes[index];
     final selection = currentNode.controller.selection;
-    print(selection.extentOffset);
-    if (isLeft && selection.extentOffset == 0 && editingLineIndex > 0) {
+
+    if (isLeft && selection.extentOffset == 0 && index > 0) {
       setState(() {
-        editingLineIndex--;
-        nodes[editingLineIndex].controller.text =
-            nodes[editingLineIndex].rawText;
-        nodes[editingLineIndex].controller.selection = TextSelection(
-          baseOffset: nodes[editingLineIndex].controller.text.length,
-          extentOffset: nodes[editingLineIndex].controller.text.length,
-        );
+        // index--;
+        nodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[editingLineIndex].focusNode.requestFocus();
+          nodes[index - 1].focusNode.requestFocus();
         });
       });
     } else if (!isLeft &&
         selection.extentOffset == currentNode.rawText.length &&
-        editingLineIndex < nodes.length - 1) {
+        index < nodes.length - 1) {
       setState(() {
-        editingLineIndex++;
-        nodes[editingLineIndex].controller.text =
-            nodes[editingLineIndex].rawText;
-        nodes[editingLineIndex].controller.selection =
-            const TextSelection.collapsed(offset: 0);
+        // index++;
+        nodes[index + 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[editingLineIndex].focusNode.requestFocus();
+          nodes[index + 1].focusNode.requestFocus();
         });
       });
     }
   }
 
-  void _moveCursor(bool isLeft) {
-    final currentNode = nodes[editingLineIndex];
+  void _moveCursor(int index, bool isLeft) {
+    final currentNode = nodes[index];
     final selection = currentNode.controller.selection;
 
     setState(() {
-      if (isLeft && selection.baseOffset == 0 && editingLineIndex > 0) {
-        editingLineIndex--;
+      if (isLeft && selection.baseOffset == 0 && index > 0) {
+        // index--;
+        nodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[editingLineIndex].focusNode.requestFocus();
+          nodes[index - 1].focusNode.requestFocus();
         });
       } else if (!isLeft &&
           selection.baseOffset == currentNode.rawText.length &&
-          editingLineIndex < nodes.length - 1) {
-        if (editingLineIndex < nodes.length - 1) {
-          editingLineIndex++;
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            nodes[editingLineIndex].focusNode.requestFocus();
-          });
-        }
+          index < nodes.length - 1) {
+        // index++;
+        nodes[index + 1].isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[index + 1].focusNode.requestFocus();
+        });
       }
     });
   }
-
-  void _clearSelection() {}
 }

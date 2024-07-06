@@ -46,7 +46,7 @@ class EmojiNode extends Node {
       parsedEmoji,
       style: TextStyle(
         fontSize: theme.textTheme.titleSmall!.fontSize,
-      ), // Adjust the font size as needed
+      ),
     );
   }
 

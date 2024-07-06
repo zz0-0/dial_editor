@@ -14,7 +14,6 @@ class Heading extends Node {
     TextStyle style = const TextStyle(),
     String text = "",
   ]) : super(context, rawText, style, text) {
-    // Node.registerParser('heading', Heading.parse);
     controller.text = rawText;
   }
 
@@ -51,19 +50,6 @@ class Heading extends Node {
       default:
     }
   }
-
-  // factory Heading.parse(String line) {
-  //   final regex = RegExp("^#{1,6}");
-
-  //   if (regex.matchAsPrefix(line) != null) {
-  //     final level = regex.allMatches(line).length;
-  //     final rawText = line;
-  //     final text = line.replaceAll(regex, '').trim();
-  //     return Heading(level, rawText, text);
-  //   }
-
-  //   return Heading(1, "");
-  // }
 
   @override
   Widget render() {

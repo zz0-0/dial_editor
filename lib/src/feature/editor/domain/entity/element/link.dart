@@ -37,9 +37,7 @@ class Link extends Node {
 
   Widget _buildLink() {
     return GestureDetector(
-      onTap: () {
-        // Handle link tap, e.g., open the URL in a browser
-      },
+      onTap: () {},
       child: Text(
         rawText,
         style: style,

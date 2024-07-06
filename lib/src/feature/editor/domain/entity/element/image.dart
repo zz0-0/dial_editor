@@ -15,15 +15,10 @@ class ImageNode extends Node {
   }
 
   @override
-  void updateText(String newText) {
-    // Image nodes do not have text to update in the same way as other nodes.
-    // Implement any necessary logic here if you want to change the image URL or alt text.
-  }
+  void updateText(String newText) {}
 
   @override
-  void updateStyle() {
-    // No specific style for image nodes, but you can implement custom styles if needed.
-  }
+  void updateStyle() {}
 
   @override
   Node createNewLine() {

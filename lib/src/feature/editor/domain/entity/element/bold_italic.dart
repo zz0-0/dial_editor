@@ -59,7 +59,7 @@ class BoldItalic extends Node {
           text: rawText.substring(
             match.start + 3,
             match.end - 3,
-          ), // Remove the triple asterisks or underscores
+          ),
           style: style,
         ),
       );

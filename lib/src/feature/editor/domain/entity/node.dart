@@ -1,7 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-typedef SelectionCallback = void Function(Node node, bool moveUp);
-
 abstract class Node {
   BuildContext context;
   String rawText;
@@ -10,7 +8,7 @@ abstract class Node {
   late TextEditingController controller;
   FocusNode focusNode = FocusNode();
   bool _initializing = true;
-  bool isSelected = false;
+  bool isEditing = false;
 
   Node(
     this.context,
@@ -48,18 +46,4 @@ abstract class Node {
 
   @override
   String toString();
-
-  // static final Map<String, Node Function(String)> _parsers = {};
-
-  // static void registerParser(String type, Node Function(String) parser) {
-  //   _parsers[type] = parser;
-  // }
-
-  // factory Node.parse(String line) {
-  //   for (final type in _parsers.keys) {
-  //     final node = _parsers[type]!(line);
-  //     return node;
-  //   }
-  //   return TextNode(line);
-  // }
 }

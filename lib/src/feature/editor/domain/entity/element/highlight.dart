@@ -34,9 +34,7 @@ class Highlight extends Node {
   }
 
   @override
-  void updateStyle() {
-    // TODO: implement updateStyle
-  }
+  void updateStyle() {}
 
   @override
   Node createNewLine() {
