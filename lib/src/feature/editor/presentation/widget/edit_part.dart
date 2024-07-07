@@ -343,9 +343,12 @@ class _EditPartState extends ConsumerState<EditPart>
 
     if (isLeft && selection.extentOffset == 0 && index > 0) {
       setState(() {
+        final int newOffset = nodes[index - 1].rawText.length;
         nodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index - 1].focusNode.requestFocus();
+          nodes[index - 1].controller.selection =
+              TextSelection.collapsed(offset: newOffset);
           nodes[index].controller.selection = selection;
         });
       });
