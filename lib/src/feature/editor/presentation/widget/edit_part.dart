@@ -17,11 +17,23 @@ class EditPart extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _EditPartState();
 }
 
-class _EditPartState extends ConsumerState<EditPart> {
+class _EditPartState extends ConsumerState<EditPart>
+    implements TextSelectionGestureDetectorBuilderDelegate {
   late Document document;
   late String fileString;
   List<Node> nodes = [];
   List<Widget> markdownWidgetList = [];
+  final GlobalKey<EditableTextState> _editorKey =
+      GlobalKey<EditableTextState>();
+
+  @override
+  GlobalKey<EditableTextState> get editableTextKey => _editorKey;
+
+  @override
+  bool get forcePressEnabled => false;
+
+  @override
+  bool get selectionEnabled => true;
 
   @override
   void initState() {
@@ -109,23 +121,30 @@ class _EditPartState extends ConsumerState<EditPart> {
   }
 
   Widget _buildEditingWidget(int index) {
-    return Focus(
-      onFocusChange: (hasFocus) {},
-      onKeyEvent: (node, event) => _onKeyEvent(event, index),
-      child: GestureDetector(
-        child: EditableText(
-          controller: nodes[index].controller,
-          focusNode: nodes[index].focusNode,
-          cursorColor: Colors.blue,
-          backgroundCursorColor: Colors.blue,
-          style: nodes[index].style,
-          onChanged: (value) {
-            _onChange(index, value);
-          },
-          onEditingComplete: () {
-            _onEditingComplete(index);
-          },
-          selectionColor: Colors.red,
+    final CustomTextSelectionGestureDetectorBuilder builder =
+        CustomTextSelectionGestureDetectorBuilder(
+      delegate: this,
+    );
+
+    return builder.buildGestureDetector(
+      child: Focus(
+        onFocusChange: (hasFocus) {},
+        onKeyEvent: (node, event) => _onKeyEvent(event, index),
+        child: GestureDetector(
+          child: EditableText(
+            controller: nodes[index].controller,
+            focusNode: nodes[index].focusNode,
+            cursorColor: Colors.blue,
+            backgroundCursorColor: Colors.blue,
+            style: nodes[index].style,
+            onChanged: (value) {
+              _onChange(index, value);
+            },
+            onEditingComplete: () {
+              _onEditingComplete(index);
+            },
+            selectionColor: Colors.red,
+          ),
         ),
       ),
     );
@@ -166,6 +185,53 @@ class _EditPartState extends ConsumerState<EditPart> {
     return KeyEventResult.ignored;
   }
 
+  void _onChange(int index, String value) {
+    final currentSelection = nodes[index].controller.selection;
+    setState(() {
+      nodes[index] = StringToDocumentConverter(context).convertLine(value);
+      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
+      nodes[index].isEditing = true;
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        nodes[index].controller.selection = currentSelection;
+        nodes[index].focusNode.requestFocus();
+      });
+      _updateDocument();
+    });
+  }
+
+  void _onEditingComplete(int index) {
+    setState(() {
+      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
+
+      final newNode = nodes[index].createNewLine();
+
+      if (index < nodes.length - 1) {
+        nodes.insert(index + 1, newNode);
+        markdownWidgetList.insert(
+          index + 1,
+          MarkdownRender().render(nodes[index + 1]),
+        );
+
+        nodes[index + 1].isEditing = true;
+      } else {
+        nodes.add(newNode);
+        markdownWidgetList.add(
+          MarkdownRender().render(nodes[index + 1]),
+        );
+        nodes[nodes.length - 1].isEditing = true;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        nodes[index + 1].focusNode.requestFocus();
+      });
+      _updateDocument();
+    });
+  }
+
+  void _updateDocument() {
+    fileString = document.toString();
+    widget.file.writeAsStringSync(fileString);
+  }
+
   Widget _buildRenderingWidget(int index) {
     return GestureDetector(
       onTapUp: (details) {
@@ -193,13 +259,6 @@ class _EditPartState extends ConsumerState<EditPart> {
         );
       }
     });
-  }
-
-  void _resetAll() {
-    for (int i = 0; i < nodes.length; i++) {
-      nodes[i].controller.selection = const TextSelection.collapsed(offset: 0);
-      nodes[i].isEditing = false;
-    }
   }
 
   void _onDelete(int index) {
@@ -263,51 +322,11 @@ class _EditPartState extends ConsumerState<EditPart> {
     _handleArrowKey(index, false, isShiftPressed);
   }
 
-  void _onChange(int index, String value) {
-    final currentSelection = nodes[index].controller.selection;
-    setState(() {
-      nodes[index] = StringToDocumentConverter(context).convertLine(value);
-      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
-      nodes[index].isEditing = true;
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[index].controller.selection = currentSelection;
-        nodes[index].focusNode.requestFocus();
-      });
-      _updateDocument();
-    });
-  }
-
-  void _onEditingComplete(int index) {
-    setState(() {
-      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
-
-      final newNode = nodes[index].createNewLine();
-
-      if (index < nodes.length - 1) {
-        nodes.insert(index + 1, newNode);
-        markdownWidgetList.insert(
-          index + 1,
-          MarkdownRender().render(nodes[index + 1]),
-        );
-
-        nodes[index + 1].isEditing = true;
-      } else {
-        nodes.add(newNode);
-        markdownWidgetList.add(
-          MarkdownRender().render(nodes[index + 1]),
-        );
-        nodes[nodes.length - 1].isEditing = true;
-      }
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[index + 1].focusNode.requestFocus();
-      });
-      _updateDocument();
-    });
-  }
-
-  void _updateDocument() {
-    fileString = document.toString();
-    widget.file.writeAsStringSync(fileString);
+  void _resetAll() {
+    for (int i = 0; i < nodes.length; i++) {
+      nodes[i].controller.selection = const TextSelection.collapsed(offset: 0);
+      nodes[i].isEditing = false;
+    }
   }
 
   void _handleArrowKey(int index, bool isLeft, bool isShiftPressed) {
@@ -363,4 +382,11 @@ class _EditPartState extends ConsumerState<EditPart> {
       }
     });
   }
+}
+
+class CustomTextSelectionGestureDetectorBuilder
+    extends TextSelectionGestureDetectorBuilder {
+  CustomTextSelectionGestureDetectorBuilder({
+    required super.delegate,
+  });
 }
