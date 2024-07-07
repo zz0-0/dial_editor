@@ -111,52 +111,18 @@ class _EditPartState extends ConsumerState<EditPart> {
   Widget _buildEditingWidget(int index) {
     return Focus(
       onFocusChange: (hasFocus) {},
-      onKeyEvent: (node, event) {
-        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-            event.logicalKey == LogicalKeyboardKey.backspace) {
-          _onDelete(index);
-        }
-
-        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-            event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          _onArrowUp(index);
-        }
-
-        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-            event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          _onArrowDown(index);
-        }
-
-        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-            event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-          _onArrowLeft(index, HardwareKeyboard.instance.isShiftPressed);
-        }
-
-        if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-            event.logicalKey == LogicalKeyboardKey.arrowRight) {
-          _onArrowRight(index, HardwareKeyboard.instance.isShiftPressed);
-        }
-
-        return KeyEventResult.ignored;
-      },
+      onKeyEvent: (node, event) => _onKeyEvent(event, index),
       child: GestureDetector(
         child: TextField(
           controller: nodes[index].controller,
           focusNode: nodes[index].focusNode,
           cursorColor: Colors.blue,
           style: nodes[index].style,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            errorBorder: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
-            focusedErrorBorder: InputBorder.none,
-            isDense: true,
+          decoration: const InputDecoration.collapsed(
             fillColor: Colors.transparent,
             focusColor: Colors.transparent,
             hoverColor: Colors.transparent,
-            contentPadding: EdgeInsets.zero,
+            hintText: '',
           ),
           onChanged: (value) {
             _onChange(index, value);
@@ -164,10 +130,44 @@ class _EditPartState extends ConsumerState<EditPart> {
           onEditingComplete: () {
             _onEditingComplete(index);
           },
-          // onTap: () => _resetSelection(index),
+          onTap: () {
+            for (final node in nodes) {
+              node.controller.selection =
+                  const TextSelection.collapsed(offset: 0);
+            }
+          },
         ),
       ),
     );
+  }
+
+  KeyEventResult _onKeyEvent(KeyEvent event, int index) {
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+        event.logicalKey == LogicalKeyboardKey.backspace) {
+      _onDelete(index);
+    }
+
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+        event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      _onArrowUp(index);
+    }
+
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+        event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      _onArrowDown(index);
+    }
+
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+        event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      _onArrowLeft(index, HardwareKeyboard.instance.isShiftPressed);
+    }
+
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+        event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      _onArrowRight(index, HardwareKeyboard.instance.isShiftPressed);
+    }
+
+    return KeyEventResult.ignored;
   }
 
   Widget _buildRenderingWidget(int index) {
@@ -195,7 +195,7 @@ class _EditPartState extends ConsumerState<EditPart> {
         setState(() {
           nodes.removeAt(index);
           markdownWidgetList.removeAt(index);
-          // index--;
+
           nodes[index - 1].isEditing = true;
           fileString = document.toString();
           widget.file.writeAsStringSync(fileString);
@@ -211,7 +211,6 @@ class _EditPartState extends ConsumerState<EditPart> {
   void _onArrowUp(int index) {
     if (index > 0) {
       setState(() {
-        // index--;
         nodes[index].isEditing = false;
         nodes[index - 1].isEditing = true;
         nodes[index].controller.text = nodes[index].rawText;
@@ -228,7 +227,6 @@ class _EditPartState extends ConsumerState<EditPart> {
   void _onArrowDown(int index) {
     if (index < nodes.length - 1) {
       setState(() {
-        // index++;
         nodes[index].isEditing = false;
         nodes[index + 1].isEditing = true;
         nodes[index].controller.text = nodes[index].rawText;
@@ -257,10 +255,7 @@ class _EditPartState extends ConsumerState<EditPart> {
       markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
       nodes[index].isEditing = true;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[index].controller.selection = TextSelection(
-          baseOffset: currentSelection.baseOffset,
-          extentOffset: currentSelection.extentOffset,
-        );
+        nodes[index].controller.selection = currentSelection;
         nodes[index].focusNode.requestFocus();
       });
       _updateDocument();
@@ -279,7 +274,7 @@ class _EditPartState extends ConsumerState<EditPart> {
           index + 1,
           MarkdownRender().render(nodes[index + 1]),
         );
-        // index++;
+
         nodes[index + 1].isEditing = true;
       } else {
         nodes.add(newNode);
@@ -287,7 +282,6 @@ class _EditPartState extends ConsumerState<EditPart> {
           MarkdownRender().render(nodes[index + 1]),
         );
         nodes[nodes.length - 1].isEditing = true;
-        // index = nodes.length - 1;
       }
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         nodes[index + 1].focusNode.requestFocus();
@@ -315,20 +309,20 @@ class _EditPartState extends ConsumerState<EditPart> {
 
     if (isLeft && selection.extentOffset == 0 && index > 0) {
       setState(() {
-        // index--;
         nodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index - 1].focusNode.requestFocus();
+          nodes[index].controller.selection = selection;
         });
       });
     } else if (!isLeft &&
         selection.extentOffset == currentNode.rawText.length &&
         index < nodes.length - 1) {
       setState(() {
-        // index++;
         nodes[index + 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index + 1].focusNode.requestFocus();
+          nodes[index].controller.selection = selection;
         });
       });
     }
@@ -340,7 +334,6 @@ class _EditPartState extends ConsumerState<EditPart> {
 
     setState(() {
       if (isLeft && selection.baseOffset == 0 && index > 0) {
-        // index--;
         nodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index - 1].focusNode.requestFocus();
@@ -348,7 +341,6 @@ class _EditPartState extends ConsumerState<EditPart> {
       } else if (!isLeft &&
           selection.baseOffset == currentNode.rawText.length &&
           index < nodes.length - 1) {
-        // index++;
         nodes[index + 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index + 1].focusNode.requestFocus();
