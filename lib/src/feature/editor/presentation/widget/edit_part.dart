@@ -113,35 +113,31 @@ class _EditPartState extends ConsumerState<EditPart> {
       onFocusChange: (hasFocus) {},
       onKeyEvent: (node, event) => _onKeyEvent(event, index),
       child: GestureDetector(
-        child: TextField(
+        child: EditableText(
           controller: nodes[index].controller,
           focusNode: nodes[index].focusNode,
           cursorColor: Colors.blue,
+          backgroundCursorColor: Colors.blue,
           style: nodes[index].style,
-          decoration: const InputDecoration.collapsed(
-            fillColor: Colors.transparent,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            hintText: '',
-          ),
           onChanged: (value) {
             _onChange(index, value);
           },
           onEditingComplete: () {
             _onEditingComplete(index);
           },
-          onTap: () {
-            for (final node in nodes) {
-              node.controller.selection =
-                  const TextSelection.collapsed(offset: 0);
-            }
-          },
+          selectionColor: Colors.red,
         ),
       ),
     );
   }
 
   KeyEventResult _onKeyEvent(KeyEvent event, int index) {
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+        event.logicalKey == LogicalKeyboardKey.keyA &&
+        HardwareKeyboard.instance.isControlPressed) {
+      _selectAll(index);
+    }
+
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.backspace) {
       _onDelete(index);
@@ -173,10 +169,8 @@ class _EditPartState extends ConsumerState<EditPart> {
   Widget _buildRenderingWidget(int index) {
     return GestureDetector(
       onTapUp: (details) {
+        _resetAll();
         setState(() {
-          for (int i = 0; i < nodes.length; i++) {
-            nodes[i].isEditing = false;
-          }
           nodes[index].isEditing = true;
           nodes[index].controller.clear();
           nodes[index].controller.text = nodes[index].rawText;
@@ -187,6 +181,25 @@ class _EditPartState extends ConsumerState<EditPart> {
       },
       child: markdownWidgetList[index],
     );
+  }
+
+  void _selectAll(int index) {
+    setState(() {
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].isEditing = true;
+        nodes[i].controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: nodes[i].controller.text.length,
+        );
+      }
+    });
+  }
+
+  void _resetAll() {
+    for (int i = 0; i < nodes.length; i++) {
+      nodes[i].controller.selection = const TextSelection.collapsed(offset: 0);
+      nodes[i].isEditing = false;
+    }
   }
 
   void _onDelete(int index) {
@@ -211,6 +224,7 @@ class _EditPartState extends ConsumerState<EditPart> {
   void _onArrowUp(int index) {
     if (index > 0) {
       setState(() {
+        _resetAll();
         nodes[index].isEditing = false;
         nodes[index - 1].isEditing = true;
         nodes[index].controller.text = nodes[index].rawText;
@@ -227,6 +241,7 @@ class _EditPartState extends ConsumerState<EditPart> {
   void _onArrowDown(int index) {
     if (index < nodes.length - 1) {
       setState(() {
+        _resetAll();
         nodes[index].isEditing = false;
         nodes[index + 1].isEditing = true;
         nodes[index].controller.text = nodes[index].rawText;
