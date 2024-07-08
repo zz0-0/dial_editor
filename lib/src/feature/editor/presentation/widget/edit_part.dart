@@ -5,6 +5,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
 import 'package:dial_editor/src/feature/editor/util/string_to_document_converter.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -123,10 +124,12 @@ class _EditPartState extends ConsumerState<EditPart>
   Widget _buildEditingWidget(int index) {
     final CustomTextSelectionGestureDetectorBuilder builder =
         CustomTextSelectionGestureDetectorBuilder(
-      delegate: this,
+      state: this,
+      index: index,
     );
 
     return builder.buildGestureDetector(
+      behavior: HitTestBehavior.translucent,
       child: Focus(
         onFocusChange: (hasFocus) {},
         onKeyEvent: (node, event) => _onKeyEvent(event, index),
@@ -137,6 +140,7 @@ class _EditPartState extends ConsumerState<EditPart>
             cursorColor: Colors.blue,
             backgroundCursorColor: Colors.blue,
             style: nodes[index].style,
+            selectionControls: MaterialTextSelectionControls(),
             onChanged: (value) {
               _onChange(index, value);
             },
@@ -148,6 +152,78 @@ class _EditPartState extends ConsumerState<EditPart>
         ),
       ),
     );
+  }
+
+  void _onTapDown(int index, TapDragDownDetails details) {
+    final currentNode = nodes[index];
+    currentNode.controller.selection =
+        TextSelection.collapsed(offset: details.globalPosition.dx.toInt());
+  }
+
+  void _onDragSelectionStart(int index, TapDragStartDetails details) {
+    final currentNode = nodes[index];
+    final position = currentNode.controller.selection.baseOffset;
+    currentNode.controller.selection = TextSelection(
+      baseOffset: position,
+      extentOffset: details.globalPosition.dx.toInt(),
+    );
+  }
+
+  void _onDragSelectionUpdate(int index, TapDragUpdateDetails details) {
+    final currentNode = nodes[index];
+    final localOffset = details.localPosition.dx.toInt();
+    final int baseOffset = currentNode.controller.selection.baseOffset;
+    final int extentOffset = localOffset;
+
+    if (extentOffset < 0 && index > 0) {
+      setState(() {
+        final int newOffset = nodes[index - 1].rawText.length;
+        nodes[index - 1].isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[index - 1].focusNode.requestFocus();
+          nodes[index - 1].controller.selection =
+              TextSelection.collapsed(offset: newOffset);
+        });
+      });
+    } else if (extentOffset > currentNode.controller.text.length &&
+        index < nodes.length - 1) {
+      setState(() {
+        nodes[index + 1].isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[index + 1].focusNode.requestFocus();
+        });
+      });
+    } else {
+      setState(() {
+        currentNode.controller.selection =
+            TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
+      });
+    }
+  }
+
+  void _onDragSelectionEnd(int index, TapDragEndDetails details) {
+    final currentNode = nodes[index];
+    final extentOffset = details.velocity.pixelsPerSecond.dx.toInt();
+
+    if (extentOffset < 0 && index > 0) {
+      setState(() {
+        final int newOffset = nodes[index - 1].rawText.length;
+        nodes[index - 1].isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[index - 1].focusNode.requestFocus();
+          nodes[index - 1].controller.selection =
+              TextSelection.collapsed(offset: newOffset);
+        });
+      });
+    } else if (extentOffset > currentNode.controller.text.length &&
+        index < nodes.length - 1) {
+      setState(() {
+        nodes[index + 1].isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nodes[index + 1].focusNode.requestFocus();
+        });
+      });
+    }
   }
 
   KeyEventResult _onKeyEvent(KeyEvent event, int index) {
@@ -389,7 +465,33 @@ class _EditPartState extends ConsumerState<EditPart>
 
 class CustomTextSelectionGestureDetectorBuilder
     extends TextSelectionGestureDetectorBuilder {
+  final _EditPartState _state;
+  final int _index;
+
   CustomTextSelectionGestureDetectorBuilder({
-    required super.delegate,
-  });
+    required _EditPartState state,
+    required int index,
+  })  : _state = state,
+        _index = index,
+        super(delegate: state);
+
+  @override
+  void onTapDown(TapDragDownDetails details) {
+    _state._onTapDown(_index, details);
+  }
+
+  @override
+  void onDragSelectionStart(TapDragStartDetails details) {
+    _state._onDragSelectionStart(_index, details);
+  }
+
+  @override
+  void onDragSelectionUpdate(TapDragUpdateDetails details) {
+    _state._onDragSelectionUpdate(_index, details);
+  }
+
+  @override
+  void onDragSelectionEnd(TapDragEndDetails details) {
+    _state._onDragSelectionEnd(_index, details);
+  }
 }
