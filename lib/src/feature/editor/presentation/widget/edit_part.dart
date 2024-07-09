@@ -151,11 +151,7 @@ class _EditPartState extends ConsumerState<EditPart>
             onEditingComplete: () {
               _onEditingComplete(index);
             },
-            onSelectionChanged: (selection, cause) {
-              // nodes[index].controller.selection = selection;
-            },
             showCursor: true,
-            // showSelectionHandles: true,
             selectionColor: Colors.red,
             rendererIgnoresPointer: true,
             enableInteractiveSelection: true,
@@ -175,9 +171,7 @@ class _EditPartState extends ConsumerState<EditPart>
     }
 
     final node = nodes[index];
-
     final nodeKey = node.key;
-
     final EditableTextState? editableTextState = nodeKey.currentState;
     if (editableTextState == null) {
       // logger.d("Error: EditableTextState is null for node at index $index");
@@ -187,6 +181,7 @@ class _EditPartState extends ConsumerState<EditPart>
     final RenderEditable renderEditable = editableTextState.renderEditable;
 
     try {
+      _resetAll();
       final TapDownDetails tapDownDetails =
           TapDownDetails(globalPosition: details.globalPosition);
       renderEditable.handleTapDown(tapDownDetails);
@@ -198,14 +193,6 @@ class _EditPartState extends ConsumerState<EditPart>
       // logger.d("Error during tap handling for node at index $index: $e");
     }
   }
-
-  // void _onTapDown(int index, TapDragDownDetails details) {
-  // final currentNode = nodes[index];
-  // currentNode.isEditing = true;
-  // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //   currentNode.focusNode.requestFocus();
-  // });
-  // }
 
   void _onDragSelectionStart(int index, TapDragStartDetails details) {
     final RenderEditable renderEditable =
@@ -237,58 +224,36 @@ class _EditPartState extends ConsumerState<EditPart>
       cause: SelectionChangedCause.drag,
     );
 
-    // final currentNode = nodes[index];
-    // final int baseOffset = currentNode.controller.selection.baseOffset;
-    // final int extentOffset = currentNode.controller.selection.extentOffset;
+    final currentNode = nodes[index];
 
-    // final renderBox =
-    //     currentNode.key.currentContext!.findRenderObject()! as RenderBox;
-    // final textFieldWidth = renderBox.size.width;
-    // // final offsetRatio = details.globalPosition.dx / textFieldWidth;
+    final int extentOffset = currentNode.controller.selection.extentOffset;
 
-    // // final textLength = currentNode.controller.text.length;
-    // // final i = (offsetRatio * textLength).floor();
-    // // print(textFieldWidth);
-    // // print(currentNode.controller.selection.extent);
-
-    // if (extentOffset < 0 && index > 0) {
-    //   setState(() {
-    //     final previousNode = nodes[index - 1];
-
-    //     previousNode.isEditing = true;
-    //     final position = previousNode.controller.selection.baseOffset;
-    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //       currentNode.focusNode.unfocus();
-    //       previousNode.focusNode.requestFocus();
-    //       previousNode.controller.selection = TextSelection.collapsed(
-    //         offset: position,
-    //       );
-    //     });
-    //   });
-    // } else if (extentOffset > currentNode.controller.text.length &&
-    //     index < nodes.length - 1) {
-    //   setState(() {
-    //     final nextNode = nodes[index + 1];
-    //     nextNode.isEditing = true;
-
-    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //       currentNode.focusNode.unfocus();
-    //       nextNode.focusNode.requestFocus();
-    //       nextNode.controller.selection =
-    //           const TextSelection.collapsed(offset: 0);
-    //     });
-    //   });
-    // } else {
-    //   setState(() {
-    //     currentNode.controller.selection =
-    //         TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
-    //   });
-    // }
+    if (extentOffset <= 0 && index > 0) {
+      setState(() {
+        final previousNode = nodes[index - 1];
+        previousNode.isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          previousNode.focusNode.requestFocus();
+          previousNode.controller.selection = TextSelection.collapsed(
+            offset: previousNode.controller.text.length,
+          );
+          _onDragSelectionUpdate(index - 1, details);
+        });
+      });
+    } else if (extentOffset >= currentNode.controller.text.length &&
+        index < nodes.length - 1) {
+      setState(() {
+        final nextNode = nodes[index + 1];
+        nextNode.isEditing = true;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          nextNode.focusNode.requestFocus();
+          nextNode.controller.selection =
+              const TextSelection.collapsed(offset: 0);
+          _onDragSelectionUpdate(index + 1, details);
+        });
+      });
+    }
   }
-
-  // void _onDragSelectionEnd(int index, TapDragEndDetails details) {
-  //   print("d");
-  // }
 
   KeyEventResult _onKeyEvent(KeyEvent event, int index) {
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
