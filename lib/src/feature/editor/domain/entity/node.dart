@@ -9,6 +9,7 @@ abstract class Node {
   FocusNode focusNode = FocusNode();
   bool _initializing = true;
   bool isEditing = false;
+  GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
 
   Node(
     this.context,

@@ -55,6 +55,7 @@
 - [ ]  Storyboard: Help construct the plot
 - [ ]  Music Composer: Daw
 - [ ]  Video Editing
+- [ ]  Home Assistant
 
 ## 🖥️ Getting Started
 

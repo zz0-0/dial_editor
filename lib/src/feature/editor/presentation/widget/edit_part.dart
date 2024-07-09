@@ -7,8 +7,10 @@ import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
 import 'package:dial_editor/src/feature/editor/util/string_to_document_converter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:logger/logger.dart';
 
 class EditPart extends ConsumerStatefulWidget {
   final File file;
@@ -20,6 +22,7 @@ class EditPart extends ConsumerStatefulWidget {
 
 class _EditPartState extends ConsumerState<EditPart>
     implements TextSelectionGestureDetectorBuilderDelegate {
+  // Logger logger = Logger();
   late Document document;
   late String fileString;
   List<Node> nodes = [];
@@ -135,6 +138,7 @@ class _EditPartState extends ConsumerState<EditPart>
         onKeyEvent: (node, event) => _onKeyEvent(event, index),
         child: GestureDetector(
           child: EditableText(
+            key: nodes[index].key,
             controller: nodes[index].controller,
             focusNode: nodes[index].focusNode,
             cursorColor: Colors.blue,
@@ -147,84 +151,144 @@ class _EditPartState extends ConsumerState<EditPart>
             onEditingComplete: () {
               _onEditingComplete(index);
             },
+            onSelectionChanged: (selection, cause) {
+              // nodes[index].controller.selection = selection;
+            },
+            showCursor: true,
+            // showSelectionHandles: true,
             selectionColor: Colors.red,
+            rendererIgnoresPointer: true,
+            enableInteractiveSelection: true,
+            paintCursorAboveText: true,
           ),
         ),
       ),
     );
   }
 
-  void _onTapDown(int index, TapDragDownDetails details) {
-    final currentNode = nodes[index];
-    currentNode.controller.selection =
-        TextSelection.collapsed(offset: details.globalPosition.dx.toInt());
+  void _onSingleTapUp(int index, TapDragUpDetails details) {
+    // logger.d("_onSingleTapUp called for index: $index");
+
+    if (index < 0 || index >= nodes.length) {
+      // logger.d("Error: Invalid index $index. Nodes length: ${nodes.length}");
+      return;
+    }
+
+    final node = nodes[index];
+
+    final nodeKey = node.key;
+
+    final EditableTextState? editableTextState = nodeKey.currentState;
+    if (editableTextState == null) {
+      // logger.d("Error: EditableTextState is null for node at index $index");
+      return;
+    }
+
+    final RenderEditable renderEditable = editableTextState.renderEditable;
+
+    try {
+      final TapDownDetails tapDownDetails =
+          TapDownDetails(globalPosition: details.globalPosition);
+      renderEditable.handleTapDown(tapDownDetails);
+      renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
+      editableTextState.hideToolbar();
+      editableTextState.requestKeyboard();
+      // logger.d("_onSingleTapUp completed successfully for index: $index");
+    } catch (e) {
+      // logger.d("Error during tap handling for node at index $index: $e");
+    }
   }
 
+  // void _onTapDown(int index, TapDragDownDetails details) {
+  // final currentNode = nodes[index];
+  // currentNode.isEditing = true;
+  // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //   currentNode.focusNode.requestFocus();
+  // });
+  // }
+
   void _onDragSelectionStart(int index, TapDragStartDetails details) {
-    final currentNode = nodes[index];
-    final position = currentNode.controller.selection.baseOffset;
-    currentNode.controller.selection = TextSelection(
-      baseOffset: position,
-      extentOffset: details.globalPosition.dx.toInt(),
+    final RenderEditable renderEditable =
+        nodes[index].key.currentState!.renderEditable;
+
+    renderEditable.selectPositionAt(
+      from: details.globalPosition,
+      cause: SelectionChangedCause.drag,
     );
   }
 
-  void _onDragSelectionUpdate(int index, TapDragUpdateDetails details) {
-    final currentNode = nodes[index];
-    final localOffset = details.localPosition.dx.toInt();
-    final int baseOffset = currentNode.controller.selection.baseOffset;
-    final int extentOffset = localOffset;
+  void _onDragSelectionUpdate(
+    int index,
+    TapDragUpdateDetails details,
+  ) {
+    final nodeKey = nodes[index].key;
 
-    if (extentOffset < 0 && index > 0) {
-      setState(() {
-        final int newOffset = nodes[index - 1].rawText.length;
-        nodes[index - 1].isEditing = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index - 1].focusNode.requestFocus();
-          nodes[index - 1].controller.selection =
-              TextSelection.collapsed(offset: newOffset);
-        });
-      });
-    } else if (extentOffset > currentNode.controller.text.length &&
-        index < nodes.length - 1) {
-      setState(() {
-        nodes[index + 1].isEditing = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index + 1].focusNode.requestFocus();
-        });
-      });
-    } else {
-      setState(() {
-        currentNode.controller.selection =
-            TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
-      });
+    final EditableTextState? editableTextState = nodeKey.currentState;
+    if (editableTextState == null) {
+      // logger.d('Error: EditableTextState is null for node at index $index');
+      return;
     }
+
+    final renderEditable = editableTextState.renderEditable;
+
+    renderEditable.selectPositionAt(
+      from: details.globalPosition - details.offsetFromOrigin,
+      to: details.globalPosition,
+      cause: SelectionChangedCause.drag,
+    );
+
+    // final currentNode = nodes[index];
+    // final int baseOffset = currentNode.controller.selection.baseOffset;
+    // final int extentOffset = currentNode.controller.selection.extentOffset;
+
+    // final renderBox =
+    //     currentNode.key.currentContext!.findRenderObject()! as RenderBox;
+    // final textFieldWidth = renderBox.size.width;
+    // // final offsetRatio = details.globalPosition.dx / textFieldWidth;
+
+    // // final textLength = currentNode.controller.text.length;
+    // // final i = (offsetRatio * textLength).floor();
+    // // print(textFieldWidth);
+    // // print(currentNode.controller.selection.extent);
+
+    // if (extentOffset < 0 && index > 0) {
+    //   setState(() {
+    //     final previousNode = nodes[index - 1];
+
+    //     previousNode.isEditing = true;
+    //     final position = previousNode.controller.selection.baseOffset;
+    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //       currentNode.focusNode.unfocus();
+    //       previousNode.focusNode.requestFocus();
+    //       previousNode.controller.selection = TextSelection.collapsed(
+    //         offset: position,
+    //       );
+    //     });
+    //   });
+    // } else if (extentOffset > currentNode.controller.text.length &&
+    //     index < nodes.length - 1) {
+    //   setState(() {
+    //     final nextNode = nodes[index + 1];
+    //     nextNode.isEditing = true;
+
+    //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //       currentNode.focusNode.unfocus();
+    //       nextNode.focusNode.requestFocus();
+    //       nextNode.controller.selection =
+    //           const TextSelection.collapsed(offset: 0);
+    //     });
+    //   });
+    // } else {
+    //   setState(() {
+    //     currentNode.controller.selection =
+    //         TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
+    //   });
+    // }
   }
 
-  void _onDragSelectionEnd(int index, TapDragEndDetails details) {
-    final currentNode = nodes[index];
-    final extentOffset = details.velocity.pixelsPerSecond.dx.toInt();
-
-    if (extentOffset < 0 && index > 0) {
-      setState(() {
-        final int newOffset = nodes[index - 1].rawText.length;
-        nodes[index - 1].isEditing = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index - 1].focusNode.requestFocus();
-          nodes[index - 1].controller.selection =
-              TextSelection.collapsed(offset: newOffset);
-        });
-      });
-    } else if (extentOffset > currentNode.controller.text.length &&
-        index < nodes.length - 1) {
-      setState(() {
-        nodes[index + 1].isEditing = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index + 1].focusNode.requestFocus();
-        });
-      });
-    }
-  }
+  // void _onDragSelectionEnd(int index, TapDragEndDetails details) {
+  //   print("d");
+  // }
 
   KeyEventResult _onKeyEvent(KeyEvent event, int index) {
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
@@ -476,9 +540,16 @@ class CustomTextSelectionGestureDetectorBuilder
         super(delegate: state);
 
   @override
-  void onTapDown(TapDragDownDetails details) {
-    _state._onTapDown(_index, details);
+  RenderEditable get renderEditable =>
+      _state.editableTextKey.currentState!.renderEditable;
+
+  @override
+  void onSingleTapUp(TapDragUpDetails details) {
+    _state._onSingleTapUp(_index, details);
   }
+
+  @override
+  void onTapDown(TapDragDownDetails details) {}
 
   @override
   void onDragSelectionStart(TapDragStartDetails details) {
@@ -488,10 +559,5 @@ class CustomTextSelectionGestureDetectorBuilder
   @override
   void onDragSelectionUpdate(TapDragUpdateDetails details) {
     _state._onDragSelectionUpdate(_index, details);
-  }
-
-  @override
-  void onDragSelectionEnd(TapDragEndDetails details) {
-    _state._onDragSelectionEnd(_index, details);
   }
 }
