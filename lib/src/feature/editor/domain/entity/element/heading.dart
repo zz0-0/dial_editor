@@ -23,6 +23,7 @@ class Heading extends Node {
     text = newText.replaceAll(regex, '').trim();
     level = regex.allMatches(newText).first.group(0)?.length ?? 1;
     updateStyle();
+    updateTextHeight();
   }
 
   @override
@@ -55,6 +56,7 @@ class Heading extends Node {
   Widget render() {
     text = rawText.replaceAll(regex, '').trim();
     updateStyle();
+    updateTextHeight();
     return Text(
       text,
       style: style,

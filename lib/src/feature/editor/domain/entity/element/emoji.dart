@@ -12,6 +12,7 @@ class EmojiNode extends Node {
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return _buildEmoji();
   }
 
@@ -23,6 +24,7 @@ class EmojiNode extends Node {
     final parsedEmoji = parser.emojify(newText);
     text = parsedEmoji.replaceAll(regex, '').trim();
     updateStyle();
+    updateTextHeight();
   }
 
   @override

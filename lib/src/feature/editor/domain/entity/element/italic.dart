@@ -11,6 +11,7 @@ class Italic extends Node {
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return _buildRichText();
   }
 
@@ -20,6 +21,7 @@ class Italic extends Node {
     final regex = italicRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
+    updateTextHeight();
   }
 
   @override

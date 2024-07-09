@@ -11,6 +11,7 @@ class BoldItalic extends Node {
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return _buildRichText();
   }
 
@@ -20,6 +21,7 @@ class BoldItalic extends Node {
     final regex = boldItalicRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
+    updateTextHeight();
   }
 
   @override

@@ -29,6 +29,7 @@ class _EditPartState extends ConsumerState<EditPart>
   List<Widget> markdownWidgetList = [];
   final GlobalKey<EditableTextState> _editorKey =
       GlobalKey<EditableTextState>();
+  List<double> cumulativeHeights = [];
 
   @override
   GlobalKey<EditableTextState> get editableTextKey => _editorKey;
@@ -51,6 +52,7 @@ class _EditPartState extends ConsumerState<EditPart>
     document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
+    _setCumulativeHeights();
   }
 
   @override
@@ -75,12 +77,21 @@ class _EditPartState extends ConsumerState<EditPart>
     );
   }
 
-  double _getTextHeight(TextStyle textStyle, String text) {
-    final textPainter = TextPainter(
-      text: TextSpan(text: text, style: textStyle),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    return textPainter.height;
+  void _setCumulativeHeights() {
+    double currentHeight = 0.0;
+    for (final node in nodes) {
+      currentHeight += node.textHeight;
+      cumulativeHeights.add(currentHeight);
+    }
+  }
+
+  int _getLineIndex(double dy) {
+    for (int i = 0; i < cumulativeHeights.length; i++) {
+      if (dy <= cumulativeHeights[i]) {
+        return i - 1;
+      }
+    }
+    return -1;
   }
 
   Widget _buildLineNumber() {
@@ -91,14 +102,12 @@ class _EditPartState extends ConsumerState<EditPart>
         child: ListView.builder(
           itemCount: nodes.length,
           itemBuilder: (context, index) {
-            final textStyle = nodes[index].style;
-            final lineHeight = _getTextHeight(textStyle, nodes[index].text);
             return Row(
               children: [
                 const Spacer(),
                 Container(
                   alignment: Alignment.centerRight,
-                  height: lineHeight,
+                  height: nodes[index].textHeight,
                   child: Text(
                     "${index + 1}",
                   ),
@@ -228,6 +237,8 @@ class _EditPartState extends ConsumerState<EditPart>
 
     final int extentOffset = currentNode.controller.selection.extentOffset;
 
+    final mouseIndex = _getLineIndex(details.globalPosition.dy);
+
     if (extentOffset <= 0 && index > 0) {
       setState(() {
         final previousNode = nodes[index - 1];
@@ -237,7 +248,9 @@ class _EditPartState extends ConsumerState<EditPart>
           previousNode.controller.selection = TextSelection.collapsed(
             offset: previousNode.controller.text.length,
           );
-          _onDragSelectionUpdate(index - 1, details);
+          if (index - 1 >= mouseIndex) {
+            _onDragSelectionUpdate(index - 1, details);
+          }
         });
       });
     } else if (extentOffset >= currentNode.controller.text.length &&
@@ -249,7 +262,9 @@ class _EditPartState extends ConsumerState<EditPart>
           nextNode.focusNode.requestFocus();
           nextNode.controller.selection =
               const TextSelection.collapsed(offset: 0);
-          _onDragSelectionUpdate(index + 1, details);
+          if (index + 1 <= mouseIndex) {
+            _onDragSelectionUpdate(index + 1, details);
+          }
         });
       });
     }
@@ -335,6 +350,7 @@ class _EditPartState extends ConsumerState<EditPart>
   void _updateDocument() {
     fileString = document.toString();
     widget.file.writeAsStringSync(fileString);
+    _setCumulativeHeights();
   }
 
   Widget _buildRenderingWidget(int index) {

@@ -10,6 +10,7 @@ class TaskList extends Node {
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return _buildRichText();
   }
 
@@ -17,6 +18,7 @@ class TaskList extends Node {
   void updateText(String newText) {
     rawText = newText;
     updateStyle();
+    updateTextHeight();
   }
 
   @override

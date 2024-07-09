@@ -11,11 +11,13 @@ class TextNode extends Node {
     rawText = newText;
     text = newText;
     updateStyle();
+    updateTextHeight();
   }
 
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return Text(rawText, style: style);
   }
 

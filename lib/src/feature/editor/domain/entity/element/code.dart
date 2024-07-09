@@ -9,6 +9,7 @@ class Code extends Node {
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return _buildRichText();
   }
 
@@ -16,6 +17,7 @@ class Code extends Node {
   void updateText(String newText) {
     rawText = newText;
     updateStyle();
+    updateTextHeight();
   }
 
   @override

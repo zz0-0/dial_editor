@@ -26,6 +26,7 @@ class Highlight extends Node {
     final regex = highlightRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
+    updateTextHeight();
   }
 
   @override

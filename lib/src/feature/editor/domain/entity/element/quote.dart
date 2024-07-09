@@ -9,6 +9,7 @@ class Quote extends Node {
   @override
   Widget render() {
     updateStyle();
+    updateTextHeight();
     return _buildRichText();
   }
 
@@ -17,6 +18,7 @@ class Quote extends Node {
     rawText = newText;
     text = newText.replaceAll('>', '').trim();
     updateStyle();
+    updateTextHeight();
   }
 
   @override

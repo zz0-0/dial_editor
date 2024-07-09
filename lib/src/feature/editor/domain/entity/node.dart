@@ -10,14 +10,19 @@ abstract class Node {
   bool _initializing = true;
   bool isEditing = false;
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
+  double textHeight;
+  late Widget widget;
 
   Node(
     this.context,
     this.rawText, [
     this.style = const TextStyle(),
     this.text = "",
+    this.textHeight = 0,
   ]) {
     controller = TextEditingController(text: rawText);
+    widget = render();
+    textHeight = updateTextHeight();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.addListener(_onTextChanged);
       _initializing = false;
@@ -27,6 +32,14 @@ abstract class Node {
   void updateText(String newText);
 
   void updateStyle();
+
+  double updateTextHeight() {
+    final textPainter = TextPainter(
+      text: TextSpan(text: rawText, style: style),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    return textPainter.height;
+  }
 
   Widget render();
 
