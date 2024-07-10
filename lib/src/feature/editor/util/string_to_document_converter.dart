@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold_italic.dart';

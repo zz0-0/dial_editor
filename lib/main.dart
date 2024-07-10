@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dial_editor/src/feature/core/data/router.dart';
 import 'package:dial_editor/src/feature/core/presentation/screen/desktop_layout/desktop_editor.dart';
 import 'package:dial_editor/src/feature/core/presentation/screen/mobile_layout/mobile_editor.dart';

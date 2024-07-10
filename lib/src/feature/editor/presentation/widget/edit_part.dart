@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
@@ -33,10 +32,8 @@ class _EditPartState extends ConsumerState<EditPart>
 
   @override
   GlobalKey<EditableTextState> get editableTextKey => _editorKey;
-
   @override
   bool get forcePressEnabled => false;
-
   @override
   bool get selectionEnabled => true;
 
@@ -146,7 +143,6 @@ class _EditPartState extends ConsumerState<EditPart>
       state: this,
       index: index,
     );
-
     return builder.buildGestureDetector(
       behavior: HitTestBehavior.translucent,
       child: Focus(
@@ -182,16 +178,13 @@ class _EditPartState extends ConsumerState<EditPart>
     if (index < 0 || index >= nodes.length) {
       return;
     }
-
     final node = nodes[index];
     final nodeKey = node.key;
     final EditableTextState? editableTextState = nodeKey.currentState;
     if (editableTextState == null) {
       return;
     }
-
     final RenderEditable renderEditable = editableTextState.renderEditable;
-
     try {
       _resetAll();
       final TapDownDetails tapDownDetails =
@@ -226,25 +219,20 @@ class _EditPartState extends ConsumerState<EditPart>
       );
       return;
     }
-
     int lastMouseIndex = -1;
     bool isSelectingUp = false;
     setState(() {
       final bool currentSelectingUp = mouseIndex < index;
-
       if (lastMouseIndex != -1 && currentSelectingUp != isSelectingUp) {
         for (final node in nodes) {
           node.isEditing = false;
           node.controller.selection = const TextSelection.collapsed(offset: 0);
         }
       }
-
       isSelectingUp = currentSelectingUp;
       lastMouseIndex = mouseIndex;
-
       final int startIndex = isSelectingUp ? mouseIndex : index;
       final int endIndex = isSelectingUp ? index : mouseIndex;
-
       for (int i = startIndex; i <= endIndex; i++) {
         nodes[i].isEditing = true;
         if (i == startIndex) {
@@ -266,7 +254,6 @@ class _EditPartState extends ConsumerState<EditPart>
           );
         }
       }
-
       for (int i = 0; i < nodes.length; i++) {
         if (i < startIndex || i > endIndex) {
           nodes[i].isEditing = false;
@@ -283,32 +270,26 @@ class _EditPartState extends ConsumerState<EditPart>
         HardwareKeyboard.instance.isControlPressed) {
       _selectAll(index);
     }
-
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.backspace) {
       _onDelete(index);
     }
-
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowUp) {
       _onArrowUp(index);
     }
-
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowDown) {
       _onArrowDown(index);
     }
-
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       _onArrowLeft(index, HardwareKeyboard.instance.isShiftPressed);
     }
-
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
       _onArrowRight(index, HardwareKeyboard.instance.isShiftPressed);
     }
-
     return KeyEventResult.ignored;
   }
 
@@ -329,16 +310,13 @@ class _EditPartState extends ConsumerState<EditPart>
   void _onEditingComplete(int index) {
     setState(() {
       markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
-
       final newNode = nodes[index].createNewLine();
-
       if (index < nodes.length - 1) {
         nodes.insert(index + 1, newNode);
         markdownWidgetList.insert(
           index + 1,
           MarkdownRender().render(nodes[index + 1]),
         );
-
         nodes[index + 1].isEditing = true;
       } else {
         nodes.add(newNode);
@@ -347,6 +325,7 @@ class _EditPartState extends ConsumerState<EditPart>
         );
         nodes[nodes.length - 1].isEditing = true;
       }
+      nodes[index].isEditing = false;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         nodes[index + 1].focusNode.requestFocus();
       });
@@ -395,10 +374,12 @@ class _EditPartState extends ConsumerState<EditPart>
         setState(() {
           nodes.removeAt(index);
           markdownWidgetList.removeAt(index);
-
           nodes[index - 1].isEditing = true;
           fileString = document.toString();
           widget.file.writeAsStringSync(fileString);
+          final int newOffset = nodes[index - 1].rawText.length;
+          nodes[index - 1].controller.selection =
+              TextSelection.collapsed(offset: newOffset);
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
             nodes[index - 1].focusNode.requestFocus();
           });
@@ -468,7 +449,6 @@ class _EditPartState extends ConsumerState<EditPart>
   void _handleSelectionExtension(int index, bool isLeft) {
     final currentNode = nodes[index];
     final selection = currentNode.controller.selection;
-
     if (isLeft && selection.extentOffset == 0 && index > 0) {
       setState(() {
         final int newOffset = nodes[index - 1].rawText.length;
@@ -496,7 +476,6 @@ class _EditPartState extends ConsumerState<EditPart>
   void _moveCursor(int index, bool isLeft) {
     final currentNode = nodes[index];
     final selection = currentNode.controller.selection;
-
     setState(() {
       if (isLeft && selection.baseOffset == 0 && index > 0) {
         nodes[index - 1].isEditing = true;
@@ -519,18 +498,15 @@ class CustomTextSelectionGestureDetectorBuilder
     extends TextSelectionGestureDetectorBuilder {
   final _EditPartState _state;
   final int _index;
-
   CustomTextSelectionGestureDetectorBuilder({
     required _EditPartState state,
     required int index,
   })  : _state = state,
         _index = index,
         super(delegate: state);
-
   @override
   RenderEditable get renderEditable =>
       _state.editableTextKey.currentState!.renderEditable;
-
   @override
   void onSingleTapUp(TapDragUpDetails details) {
     _state._onSingleTapUp(_index, details);
@@ -538,7 +514,6 @@ class CustomTextSelectionGestureDetectorBuilder
 
   @override
   void onTapDown(TapDragDownDetails details) {}
-
   @override
   void onDragSelectionStart(TapDragStartDetails details) {
     _state._onDragSelectionStart(_index, details);

@@ -9,7 +9,6 @@ final directoryNodeListProvider =
     return DiretoryNotifier(watch);
   },
 );
-
 final directoryNodeListHasDataProvider = Provider((ref) {
   if (ref.watch(directoryNodeListProvider) != []) {
     return true;

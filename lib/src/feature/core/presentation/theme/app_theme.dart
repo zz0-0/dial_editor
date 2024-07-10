@@ -5,7 +5,6 @@ final ThemeData lightTheme = FlexThemeData.light(
   scheme: FlexScheme.blue,
   tabBarStyle: FlexTabBarStyle.forBackground,
 );
-
 final ThemeData darkTheme = FlexThemeData.dark(
   scheme: FlexScheme.blue,
   tabBarStyle: FlexTabBarStyle.forBackground,
