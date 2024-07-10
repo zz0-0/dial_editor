@@ -12,8 +12,6 @@
 
 ## 🛠️ To-Do
 
-### Will Have
-
 - [ ]  **Markdown Support**
   - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data. **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
     - [X]  Heading
