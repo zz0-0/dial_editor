@@ -29,6 +29,8 @@ class _EditPartState extends ConsumerState<EditPart>
   final GlobalKey<EditableTextState> _editorKey =
       GlobalKey<EditableTextState>();
   List<double> cumulativeHeights = [];
+  ScrollController scrollController1 = ScrollController();
+  ScrollController scrollController2 = ScrollController();
 
   @override
   GlobalKey<EditableTextState> get editableTextKey => _editorKey;
@@ -64,15 +66,32 @@ class _EditPartState extends ConsumerState<EditPart>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Row(
-          children: [
-            _buildLineNumber(),
-            _buildEditingArea(),
-          ],
-        ),
-      ],
+    bool isScrolling = false;
+    return NotificationListener(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (!isScrolling && scrollInfo.depth == 0) {
+          isScrolling = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              setState(() {
+                scrollController1.jumpTo(scrollController2.offset);
+              });
+            }
+            isScrolling = false;
+          });
+        }
+        return true;
+      },
+      child: Stack(
+        children: [
+          Row(
+            children: [
+              _buildLineNumber(),
+              _buildEditingArea(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -103,22 +122,26 @@ class _EditPartState extends ConsumerState<EditPart>
       padding: const EdgeInsets.only(right: 16.0),
       child: SizedBox(
         width: 30,
-        child: ListView.builder(
-          itemCount: nodes.length,
-          itemBuilder: (context, index) {
-            return Row(
-              children: [
-                const Spacer(),
-                Container(
-                  alignment: Alignment.centerRight,
-                  height: nodes[index].textHeight,
-                  child: Text(
-                    "${index + 1}",
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+          child: ListView.builder(
+            controller: scrollController1,
+            itemCount: nodes.length,
+            itemBuilder: (context, index) {
+              return Row(
+                children: [
+                  const Spacer(),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    height: nodes[index].textHeight,
+                    child: Text(
+                      "${index + 1}",
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -127,6 +150,7 @@ class _EditPartState extends ConsumerState<EditPart>
   Widget _buildEditingArea() {
     return Expanded(
       child: ListView.builder(
+        controller: scrollController2,
         itemCount: nodes.length,
         itemBuilder: (context, index) {
           return nodes[index].isEditing
