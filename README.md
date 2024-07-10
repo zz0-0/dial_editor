@@ -1,8 +1,12 @@
 # 📜 dial_editor
 
-**dial_editor** is a powerful and intuitive Markdown editor built with Flutter and Riverpod. We plan to integrate Rust for enhanced performance and additional features in the future.
+**Dial Editor** is a Markdown editor built using Flutter and Riverpod.
 
 [dial_editor](https://github.com/zz0-0/dial_editor)
+
+## ⚠️ Disclaimer
+
+**Warning:** This project is in its early stage and under active development. Use at your own risk.
 
 ## 🚀 Features
 
@@ -11,28 +15,18 @@
 ### Will Have
 
 - [ ]  **Markdown Support**
-  - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data.
+  - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data. **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
     - [X]  Heading
     - [X]  Bold
     - [X]  Italic
-    - [X]  Bold italic
+    - [X]  Bold Italic
     - [X]  Strikethrough
     - [X]  Unordered list
     - [X]  Ordered list
     - [X]  Task list
     - [X]  Horizontal rule
     - [X]  Emoji
-  - [ ]  **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
-    - [X]  Heading
-    - [X]  Bold
-    - [X]  Italic
-    - [X]  Bold italic
-    - [X]  Strikethrough
-    - [X]  Unordered list
-    - [X]  Ordered list
-    - [X]  Task list
-    - [X]  Horizontal rule
-    - [X]  Emoji
+- [X]  Line Number
 - [X]  Auto Save
 - [X]  Undo/Redo
 - [X]  Dark theme: Theme switch
@@ -47,15 +41,7 @@
 - [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
 - [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
 - [X]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
-
-### May have
-
-- [ ]  **Rust Integration**: Incorporate Rust for performance improvements.
-- [ ]  **Blockchain Integration**: Explore integrating blockchain technology for data security and integrity.
-- [ ]  Storyboard: Help construct the plot
-- [ ]  Music Composer: Daw
-- [ ]  Video Editing
-- [ ]  Home Assistant
+- [ ]  Infinite Canvas: Interchangeable markdown canvas that constructs and edits your markdown file visually
 
 ## 🖥️ Getting Started
 
@@ -101,4 +87,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📬 Contact
 
-Feel free to reach out via [email](mailto:your_email@example.com) for any questions or feedback.
+Feel free to reach out via [email](mailto:zz11009988@outlook.com) for any questions or feedback.
