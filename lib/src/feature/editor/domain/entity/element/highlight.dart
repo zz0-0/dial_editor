@@ -10,14 +10,9 @@ class Highlight extends Node {
 
   @override
   Widget render() {
-    style = const TextStyle(
-      fontSize: 20,
-      backgroundColor: Colors.yellow,
-    );
-    return Text(
-      text,
-      style: style,
-    );
+    updateStyle();
+    updateTextHeight();
+    return _buildRichText();
   }
 
   @override
@@ -30,15 +25,69 @@ class Highlight extends Node {
   }
 
   @override
-  String toString() {
-    return rawText;
+  void updateStyle() {
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.titleSmall!.fontSize,
+      backgroundColor: Colors.yellow,
+    );
   }
-
-  @override
-  void updateStyle() {}
 
   @override
   Node createNewLine() {
     return TextNode(context, "");
+  }
+
+  @override
+  String toString() {
+    return rawText;
+  }
+
+  Widget _buildRichText() {
+    final regex = highlightRegex;
+    final matches = regex.allMatches(rawText);
+    if (matches.isEmpty) {
+      return Text(
+        rawText,
+        style: style,
+      );
+    }
+
+    final textSpans = <TextSpan>[];
+    int currentPosition = 0;
+
+    for (final match in matches) {
+      if (match.start > currentPosition) {
+        textSpans.add(
+          TextSpan(
+            text: rawText.substring(currentPosition, match.start),
+          ),
+        );
+      }
+
+      textSpans.add(
+        TextSpan(
+          text: rawText.substring(match.start, match.end).replaceAll('==', ''),
+          style: style,
+        ),
+      );
+
+      currentPosition = match.end;
+    }
+
+    if (currentPosition < rawText.length) {
+      textSpans.add(
+        TextSpan(
+          text: rawText.substring(currentPosition),
+        ),
+      );
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context).textTheme.titleSmall,
+        children: textSpans,
+      ),
+    );
   }
 }

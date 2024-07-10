@@ -4,6 +4,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/element/bold.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold_italic.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/emoji.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/heading.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/highlight.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/horizontal_rule.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/image.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/italic.dart';
@@ -76,6 +77,8 @@ class StringToDocumentConverter extends Converter<String, Document> {
       return Bold(context, line);
     } else if (italicRegex.hasMatch(line)) {
       return Italic(context, line);
+    } else if (highlightRegex.hasMatch(line)) {
+      return Highlight(context, line);
     } else if (strikethroughRegex.hasMatch(line)) {
       return Strikethrough(context, line);
     } else if (imageRegex.hasMatch(line)) {
