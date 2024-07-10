@@ -227,46 +227,51 @@ class _EditPartState extends ConsumerState<EditPart>
       return;
     }
 
+    int lastMouseIndex = -1;
+    bool isSelectingUp = false;
     setState(() {
-      if (mouseIndex < index) {
-        for (int i = mouseIndex; i <= index; i++) {
-          nodes[i].isEditing = true;
-          if (i == mouseIndex) {
-            nodes[i].controller.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: nodes[i].controller.text.length,
-            );
-          } else if (i == index) {
-            nodes[i].controller.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: nodes[i].controller.selection.extentOffset,
-            );
-          } else {
-            nodes[i].controller.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: nodes[i].controller.text.length,
-            );
-          }
+      final bool currentSelectingUp = mouseIndex < index;
+
+      if (lastMouseIndex != -1 && currentSelectingUp != isSelectingUp) {
+        for (final node in nodes) {
+          node.isEditing = false;
+          node.controller.selection = const TextSelection.collapsed(offset: 0);
         }
-      } else {
-        for (int i = index; i <= mouseIndex; i++) {
-          nodes[i].isEditing = true;
-          if (i == index) {
-            nodes[i].controller.selection = TextSelection(
-              baseOffset: nodes[i].controller.selection.baseOffset,
-              extentOffset: nodes[i].controller.text.length,
-            );
-          } else if (i == mouseIndex) {
-            nodes[i].controller.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: nodes[i].controller.selection.extentOffset,
-            );
-          } else {
-            nodes[i].controller.selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: nodes[i].controller.text.length,
-            );
-          }
+      }
+
+      isSelectingUp = currentSelectingUp;
+      lastMouseIndex = mouseIndex;
+
+      final int startIndex = isSelectingUp ? mouseIndex : index;
+      final int endIndex = isSelectingUp ? index : mouseIndex;
+
+      for (int i = startIndex; i <= endIndex; i++) {
+        nodes[i].isEditing = true;
+        if (i == startIndex) {
+          nodes[i].controller.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: nodes[i].controller.text.length,
+          );
+        } else if (i == endIndex) {
+          nodes[i].controller.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: isSelectingUp
+                ? nodes[i].controller.selection.extentOffset
+                : nodes[i].controller.text.length,
+          );
+        } else {
+          nodes[i].controller.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: nodes[i].controller.text.length,
+          );
+        }
+      }
+
+      for (int i = 0; i < nodes.length; i++) {
+        if (i < startIndex || i > endIndex) {
+          nodes[i].isEditing = false;
+          nodes[i].controller.selection =
+              const TextSelection.collapsed(offset: 0);
         }
       }
     });
