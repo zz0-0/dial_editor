@@ -52,7 +52,7 @@ class _EditPartState extends ConsumerState<EditPart>
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setCumulativeHeights();
+      // _setCumulativeHeights();
     });
   }
 
@@ -95,26 +95,44 @@ class _EditPartState extends ConsumerState<EditPart>
     );
   }
 
-  void _setCumulativeHeights() {
+  (List<int>, List<double>) _getVisibleNodeIndices() {
+    if (scrollController2.positions.isEmpty) return ([], []);
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) {
-      return;
+    if (renderBox == null) return ([], []);
+    final double verticalOffset = renderBox.localToGlobal(Offset.zero).dy;
+    final double scrollStart = scrollController2.offset - verticalOffset;
+    final double scrollEnd =
+        scrollStart + scrollController2.position.viewportDimension;
+    final List<int> visibleIndices = [];
+    final List<double> cumulativeHeights = [];
+    double currentHeight = 0;
+    for (int i = 0; i < nodes.length; i++) {
+      currentHeight += nodes[i].textHeight;
+      if (currentHeight >= scrollStart && currentHeight <= scrollEnd) {
+        visibleIndices.add(i);
+        cumulativeHeights.add(currentHeight);
+      }
+      if (currentHeight > scrollEnd) break;
     }
-    double currentHeight = renderBox.localToGlobal(Offset.zero).dy;
-    cumulativeHeights.clear();
-    for (final node in nodes) {
-      currentHeight += node.textHeight;
-      cumulativeHeights.add(currentHeight);
-    }
+    return (visibleIndices, cumulativeHeights);
   }
 
   int _getLineIndex(double dy) {
-    for (int i = 0; i < cumulativeHeights.length; i++) {
-      if (dy <= cumulativeHeights[i]) {
-        return i;
+    final (visibleIndices, cumulativeHeights) = _getVisibleNodeIndices();
+    if (visibleIndices.isEmpty) return -1;
+
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return -1;
+
+    final double verticalOffset = renderBox.localToGlobal(Offset.zero).dy;
+    final double adjustedDy = dy - verticalOffset + scrollController2.offset;
+
+    for (int i = 0; i < visibleIndices.length; i++) {
+      if (adjustedDy <= cumulativeHeights[i]) {
+        return visibleIndices[i];
       }
     }
-    return -1;
+    return visibleIndices.last;
   }
 
   Widget _buildLineNumber() {
@@ -360,7 +378,7 @@ class _EditPartState extends ConsumerState<EditPart>
   void _updateDocument() {
     fileString = document.toString();
     widget.file.writeAsStringSync(fileString);
-    _setCumulativeHeights();
+    // _setCumulativeHeights();
   }
 
   Widget _buildRenderingWidget(int index) {
