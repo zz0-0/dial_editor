@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:logger/logger.dart';
+import 'package:logger/logger.dart';
 
 class EditPart extends ConsumerStatefulWidget {
   final File file;
@@ -22,7 +22,7 @@ class EditPart extends ConsumerStatefulWidget {
 
 class _EditPartState extends ConsumerState<EditPart>
     implements TextSelectionGestureDetectorBuilderDelegate {
-  // Logger logger = Logger();
+  Logger logger = Logger();
   late Document document;
   late String fileString;
   List<Node> nodes = [];
@@ -52,7 +52,9 @@ class _EditPartState extends ConsumerState<EditPart>
     document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
-    _setCumulativeHeights();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setCumulativeHeights();
+    });
   }
 
   @override
@@ -78,7 +80,12 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _setCumulativeHeights() {
-    double currentHeight = 0.0;
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) {
+      return;
+    }
+    double currentHeight = renderBox.localToGlobal(Offset.zero).dy;
+    cumulativeHeights.clear();
     for (final node in nodes) {
       currentHeight += node.textHeight;
       cumulativeHeights.add(currentHeight);
@@ -88,7 +95,7 @@ class _EditPartState extends ConsumerState<EditPart>
   int _getLineIndex(double dy) {
     for (int i = 0; i < cumulativeHeights.length; i++) {
       if (dy <= cumulativeHeights[i]) {
-        return i - 1;
+        return i;
       }
     }
     return -1;
@@ -172,10 +179,7 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _onSingleTapUp(int index, TapDragUpDetails details) {
-    // logger.d("_onSingleTapUp called for index: $index");
-
     if (index < 0 || index >= nodes.length) {
-      // logger.d("Error: Invalid index $index. Nodes length: ${nodes.length}");
       return;
     }
 
@@ -183,7 +187,6 @@ class _EditPartState extends ConsumerState<EditPart>
     final nodeKey = node.key;
     final EditableTextState? editableTextState = nodeKey.currentState;
     if (editableTextState == null) {
-      // logger.d("Error: EditableTextState is null for node at index $index");
       return;
     }
 
@@ -197,16 +200,14 @@ class _EditPartState extends ConsumerState<EditPart>
       renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
       editableTextState.hideToolbar();
       editableTextState.requestKeyboard();
-      // logger.d("_onSingleTapUp completed successfully for index: $index");
     } catch (e) {
-      // logger.d("Error during tap handling for node at index $index: $e");
+      logger.e(e);
     }
   }
 
   void _onDragSelectionStart(int index, TapDragStartDetails details) {
     final RenderEditable renderEditable =
         nodes[index].key.currentState!.renderEditable;
-
     renderEditable.selectPositionAt(
       from: details.globalPosition,
       cause: SelectionChangedCause.drag,
@@ -218,26 +219,34 @@ class _EditPartState extends ConsumerState<EditPart>
     TapDragUpdateDetails details,
   ) {
     final nodeKey = nodes[index].key;
-
     final EditableTextState? editableTextState = nodeKey.currentState;
     if (editableTextState == null) {
-      // logger.d('Error: EditableTextState is null for node at index $index');
       return;
     }
-
     final renderEditable = editableTextState.renderEditable;
-
     renderEditable.selectPositionAt(
       from: details.globalPosition - details.offsetFromOrigin,
       to: details.globalPosition,
       cause: SelectionChangedCause.drag,
     );
 
+    // bool isLeft = false;
+    // if (details.globalPosition - details.offsetFromOrigin >
+    //     details.globalPosition) {
+    //   isLeft = false;
+    // } else {
+    //   isLeft = true;
+    // }
+
     final currentNode = nodes[index];
-
     final int extentOffset = currentNode.controller.selection.extentOffset;
-
     final mouseIndex = _getLineIndex(details.globalPosition.dy);
+
+    // print("dy, ${details.globalPosition.dy}");
+    // print("local dy, ${details.localPosition.dy}");
+    // print("list, ${cumulativeHeights}");
+    // print("mouse, $mouseIndex");
+    // print("index, $index");
 
     if (extentOffset <= 0 && index > 0) {
       setState(() {
