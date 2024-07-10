@@ -419,10 +419,9 @@ class _EditPartState extends ConsumerState<EditPart>
         _resetAll();
         nodes[index].isEditing = false;
         nodes[index - 1].isEditing = true;
-        nodes[index].controller.text = nodes[index].rawText;
-        nodes[index].controller.selection = TextSelection.fromPosition(
-          TextPosition(offset: nodes[index].controller.text.length),
-        );
+        final int newOffset = nodes[index - 1].rawText.length;
+        nodes[index - 1].controller.selection =
+            TextSelection.collapsed(offset: newOffset);
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index - 1].focusNode.requestFocus();
         });
@@ -436,10 +435,9 @@ class _EditPartState extends ConsumerState<EditPart>
         _resetAll();
         nodes[index].isEditing = false;
         nodes[index + 1].isEditing = true;
-        nodes[index].controller.text = nodes[index].rawText;
-        nodes[index].controller.selection = TextSelection.fromPosition(
-          TextPosition(offset: nodes[index].controller.text.length),
-        );
+        final int newOffset = nodes[index + 1].rawText.length;
+        nodes[index + 1].controller.selection =
+            TextSelection.collapsed(offset: newOffset);
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index + 1].focusNode.requestFocus();
         });

@@ -88,13 +88,13 @@ class StringToDocumentConverter extends Converter<String, Document> {
       );
     } else if (linkRegex.hasMatch(line)) {
       final match = linkRegex.firstMatch(line);
-      return Link(context, match?.group(1) ?? '', match?.group(2) ?? '');
+      return Link(context, match?.group(1) ?? '');
     } else if (subscriptRegex.hasMatch(line)) {
       return Subscript(context, line);
     } else if (superscriptRegex.hasMatch(line)) {
       return Superscript(context, line);
     } else if (horizontalRuleRegex.hasMatch(line)) {
-      return HorizontalRule(context);
+      return HorizontalRule(context, line);
     } else if (emojiRegex.hasMatch(line)) {
       return EmojiNode(context, line);
     } else {

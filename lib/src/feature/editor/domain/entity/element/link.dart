@@ -1,11 +1,10 @@
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Link extends Node {
-  final String url;
-
-  Link(super.context, super.rawText, this.url) {
-    controller.text = rawText;
+  Link(super.context, super.rawText) {
+    controller.text = _convertToMarkdownLink(rawText);
   }
 
   @override
@@ -18,6 +17,7 @@ class Link extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
+    text = _convertToMarkdownLink(newText);
     updateStyle();
     updateTextHeight();
   }
@@ -34,12 +34,16 @@ class Link extends Node {
 
   @override
   Node createNewLine() {
-    return Link(context, "", "");
+    return Link(context, "");
   }
 
   Widget _buildLink() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        if (await canLaunchUrlString(text)) {
+          await launchUrlString(text);
+        }
+      },
       child: Text(
         rawText,
         style: style,
@@ -47,8 +51,16 @@ class Link extends Node {
     );
   }
 
+  String _convertToMarkdownLink(String text) {
+    final linkRegex = RegExp(r'https?:\/\/[^\s\)]+');
+    return text.replaceAllMapped(linkRegex, (match) {
+      final url = match.group(0)!;
+      return '[]($url)';
+    });
+  }
+
   @override
   String toString() {
-    return '[$rawText]($url)';
+    return '[]($text)';
   }
 }
