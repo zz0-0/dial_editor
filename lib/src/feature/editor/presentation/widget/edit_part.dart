@@ -206,77 +206,70 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _onDragSelectionStart(int index, TapDragStartDetails details) {
+    final currentNode = nodes[index];
     final RenderEditable renderEditable =
-        nodes[index].key.currentState!.renderEditable;
+        currentNode.key.currentState!.renderEditable;
     renderEditable.selectPositionAt(
       from: details.globalPosition,
       cause: SelectionChangedCause.drag,
     );
   }
 
-  void _onDragSelectionUpdate(
-    int index,
-    TapDragUpdateDetails details,
-  ) {
-    final nodeKey = nodes[index].key;
-    final EditableTextState? editableTextState = nodeKey.currentState;
-    if (editableTextState == null) {
+  void _onDragSelectionUpdate(int index, TapDragUpdateDetails details) {
+    final mouseIndex = _getLineIndex(details.globalPosition.dy);
+    if (mouseIndex == -1 || mouseIndex == index) {
+      final renderEditable = nodes[index].key.currentState!.renderEditable;
+      renderEditable.selectPositionAt(
+        from: details.globalPosition - details.offsetFromOrigin,
+        to: details.globalPosition,
+        cause: SelectionChangedCause.drag,
+      );
       return;
     }
-    final renderEditable = editableTextState.renderEditable;
-    renderEditable.selectPositionAt(
-      from: details.globalPosition - details.offsetFromOrigin,
-      to: details.globalPosition,
-      cause: SelectionChangedCause.drag,
-    );
 
-    // bool isLeft = false;
-    // if (details.globalPosition - details.offsetFromOrigin >
-    //     details.globalPosition) {
-    //   isLeft = false;
-    // } else {
-    //   isLeft = true;
-    // }
-
-    final currentNode = nodes[index];
-    final int extentOffset = currentNode.controller.selection.extentOffset;
-    final mouseIndex = _getLineIndex(details.globalPosition.dy);
-
-    // print("dy, ${details.globalPosition.dy}");
-    // print("local dy, ${details.localPosition.dy}");
-    // print("list, ${cumulativeHeights}");
-    // print("mouse, $mouseIndex");
-    // print("index, $index");
-
-    if (extentOffset <= 0 && index > 0) {
-      setState(() {
-        final previousNode = nodes[index - 1];
-        previousNode.isEditing = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          previousNode.focusNode.requestFocus();
-          previousNode.controller.selection = TextSelection.collapsed(
-            offset: previousNode.controller.text.length,
-          );
-          if (index - 1 >= mouseIndex) {
-            _onDragSelectionUpdate(index - 1, details);
+    setState(() {
+      if (mouseIndex < index) {
+        for (int i = mouseIndex; i <= index; i++) {
+          nodes[i].isEditing = true;
+          if (i == mouseIndex) {
+            nodes[i].controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: nodes[i].controller.text.length,
+            );
+          } else if (i == index) {
+            nodes[i].controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: nodes[i].controller.selection.extentOffset,
+            );
+          } else {
+            nodes[i].controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: nodes[i].controller.text.length,
+            );
           }
-        });
-      });
-    } else if (extentOffset >= currentNode.controller.text.length &&
-        index < nodes.length - 1) {
-      setState(() {
-        final nextNode = nodes[index + 1];
-        nextNode.isEditing = true;
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nextNode.focusNode.requestFocus();
-          nextNode.controller.selection =
-              const TextSelection.collapsed(offset: 0);
-          if (index + 1 <= mouseIndex) {
-            _onDragSelectionUpdate(index + 1, details);
+        }
+      } else {
+        for (int i = index; i <= mouseIndex; i++) {
+          nodes[i].isEditing = true;
+          if (i == index) {
+            nodes[i].controller.selection = TextSelection(
+              baseOffset: nodes[i].controller.selection.baseOffset,
+              extentOffset: nodes[i].controller.text.length,
+            );
+          } else if (i == mouseIndex) {
+            nodes[i].controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: nodes[i].controller.selection.extentOffset,
+            );
+          } else {
+            nodes[i].controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: nodes[i].controller.text.length,
+            );
           }
-        });
-      });
-    }
+        }
+      }
+    });
   }
 
   KeyEventResult _onKeyEvent(KeyEvent event, int index) {
