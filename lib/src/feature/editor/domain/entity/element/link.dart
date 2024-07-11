@@ -1,10 +1,17 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class Link extends Node {
+  String url = "";
+  String linkText = "Link";
+
   Link(super.context, super.rawText) {
-    controller.text = _convertToMarkdownLink(rawText);
+    _parseMarkdownLink(rawText);
+    controller.text = rawText;
   }
 
   @override
@@ -17,7 +24,7 @@ class Link extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    text = _convertToMarkdownLink(newText);
+    _parseMarkdownLink(newText);
     updateStyle();
     updateTextHeight();
   }
@@ -28,39 +35,45 @@ class Link extends Node {
     style = TextStyle(
       fontSize: theme.textTheme.bodyMedium!.fontSize,
       color: Colors.blue,
-      decoration: TextDecoration.underline,
     );
   }
 
   @override
   Node createNewLine() {
-    return Link(context, "");
+    return TextNode(context, "");
   }
 
   Widget _buildLink() {
-    return GestureDetector(
-      onTap: () async {
-        if (await canLaunchUrlString(text)) {
-          await launchUrlString(text);
-        }
-      },
-      child: Text(
-        rawText,
-        style: style,
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '[$linkText]',
+            style: style,
+            recognizer: TapGestureRecognizer()
+              ..onTap = () async {
+                if (await canLaunchUrlString(url)) {
+                  await launchUrlString(url);
+                }
+              },
+          ),
+        ],
       ),
     );
   }
 
-  String _convertToMarkdownLink(String text) {
-    final linkRegex = RegExp(r'https?:\/\/[^\s\)]+');
-    return text.replaceAllMapped(linkRegex, (match) {
-      final url = match.group(0)!;
-      return '[]($url)';
-    });
+  void _parseMarkdownLink(String text) {
+    final match = linkRegex.firstMatch(text);
+    if (match != null) {
+      linkText = match.group(1) ?? '';
+      url = match.group(2) ?? '';
+    } else {
+      url = text.trim();
+    }
   }
 
   @override
   String toString() {
-    return '[]($text)';
+    return rawText;
   }
 }

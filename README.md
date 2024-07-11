@@ -24,12 +24,29 @@
     - [X]  Task list
     - [X]  Horizontal rule
     - [X]  Emoji
-- [X]  Line Number
-- [X]  Auto Save
-- [X]  Undo/Redo
-- [X]  Dark theme: Theme switch
-  - [ ]  Customizable Themes: Choose from a variety of themes to suit your style.
+    - [X]  Hightlight
+    - [X]  Link
+  - [ ]  **Keyboard Shortcut**
+    - [X]  Ctrl A: Select All
+    - [X]  Key Arrow Up
+    - [X]  Key Arrow Down
+    - [X]  Key Arrow Left
+    - [X]  Key Arrow Right
+    - [ ]  Tab Indentation
+  - [X]  **Mouse Selection**
+- [X]  **Line Number**
+- [X]  **Auto Save**
+- [ ]  **Undo/Redo**
+  - [X]  Currently utilizing the default editable text functionality for undo/redo.
+  - [ ]  Full text undo/redo
+- [X]  **Dark theme**: Theme switch
+  - [ ]  **Customizable Themes**: Choose from a variety of themes to suit your style.
+
+    - [X]  overall theme - basic dark, light theme
+    - [ ]  theme color
+    - [ ]  text theme
 - [ ]  **Collaborative Editing**: Real-time collaboration with others.
+  - [ ]  crdt
 - [ ]  **Export Options**: Enable users to export Markdown files to PDF, HTML, etc.
 - [ ]  **Spell Check**: Implement functionality to ensure error-free Markdown.
 - [ ]  **Version Control**: Track changes and allow users to revert to previous versions.

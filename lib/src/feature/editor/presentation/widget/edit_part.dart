@@ -51,9 +51,6 @@ class _EditPartState extends ConsumerState<EditPart>
     document = DocumentCodec(context).encode(fileString);
     nodes = document.children;
     markdownWidgetList = MarkdownRender().renderList(nodes);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _setCumulativeHeights();
-    });
   }
 
   @override
@@ -198,18 +195,17 @@ class _EditPartState extends ConsumerState<EditPart>
             cursorColor: Colors.blue,
             backgroundCursorColor: Colors.blue,
             style: nodes[index].style,
-            selectionControls: MaterialTextSelectionControls(),
+            showCursor: true,
+            selectionColor: Colors.red,
+            rendererIgnoresPointer: true,
+            enableInteractiveSelection: true,
+            paintCursorAboveText: true,
             onChanged: (value) {
               _onChange(index, value);
             },
             onEditingComplete: () {
               _onEditingComplete(index);
             },
-            showCursor: true,
-            selectionColor: Colors.red,
-            rendererIgnoresPointer: true,
-            enableInteractiveSelection: true,
-            paintCursorAboveText: true,
           ),
         ),
       ),
@@ -378,7 +374,6 @@ class _EditPartState extends ConsumerState<EditPart>
   void _updateDocument() {
     fileString = document.toString();
     widget.file.writeAsStringSync(fileString);
-    // _setCumulativeHeights();
   }
 
   Widget _buildRenderingWidget(int index) {
