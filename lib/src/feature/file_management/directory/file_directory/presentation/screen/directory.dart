@@ -12,10 +12,33 @@ class Directory extends ConsumerStatefulWidget {
 }
 
 class _DirectoryState extends ConsumerState<Directory> {
+  late List<DirectoryNode> nodes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateDirectoryPositions();
+    });
+  }
+
+  void _updateDirectoryPositions() {
+    setState(() {
+      for (int i = 0; i < nodes.length; i++) {
+        final RenderBox? box =
+            nodes[i].key?.currentContext?.findRenderObject() as RenderBox?;
+        if (box != null) {
+          final Offset position = box.localToGlobal(Offset.zero);
+          // print(position.dy);
+          nodes[i] = nodes[i].copyWith(dy: position.dy - 10);
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<DirectoryNode> nodes = ref.watch(directoryNodeListProvider);
-
+    nodes = ref.watch(directoryNodeListProvider);
     return SizedBox(
       width: 200,
       child: ListView.builder(
@@ -26,6 +49,8 @@ class _DirectoryState extends ConsumerState<Directory> {
           return DirectoryNodeWidget(
             key: nodes[index].key,
             node: nodes[index],
+            dx: 30,
+            dy: nodes[index].dy,
           );
         },
       ),

@@ -33,7 +33,7 @@ class DirectoryRepositoryImpl implements DirectoryRepository {
         final segments = entity.uri.pathSegments;
         final content = segments[segments.length - 2];
         final currentNode = DirectoryNode(
-          key: Key(content),
+          key: GlobalKey(),
           isDirectory: true,
           path: entity.path,
           content: content,
@@ -47,7 +47,7 @@ class DirectoryRepositoryImpl implements DirectoryRepository {
           final segments = entity.uri.pathSegments;
           final content = segments.last;
           final currentNode = DirectoryNode(
-            key: Key(content),
+            key: GlobalKey(),
             path: entity.path,
             content: content,
           );

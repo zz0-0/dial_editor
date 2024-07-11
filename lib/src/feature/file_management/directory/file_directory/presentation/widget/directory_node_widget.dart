@@ -3,14 +3,19 @@ import 'package:dial_editor/src/feature/editor/presentation/widget/edit_part_pro
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/screen/directory_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DirectoryNodeWidget extends ConsumerStatefulWidget {
   final DirectoryNode node;
+  final double dx;
+  final double dy;
 
   const DirectoryNodeWidget({
     super.key,
     required this.node,
+    required this.dx,
+    required this.dy,
   });
 
   @override
@@ -19,8 +24,23 @@ class DirectoryNodeWidget extends ConsumerStatefulWidget {
 }
 
 class _DirectoryNodeWidgetState extends ConsumerState<DirectoryNodeWidget> {
+  final List<ContextMenuEntry> entries = [
+    MenuItem(
+      label: "New File",
+      icon: Icons.new_label,
+      onSelected: () {},
+    ),
+  ];
+
+  late ContextMenu contextMenu;
+
   @override
   Widget build(BuildContext context) {
+    contextMenu = ContextMenu(
+      entries: entries,
+      position: Offset(widget.dx, widget.dy),
+    );
+
     final icon = isLeaf(widget.node)
         ? const Icon(Icons.abc)
         : isExpanded(widget.key!)
@@ -43,17 +63,20 @@ class _DirectoryNodeWidgetState extends ConsumerState<DirectoryNodeWidget> {
               ),
             Flexible(
               child: widget.node.isDirectory
-                  ? Text(
-                      widget.node.content!,
-                      style: const TextStyle(fontSize: 8),
+                  ? ContextMenuRegion(
+                      contextMenu: contextMenu,
+                      child: Text(
+                        widget.node.content!,
+                        style: const TextStyle(fontSize: 8),
+                      ),
                     )
                   : Material(
                       child: InkWell(
                         onTap: () {
                           final file = File(widget.node.path!);
-                          ref.read(fileProvider.notifier).update(
-                                (state) => file,
-                              );
+                          ref
+                              .read(fileProvider.notifier)
+                              .update((state) => file);
                           ref
                               .read(openedFilesProvider.notifier)
                               .addFile(widget.node.path!);
@@ -80,6 +103,8 @@ class _DirectoryNodeWidgetState extends ConsumerState<DirectoryNodeWidget> {
                 return DirectoryNodeWidget(
                   key: widget.node.children[index].key,
                   node: widget.node.children[index],
+                  dx: widget.dx,
+                  dy: widget.dy,
                 );
               },
             ),
