@@ -69,13 +69,13 @@ class NavigationSideBar extends ConsumerWidget {
                 icon: const JustTheTooltip(
                   content: Text("File"),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.favorite_border),
+                  child: Icon(Icons.adf_scanner_outlined),
                 ),
                 selectedIcon: JustTheTooltip(
                   content: const Text("File"),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
-                    icon: const Icon(Icons.favorite_sharp),
+                    icon: const Icon(Icons.adf_scanner),
                     onPressed: () {
                       if (ref.read(openFolderProvider)) {
                         ref.read(sidePanelProvider.notifier).update(
@@ -93,15 +93,31 @@ class NavigationSideBar extends ConsumerWidget {
               ),
               NavigationRailDestination(
                 icon: const JustTheTooltip(
+                  content: Text("Search"),
+                  preferredDirection: AxisDirection.right,
+                  child: Icon(Icons.person_search_outlined),
+                ),
+                selectedIcon: JustTheTooltip(
+                  content: const Text("Search"),
+                  preferredDirection: AxisDirection.right,
+                  child: IconButton(
+                    icon: const Icon(Icons.person_search),
+                    onPressed: () {},
+                  ),
+                ),
+                label: const Text(''),
+              ),
+              NavigationRailDestination(
+                icon: const JustTheTooltip(
                   content: Text("Setting"),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.star_border),
+                  child: Icon(Icons.admin_panel_settings_outlined),
                 ),
                 selectedIcon: JustTheTooltip(
                   content: const Text("Setting"),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
-                    icon: const Icon(Icons.star),
+                    icon: const Icon(Icons.admin_panel_settings),
                     onPressed: () {},
                   ),
                 ),
@@ -140,13 +156,18 @@ class NavigationBottomBar extends ConsumerWidget {
         onTap: onDestinationSelected,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            activeIcon: Icon(Icons.favorite),
+            icon: Icon(Icons.adf_scanner_outlined),
+            activeIcon: Icon(Icons.adf_scanner),
             label: 'File',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.star_border),
-            activeIcon: Icon(Icons.star),
+            icon: Icon(Icons.person_search_outlined),
+            activeIcon: Icon(Icons.person_search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.admin_panel_settings_outlined),
+            activeIcon: Icon(Icons.admin_panel_settings),
             label: 'Setting',
           ),
         ],

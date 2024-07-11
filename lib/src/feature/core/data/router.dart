@@ -1,5 +1,6 @@
 // import 'package:dial_editor/main.dart';
 import 'package:dial_editor/src/feature/core/presentation/screen/branch/file_branch.dart';
+import 'package:dial_editor/src/feature/core/presentation/screen/branch/search_branch.dart';
 import 'package:dial_editor/src/feature/core/presentation/screen/branch/setting_branch.dart';
 import 'package:dial_editor/src/feature/core/presentation/widget/sidebar/sidebar.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,27 @@ GoRouter router = GoRouter(
                 return CustomTransitionPage(
                   key: state.pageKey,
                   child: const FileBranch(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: CurveTween(curve: Curves.easeInOutCirc)
+                          .animate(animation),
+                      child: child,
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/search',
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const SearchBranch(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return FadeTransition(
