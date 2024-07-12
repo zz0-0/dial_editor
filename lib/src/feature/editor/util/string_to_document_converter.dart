@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold_italic.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/code.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/emoji.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/highlight.dart';
@@ -33,6 +34,23 @@ class StringToDocumentConverter extends Converter<String, Document> {
     final children = <Node>[];
 
     for (final line in lines) {
+      bool isInCodeBlock = false;
+      List<String> codeBlockLines = [];
+
+      if (line.startsWith('```')) {
+        isInCodeBlock = !isInCodeBlock;
+        if (isInCodeBlock == false) {
+          children.add(Code(context, codeBlockLines.join('\n')));
+          codeBlockLines = [];
+        }
+        continue;
+      }
+
+      if (isInCodeBlock == true) {
+        codeBlockLines.add(line);
+        continue;
+      }
+
       children.add(convertLine(line));
     }
 
@@ -40,23 +58,6 @@ class StringToDocumentConverter extends Converter<String, Document> {
   }
 
   Node convertLine(String line) {
-    // bool isInCodeBlock = false;
-    // List<String> codeBlockLines = [];
-
-    // if (line.startsWith('```')) {
-    //     isInCodeBlock = !isInCodeBlock;
-    //     if (!isInCodeBlock) {
-    //       return (Code(context, codeBlockLines.join('\n')));
-    //       codeBlockLines = [];
-    //     }
-    //     continue;
-    //   }
-
-    //   if (isInCodeBlock) {
-    //     codeBlockLines.add(line);
-    //     continue;
-    //   }
-
     if (line.startsWith('>')) {
       return Quote(context, line);
     } else if (taskListRegex.hasMatch(line)) {

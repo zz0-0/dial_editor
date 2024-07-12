@@ -32,7 +32,7 @@ class _TopbarState extends ConsumerState<Topbar> {
                           .read(openFolderProvider.notifier)
                           .update((state) => true);
                       ref
-                          .read(sidePanelProvider.notifier)
+                          .read(fileSidePanelProvider.notifier)
                           .update((state) => true);
                     },
                     child: const MenuAcceleratorLabel('&Open Folder'),

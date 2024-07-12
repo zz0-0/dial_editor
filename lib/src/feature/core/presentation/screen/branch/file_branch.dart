@@ -21,8 +21,8 @@ class _FileBranchState extends ConsumerState<FileBranch> {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (ref.watch(sidePanelProvider)) const Directory(),
-          if (ref.watch(sidePanelProvider))
+          if (ref.watch(fileSidePanelProvider)) const Directory(),
+          if (ref.watch(fileSidePanelProvider))
             const VerticalDivider(thickness: 1, width: 1),
           if (ref.watch(fileProvider) != null)
             const Expanded(child: FileTabPart()),
@@ -31,8 +31,8 @@ class _FileBranchState extends ConsumerState<FileBranch> {
     } else {
       return Row(
         children: [
-          if (ref.watch(emptySidePanelProvider)) const EmptyDirectory(),
-          if (ref.watch(emptySidePanelProvider))
+          if (ref.watch(fileEmptySidePanelProvider)) const EmptyDirectory(),
+          if (ref.watch(fileEmptySidePanelProvider))
             const VerticalDivider(thickness: 1, width: 1),
           const Expanded(child: Center(child: Text("Dial Editor"))),
         ],

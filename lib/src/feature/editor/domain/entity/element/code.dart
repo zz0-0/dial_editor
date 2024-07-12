@@ -1,5 +1,8 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_highlighting/flutter_highlighting.dart';
+import 'package:flutter_highlighting/themes/github.dart';
 
 class Code extends Node {
   Code(super.context, super.rawText, [super.text]) {
@@ -35,17 +38,16 @@ class Code extends Node {
 
   @override
   Node createNewLine() {
-    return Code(context, '');
+    return TextNode(context, '');
   }
 
   Widget _buildRichText() {
-    return Container(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        rawText,
-        style: style,
-      ),
+    return HighlightView(
+      rawText,
+      // languageId: dart.id,
+      theme: githubTheme,
+      padding: const EdgeInsets.all(12),
+      textStyle: style,
     );
   }
 }

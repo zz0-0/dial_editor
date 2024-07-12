@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final sidePanelProvider = StateProvider((ref) => false);
-final emptySidePanelProvider = StateProvider((ref) => false);
+final fileSidePanelProvider = StateProvider((ref) => false);
+final fileEmptySidePanelProvider = StateProvider((ref) => false);
+final searchSidePanelProvider = StateProvider((ref) => false);
+final settingSidePanelProvider = StateProvider((ref) => false);

@@ -23,10 +23,10 @@ class _EmptyDirectoryState extends ConsumerState<EmptyDirectory> {
             onPressed: () {
               ref.read(directoryNodeListProvider.notifier).openFolder;
               ref
-                  .read(emptySidePanelProvider.notifier)
+                  .read(fileEmptySidePanelProvider.notifier)
                   .update((state) => false);
               ref.read(openFolderProvider.notifier).update((state) => true);
-              ref.read(sidePanelProvider.notifier).update((state) => true);
+              ref.read(fileSidePanelProvider.notifier).update((state) => true);
             },
             child: const Text("Open Folder"),
           ),

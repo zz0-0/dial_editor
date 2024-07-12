@@ -6,6 +6,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
+enum Navigation {
+  file(
+    text: "File",
+    icon: Icon(Icons.adf_scanner_outlined),
+    selectedIcon: Icon(Icons.adf_scanner),
+  ),
+  search(
+    text: "Search",
+    icon: Icon(Icons.person_search_outlined),
+    selectedIcon: Icon(Icons.person_search),
+  ),
+  setting(
+    text: "Setting",
+    icon: Icon(Icons.admin_panel_settings_outlined),
+    selectedIcon: Icon(Icons.admin_panel_settings),
+  );
+
+  final String text;
+  final Icon icon;
+  final Icon selectedIcon;
+  const Navigation({
+    required this.text,
+    required this.icon,
+    required this.selectedIcon,
+  });
+}
+
 class Sidebar extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
@@ -66,59 +93,55 @@ class NavigationSideBar extends ConsumerWidget {
             labelType: NavigationRailLabelType.none,
             destinations: [
               NavigationRailDestination(
-                icon: const JustTheTooltip(
-                  content: Text("File"),
+                icon: JustTheTooltip(
+                  content: Text(Navigation.file.text),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.adf_scanner_outlined),
+                  child: Navigation.file.icon,
                 ),
                 selectedIcon: JustTheTooltip(
-                  content: const Text("File"),
+                  content: Text(Navigation.file.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
-                    icon: const Icon(Icons.adf_scanner),
+                    icon: Navigation.file.selectedIcon,
                     onPressed: () {
-                      if (ref.read(openFolderProvider)) {
-                        ref.read(sidePanelProvider.notifier).update(
-                              (state) => !ref.read(sidePanelProvider),
-                            );
-                      } else {
-                        ref.read(emptySidePanelProvider.notifier).update(
-                              (state) => !ref.read(emptySidePanelProvider),
-                            );
-                      }
+                      _openFileSidePanel(ref);
                     },
                   ),
                 ),
                 label: const Text(''),
               ),
               NavigationRailDestination(
-                icon: const JustTheTooltip(
-                  content: Text("Search"),
+                icon: JustTheTooltip(
+                  content: Text(Navigation.search.text),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.person_search_outlined),
+                  child: Navigation.search.icon,
                 ),
                 selectedIcon: JustTheTooltip(
-                  content: const Text("Search"),
+                  content: Text(Navigation.search.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
-                    icon: const Icon(Icons.person_search),
-                    onPressed: () {},
+                    icon: Navigation.search.selectedIcon,
+                    onPressed: () {
+                      _openSearchSidePanel(ref);
+                    },
                   ),
                 ),
                 label: const Text(''),
               ),
               NavigationRailDestination(
-                icon: const JustTheTooltip(
-                  content: Text("Setting"),
+                icon: JustTheTooltip(
+                  content: Text(Navigation.setting.text),
                   preferredDirection: AxisDirection.right,
-                  child: Icon(Icons.admin_panel_settings_outlined),
+                  child: Navigation.setting.icon,
                 ),
                 selectedIcon: JustTheTooltip(
-                  content: const Text("Setting"),
+                  content: Text(Navigation.setting.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
-                    icon: const Icon(Icons.admin_panel_settings),
-                    onPressed: () {},
+                    icon: Navigation.setting.selectedIcon,
+                    onPressed: () {
+                      _openSettingSidePanel(ref);
+                    },
                   ),
                 ),
                 label: const Text(''),
@@ -132,6 +155,30 @@ class NavigationSideBar extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _openFileSidePanel(WidgetRef ref) {
+    if (ref.read(openFolderProvider)) {
+      ref.read(fileSidePanelProvider.notifier).update(
+            (state) => !ref.read(fileSidePanelProvider),
+          );
+    } else {
+      ref.read(fileEmptySidePanelProvider.notifier).update(
+            (state) => !ref.read(fileEmptySidePanelProvider),
+          );
+    }
+  }
+
+  void _openSearchSidePanel(WidgetRef ref) {
+    ref.read(searchSidePanelProvider.notifier).update(
+          (state) => !ref.read(searchSidePanelProvider),
+        );
+  }
+
+  void _openSettingSidePanel(WidgetRef ref) {
+    ref.read(settingSidePanelProvider.notifier).update(
+          (state) => !ref.read(settingSidePanelProvider),
+        );
   }
 }
 
@@ -154,21 +201,21 @@ class NavigationBottomBar extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: onDestinationSelected,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.adf_scanner_outlined),
-            activeIcon: Icon(Icons.adf_scanner),
-            label: 'File',
+            icon: Navigation.file.icon,
+            activeIcon: Navigation.file.selectedIcon,
+            label: Navigation.file.text,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_search_outlined),
-            activeIcon: Icon(Icons.person_search),
-            label: 'Search',
+            icon: Navigation.search.icon,
+            activeIcon: Navigation.search.selectedIcon,
+            label: Navigation.search.text,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings_outlined),
-            activeIcon: Icon(Icons.admin_panel_settings),
-            label: 'Setting',
+            icon: Navigation.setting.icon,
+            activeIcon: Navigation.setting.icon,
+            label: Navigation.setting.text,
           ),
         ],
       ),

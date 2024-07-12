@@ -29,7 +29,6 @@ class _DirectoryState extends ConsumerState<Directory> {
             nodes[i].key?.currentContext?.findRenderObject() as RenderBox?;
         if (box != null) {
           final Offset position = box.localToGlobal(Offset.zero);
-          // print(position.dy);
           nodes[i] = nodes[i].copyWith(dy: position.dy - 10);
         }
       }
