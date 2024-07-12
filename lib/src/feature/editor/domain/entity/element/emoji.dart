@@ -40,6 +40,11 @@ class EmojiNode extends Node {
     return TextNode(context, "");
   }
 
+  @override
+  String toString() {
+    return rawText;
+  }
+
   Widget _buildEmoji() {
     final parser = EmojiParser();
     final parsedEmoji = parser.emojify(rawText);
@@ -50,10 +55,5 @@ class EmojiNode extends Node {
         fontSize: theme.textTheme.titleSmall!.fontSize,
       ),
     );
-  }
-
-  @override
-  String toString() {
-    return rawText;
   }
 }

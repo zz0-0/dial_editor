@@ -33,6 +33,16 @@ class Subscript extends Node {
     );
   }
 
+  @override
+  String toString() {
+    return rawText;
+  }
+
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
+  }
+
   Widget _buildRichText() {
     final regex = subscriptRegex;
     final matches = regex.allMatches(rawText);
@@ -79,15 +89,5 @@ class Subscript extends Node {
         children: textSpans,
       ),
     );
-  }
-
-  @override
-  String toString() {
-    return rawText;
-  }
-
-  @override
-  Node createNewLine() {
-    return TextNode(context, "");
   }
 }

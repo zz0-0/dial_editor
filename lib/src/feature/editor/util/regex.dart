@@ -6,7 +6,12 @@ final unorderedListRegex = RegExp(r'^[-*]\s');
 final orderListRegex = RegExp(r'^\d+\.\s');
 final taskListRegex = RegExp(r'^- \[([ xX])\](.*)$');
 final strikethroughRegex = RegExp('~~(.*?)~~');
-final imageRegex = RegExp(r'!\[(.*?)\]\((.*?)\)');
+final imageRegex = RegExp(
+  r'!\[([^\]]*)\]\((https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))\)',
+);
+final imageUrlRegex = RegExp(
+  r'^(https?:\/\/[^\s)]+\.(?:jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))$',
+);
 final linkRegex = RegExp(r'\[(.*?)\]\((.*?)\)');
 final urlRegex = RegExp(r'^https?:\/\/[^\s]+$');
 final highlightRegex = RegExp('==(.*?)==');

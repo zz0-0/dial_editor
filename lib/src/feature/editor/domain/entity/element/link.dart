@@ -43,6 +43,11 @@ class Link extends Node {
     return TextNode(context, "");
   }
 
+  @override
+  String toString() {
+    return rawText;
+  }
+
   Widget _buildLink() {
     return RichText(
       text: TextSpan(
@@ -70,10 +75,5 @@ class Link extends Node {
     } else {
       url = text.trim();
     }
-  }
-
-  @override
-  String toString() {
-    return rawText;
   }
 }

@@ -23,6 +23,11 @@ class HorizontalRule extends Node {
     return TextNode(context, "");
   }
 
+  @override
+  String toString() {
+    return '---';
+  }
+
   Widget _buildHorizontalRule() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -30,10 +35,5 @@ class HorizontalRule extends Node {
       height: 1.0,
       color: Theme.of(context).dividerColor,
     );
-  }
-
-  @override
-  String toString() {
-    return '---';
   }
 }

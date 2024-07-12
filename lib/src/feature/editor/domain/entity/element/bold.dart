@@ -38,6 +38,11 @@ class Bold extends Node {
     return rawText;
   }
 
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
+  }
+
   Widget _buildRichText() {
     final regex = boldRegex;
     final matches = regex.allMatches(rawText);
@@ -84,10 +89,5 @@ class Bold extends Node {
         children: textSpans,
       ),
     );
-  }
-
-  @override
-  Node createNewLine() {
-    return TextNode(context, "");
   }
 }

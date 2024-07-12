@@ -374,6 +374,7 @@ class _EditPartState extends ConsumerState<EditPart>
   void _updateDocument() {
     fileString = document.toString();
     widget.file.writeAsStringSync(fileString);
+    print(markdownWidgetList);
   }
 
   Widget _buildRenderingWidget(int index) {

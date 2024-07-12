@@ -36,16 +36,16 @@ class Quote extends Node {
     return rawText;
   }
 
+  @override
+  Quote createNewLine() {
+    return Quote(context, "> ");
+  }
+
   Widget _buildRichText() {
     text = rawText.replaceAll('>', '').trim();
     return Text(
       text,
       style: style,
     );
-  }
-
-  @override
-  Quote createNewLine() {
-    return Quote(context, "> ");
   }
 }

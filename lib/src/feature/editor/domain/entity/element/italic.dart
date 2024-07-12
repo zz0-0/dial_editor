@@ -38,6 +38,11 @@ class Italic extends Node {
     );
   }
 
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
+  }
+
   Widget _buildRichText() {
     final regex = italicRegex;
     final matches = regex.allMatches(rawText);
@@ -84,10 +89,5 @@ class Italic extends Node {
         children: textSpans,
       ),
     );
-  }
-
-  @override
-  Node createNewLine() {
-    return TextNode(context, "");
   }
 }

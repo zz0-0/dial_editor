@@ -1,13 +1,13 @@
-import 'dart:convert';
-
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class ImageNode extends Node {
-  final String altText;
-  final String url;
+  String url = "";
+  String linkText = "Link";
 
-  ImageNode(super.context, super.rawText, this.url, this.altText) {
+  ImageNode(super.context, super.rawText) {
+    _parseMarkdownLink(rawText);
     controller.text = rawText;
   }
 
@@ -24,38 +24,33 @@ class ImageNode extends Node {
 
   @override
   Node createNewLine() {
-    return ImageNode(context, "", "", "");
-  }
-
-  Widget _buildImage() {
-    if (url.startsWith('data:image')) {
-      // This is a base64 image
-      final bytes = base64Decode(url.split(',')[1]);
-      return Image.memory(
-        bytes,
-        errorBuilder: (context, error, stackTrace) {
-          return const Text(
-            'Image not found',
-            style: TextStyle(color: Colors.red),
-          );
-        },
-      );
-    } else {
-      // This is a regular URL
-      return Image.network(
-        url,
-        errorBuilder: (context, error, stackTrace) {
-          return const Text(
-            'Image not found',
-            style: TextStyle(color: Colors.red),
-          );
-        },
-      );
-    }
+    return ImageNode(context, "");
   }
 
   @override
   String toString() {
-    return '![$altText]($url)';
+    return rawText;
+  }
+
+  void _parseMarkdownLink(String text) {
+    final match = imageUrlRegex.firstMatch(text);
+    if (match != null) {
+      linkText = match.group(1) ?? '';
+      url = match.group(2) ?? '';
+    } else {
+      url = text.trim();
+    }
+  }
+
+  Widget _buildImage() {
+    return Image.network(
+      url,
+      errorBuilder: (context, error, stackTrace) {
+        return const Text(
+          'Image not found',
+          style: TextStyle(color: Colors.red),
+        );
+      },
+    );
   }
 }

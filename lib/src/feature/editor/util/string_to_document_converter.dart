@@ -82,22 +82,8 @@ class StringToDocumentConverter extends Converter<String, Document> {
       return Highlight(context, line);
     } else if (strikethroughRegex.hasMatch(line)) {
       return Strikethrough(context, line);
-    } else if (imageRegex.hasMatch(line) || line.contains('data:image')) {
-      final match = imageRegex.firstMatch(line);
-      if (match != null) {
-        return ImageNode(
-          context,
-          line,
-          match.group(2) ?? '',
-          match.group(1) ?? '',
-        );
-      } else {
-        // This is likely a base64 image
-        final parts = line.split('](');
-        final altText = parts[0].substring(2);
-        final url = parts[1].substring(0, parts[1].length - 1);
-        return ImageNode(context, line, url, altText);
-      }
+    } else if (imageRegex.hasMatch(line) || imageUrlRegex.hasMatch(line)) {
+      return ImageNode(context, line);
     } else if (linkRegex.hasMatch(line) || urlRegex.hasMatch(line)) {
       return Link(context, line);
     } else if (subscriptRegex.hasMatch(line)) {
