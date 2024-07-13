@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/bold_italic.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/code.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/emoji.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/highlight.dart';
@@ -30,34 +31,34 @@ class StringToDocumentConverter extends Converter<String, Document> {
   @override
   Document convert(String input) {
     final lines = input.split("\n");
-
     final children = <Node>[];
+    String language = "";
+    bool isInCodeBlock = false;
 
     for (final line in lines) {
-      bool isInCodeBlock = false;
-      List<String> codeBlockLines = [];
-
-      if (line.startsWith('```')) {
-        isInCodeBlock = !isInCodeBlock;
+      if (codeBlockRegex.hasMatch(line)) {
         if (isInCodeBlock == false) {
-          children.add(Code(context, codeBlockLines.join('\n')));
-          codeBlockLines = [];
+          isInCodeBlock = true;
+          final match = codeBlockRegex.firstMatch(line);
+          language = match!.group(1) ?? '';
+          children.add(CodeBlockMarker(context, language, true));
+        } else {
+          isInCodeBlock = false;
+          children.add(CodeBlockMarker(context, language, false));
         }
-        continue;
+      } else {
+        children.add(convertLine(line, isInCodeBlock));
       }
-
-      if (isInCodeBlock == true) {
-        codeBlockLines.add(line);
-        continue;
-      }
-
-      children.add(convertLine(line));
     }
 
     return Document(children: children);
   }
 
-  Node convertLine(String line) {
+  Node convertLine(String line, bool isInCodeBlock) {
+    if (isInCodeBlock) {
+      return CodeLine(context, line);
+    }
+
     if (line.startsWith('>')) {
       return Quote(context, line);
     } else if (taskListRegex.hasMatch(line)) {

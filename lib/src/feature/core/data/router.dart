@@ -64,7 +64,6 @@ GoRouter router = GoRouter(
           routes: [
             StatefulShellRoute.indexedStack(
               builder: (context2, state2, navigationShell2) {
-                // print(navigationShell2);
                 return SettingOptions(
                   navigationShell: navigationShell2,
                 );

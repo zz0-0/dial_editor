@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
@@ -364,7 +366,13 @@ class _EditPartState extends ConsumerState<EditPart>
   void _onChange(int index, String value) {
     final currentSelection = nodes[index].controller.selection;
     setState(() {
-      nodes[index] = StringToDocumentConverter(context).convertLine(value);
+      if (nodes[index] is CodeBlockMarker || nodes[index] is CodeLine) {
+        nodes[index] =
+            StringToDocumentConverter(context).convertLine(value, true);
+      } else {
+        nodes[index] =
+            StringToDocumentConverter(context).convertLine(value, false);
+      }
       markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
       nodes[index].isEditing = true;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

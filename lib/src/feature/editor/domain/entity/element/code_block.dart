@@ -1,13 +1,16 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlighting/flutter_highlighting.dart';
 import 'package:flutter_highlighting/themes/github.dart';
 
-class Code extends Node {
-  Code(super.context, super.rawText, [super.text]) {
-    controller.text = rawText;
-  }
+class CodeBlock extends Node {
+  final String language;
+  final List<CodeLine> lines;
+
+  CodeBlock(BuildContext context, this.language, this.lines)
+      : super(context, lines.map((line) => line.rawText).join('\n'));
 
   @override
   Widget render() {

@@ -32,3 +32,4 @@ final horizontalRuleRegex = RegExp(r'^\s*([-*_]){3,}\s*$');
 final emojiRegex = RegExp(':([a-zA-Z0-9_]+):');
 final inlineMathRegex = RegExp(r'\$(.*?)\$');
 final blockMathRegex = RegExp(r'\$\$(.*?)\$\$', dotAll: true);
+final codeBlockRegex = RegExp(r'```(\w+)?\n([\s\S]*?)\n```');
