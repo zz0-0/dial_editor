@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,7 @@ class ImageNode extends Node {
   }
 
   void _parseMarkdownLink(String text) {
-    final match = imageUrlRegex.firstMatch(text);
+    final match = imageRegex.firstMatch(text);
     if (match != null) {
       linkText = match.group(1) ?? '';
       url = match.group(2) ?? '';
@@ -43,14 +45,30 @@ class ImageNode extends Node {
   }
 
   Widget _buildImage() {
-    return Image.network(
-      url,
-      errorBuilder: (context, error, stackTrace) {
-        return const Text(
-          'Image not found',
-          style: TextStyle(color: Colors.red),
-        );
-      },
-    );
+    final match1 = imageUrlPathRegex.firstMatch(url);
+    final match2 = imageFilePathRegex.firstMatch(url);
+
+    if (match1 != null) {
+      return Image.network(
+        url,
+        errorBuilder: (context, error, stackTrace) {
+          return Text(
+            stackTrace.toString(),
+            style: const TextStyle(color: Colors.red),
+          );
+        },
+      );
+    } else if (match2 != null) {
+      return Image.file(
+        File(url),
+        errorBuilder: (context, error, stackTrace) {
+          return Text(
+            stackTrace.toString(),
+            style: const TextStyle(color: Colors.red),
+          );
+        },
+      );
+    }
+    return Container();
   }
 }

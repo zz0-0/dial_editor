@@ -26,6 +26,9 @@
     - [X]  Emoji
     - [X]  Hightlight
     - [X]  Link
+    - [ ]  Image
+      - [X]  Image url
+      - [X]  Image file
   - [ ]  **Keyboard Shortcut**
     - [X]  Ctrl A: Select All
     - [X]  Key Arrow Up
