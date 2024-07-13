@@ -14,26 +14,38 @@
 
 - [ ]  **Markdown Support**
   - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data. **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
-    - [X]  Heading
+
+    - [X]  Heading (https://github.com/zz0-0/dial_editor/issues/34)
+      - [ ]  Heading block (https://github.com/zz0-0/dial_editor/issues/38)
+      - [ ]  Heading id (https://github.com/zz0-0/dial_editor/issues/35)
+      - [ ]  Bidirectional link (https://github.com/zz0-0/dial_editor/issues/36)
     - [X]  Bold
     - [X]  Italic
     - [X]  Bold Italic
     - [X]  Strikethrough
     - [X]  Unordered list
+      - [ ]  List block (https://github.com/zz0-0/dial_editor/issues/40)
     - [X]  Ordered list
+      - [ ]  List block (https://github.com/zz0-0/dial_editor/issues/40)
     - [X]  Task list
+      - [ ]  List block (https://github.com/zz0-0/dial_editor/issues/40)
+    - [ ]  Definition list
+      - [ ]  List block (https://github.com/zz0-0/dial_editor/issues/40)
     - [X]  Horizontal rule
+    - [X]  Quote
+      - [ ]  Quote block (https://github.com/zz0-0/dial_editor/issues/39)
     - [X]  Emoji
     - [X]  Hightlight
     - [X]  Link
     - [X]  Image
     - [ ]  Table
-    - [ ]  Code block
-    - [ ]  Inline code
+      - [ ]  Table block (https://github.com/zz0-0/dial_editor/issues/8)
+    - [ ]  Code
+      - [ ]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
     - [ ]  Footnote
-    - [ ]  Definition list
-    - [ ]  Math Equation
-    - [ ]  Diagram
+    - [ ]  Math Equation (https://github.com/zz0-0/dial_editor/issues/19)
+    - [ ]  Diagram (https://github.com/zz0-0/dial_editor/issues/9)
+      - [ ]  Code block
     - [ ]  Table of content
     - [ ]  Video
     - [ ]  Page breaks
@@ -46,6 +58,7 @@
     - [ ]  Tab Indentation
   - [X]  **Mouse Selection**
 - [X]  **Line Number**
+- [ ]  **Folder context menu** (https://github.com/zz0-0/dial_editor/issues/34)
 - [X]  **Auto Save**
 - [ ]  **Undo/Redo**
   - [X]  Currently utilizing the default editable text functionality for undo/redo.
