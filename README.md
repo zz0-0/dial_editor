@@ -26,9 +26,7 @@
     - [X]  Emoji
     - [X]  Hightlight
     - [X]  Link
-    - [ ]  Image
-      - [X]  Image url
-      - [X]  Image file
+    - [x]  Image
   - [ ]  **Keyboard Shortcut**
     - [X]  Ctrl A: Select All
     - [X]  Key Arrow Up
@@ -44,7 +42,6 @@
   - [ ]  Full text undo/redo
 - [X]  **Dark theme**: Theme switch
   - [ ]  **Customizable Themes**: Choose from a variety of themes to suit your style.
-
     - [X]  overall theme - basic dark, light theme
     - [ ]  theme color
     - [ ]  text theme
