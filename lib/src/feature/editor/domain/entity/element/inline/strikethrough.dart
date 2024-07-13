@@ -1,10 +1,10 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class Italic extends Node {
-  Italic(super.context, super.rawText, [super.text]) {
+class Strikethrough extends Node {
+  Strikethrough(super.context, super.rawText) {
     controller.text = rawText;
   }
 
@@ -18,10 +18,19 @@ class Italic extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = italicRegex;
+    final regex = strikethroughRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
     updateTextHeight();
+  }
+
+  @override
+  void updateStyle() {
+    final theme = Theme.of(context);
+    style = TextStyle(
+      fontSize: theme.textTheme.titleSmall!.fontSize,
+      decoration: TextDecoration.lineThrough,
+    );
   }
 
   @override
@@ -30,21 +39,12 @@ class Italic extends Node {
   }
 
   @override
-  void updateStyle() {
-    final theme = Theme.of(context);
-    style = TextStyle(
-      fontSize: theme.textTheme.titleSmall!.fontSize,
-      fontStyle: FontStyle.italic,
-    );
-  }
-
-  @override
   Node createNewLine() {
     return TextNode(context, "");
   }
 
   Widget _buildRichText() {
-    final regex = italicRegex;
+    final regex = strikethroughRegex;
     final matches = regex.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
@@ -67,7 +67,7 @@ class Italic extends Node {
 
       textSpans.add(
         TextSpan(
-          text: rawText.substring(match.start + 1, match.end - 1),
+          text: rawText.substring(match.start, match.end).replaceAll('~~', ''),
           style: style,
         ),
       );

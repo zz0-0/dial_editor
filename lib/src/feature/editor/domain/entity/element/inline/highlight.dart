@@ -1,10 +1,10 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class BoldItalic extends Node {
-  BoldItalic(super.context, super.rawText, [super.text]) {
+class Highlight extends Node {
+  Highlight(super.context, super.rawText, [super.text]) {
     controller.text = rawText;
   }
 
@@ -18,7 +18,7 @@ class BoldItalic extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = boldItalicRegex;
+    final regex = highlightRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
     updateTextHeight();
@@ -29,14 +29,8 @@ class BoldItalic extends Node {
     final theme = Theme.of(context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
-      fontWeight: FontWeight.bold,
-      fontStyle: FontStyle.italic,
+      backgroundColor: Colors.yellow,
     );
-  }
-
-  @override
-  String toString() {
-    return rawText;
   }
 
   @override
@@ -44,8 +38,13 @@ class BoldItalic extends Node {
     return TextNode(context, "");
   }
 
+  @override
+  String toString() {
+    return rawText;
+  }
+
   Widget _buildRichText() {
-    final regex = boldItalicRegex;
+    final regex = highlightRegex;
     final matches = regex.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
@@ -68,10 +67,7 @@ class BoldItalic extends Node {
 
       textSpans.add(
         TextSpan(
-          text: rawText.substring(
-            match.start + 3,
-            match.end - 3,
-          ),
+          text: rawText.substring(match.start, match.end).replaceAll('==', ''),
           style: style,
         ),
       );

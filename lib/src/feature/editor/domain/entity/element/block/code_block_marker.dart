@@ -1,5 +1,5 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/code_line.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 

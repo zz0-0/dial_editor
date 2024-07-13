@@ -1,10 +1,10 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class Superscript extends Node {
-  Superscript(super.context, super.rawText, [super.text]) {
+class Bold extends Node {
+  Bold(super.context, super.rawText, [super.text]) {
     controller.text = rawText;
   }
 
@@ -18,7 +18,7 @@ class Superscript extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = superscriptRegex;
+    final regex = boldRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
     updateTextHeight();
@@ -28,8 +28,8 @@ class Superscript extends Node {
   void updateStyle() {
     final theme = Theme.of(context);
     style = TextStyle(
-      fontSize: theme.textTheme.bodyMedium!.fontSize! * 0.8,
-      fontFeatures: const [FontFeature.superscripts()],
+      fontSize: theme.textTheme.titleSmall!.fontSize,
+      fontWeight: FontWeight.bold,
     );
   }
 
@@ -44,7 +44,7 @@ class Superscript extends Node {
   }
 
   Widget _buildRichText() {
-    final regex = superscriptRegex;
+    final regex = boldRegex;
     final matches = regex.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
@@ -67,7 +67,7 @@ class Superscript extends Node {
 
       textSpans.add(
         TextSpan(
-          text: rawText.substring(match.start, match.end).replaceAll('^', ''),
+          text: rawText.substring(match.start, match.end).replaceAll('**', ''),
           style: style,
         ),
       );
@@ -85,7 +85,7 @@ class Superscript extends Node {
 
     return RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: Theme.of(context).textTheme.titleSmall,
         children: textSpans,
       ),
     );

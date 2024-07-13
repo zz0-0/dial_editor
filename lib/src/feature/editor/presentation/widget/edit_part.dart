@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/code_block_marker.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/code_line.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';

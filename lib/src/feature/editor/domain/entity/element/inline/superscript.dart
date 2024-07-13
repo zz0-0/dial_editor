@@ -1,10 +1,10 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/element/text.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class Highlight extends Node {
-  Highlight(super.context, super.rawText, [super.text]) {
+class Superscript extends Node {
+  Superscript(super.context, super.rawText, [super.text]) {
     controller.text = rawText;
   }
 
@@ -18,7 +18,7 @@ class Highlight extends Node {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = highlightRegex;
+    final regex = superscriptRegex;
     text = newText.replaceAll(regex, '').trim();
     updateStyle();
     updateTextHeight();
@@ -28,14 +28,9 @@ class Highlight extends Node {
   void updateStyle() {
     final theme = Theme.of(context);
     style = TextStyle(
-      fontSize: theme.textTheme.titleSmall!.fontSize,
-      backgroundColor: Colors.yellow,
+      fontSize: theme.textTheme.bodyMedium!.fontSize! * 0.8,
+      fontFeatures: const [FontFeature.superscripts()],
     );
-  }
-
-  @override
-  Node createNewLine() {
-    return TextNode(context, "");
   }
 
   @override
@@ -43,8 +38,13 @@ class Highlight extends Node {
     return rawText;
   }
 
+  @override
+  Node createNewLine() {
+    return TextNode(context, "");
+  }
+
   Widget _buildRichText() {
-    final regex = highlightRegex;
+    final regex = superscriptRegex;
     final matches = regex.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
@@ -67,7 +67,7 @@ class Highlight extends Node {
 
       textSpans.add(
         TextSpan(
-          text: rawText.substring(match.start, match.end).replaceAll('==', ''),
+          text: rawText.substring(match.start, match.end).replaceAll('^', ''),
           style: style,
         ),
       );
@@ -85,7 +85,7 @@ class Highlight extends Node {
 
     return RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.titleSmall,
+        style: Theme.of(context).textTheme.bodyMedium,
         children: textSpans,
       ),
     );
