@@ -15,7 +15,8 @@ final imageUrlPathRegex = RegExp(
 // final imageFileRegex = RegExp(
 //     r'!\[([^\]]*)\]\((?:[a-zA-Z]:)?[\/\\][^\s\/\\]+(?:[\/\\][^\s\/\\]+)*(?:\.(jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))\)');
 final imageFilePathRegex = RegExp(
-    r'^(?:[a-zA-Z]:)?[\/\\][^\s\/\\]+(?:[\/\\][^\s\/\\]+)*(?:\.(jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))$');
+  r'^(?:[a-zA-Z]:)?[\/\\][^\s\/\\]+(?:[\/\\][^\s\/\\]+)*(?:\.(jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))$',
+);
 final imageRegex = RegExp(
   r'!\[([^\]]*)\]\(((https?:\/\/[^\s\)]+\.(?:jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))|((?:[a-zA-Z]:)?[\/\\][^\s\/\\]+(?:[\/\\][^\s\/\\]+)*(?:\.(?:jpg|jpeg|png|gif|bmp|webp|svg|tiff|ico))))\)',
 );

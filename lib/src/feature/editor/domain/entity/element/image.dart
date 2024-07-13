@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'dart:io';
-
+import 'dart:ui' as ui;
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,12 @@ import 'package:flutter/material.dart';
 class ImageNode extends Node {
   String url = "";
   String linkText = "Link";
+  Image? image;
 
   ImageNode(super.context, super.rawText) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
+    controller.addListener(updateTextHeight);
   }
 
   @override
@@ -19,7 +22,39 @@ class ImageNode extends Node {
   }
 
   @override
-  void updateText(String newText) {}
+  double updateTextHeight() {
+    if (isEditing) {
+      final textPainter = TextPainter(
+        text: TextSpan(text: rawText, style: style),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      textHeight = textPainter.height;
+    } else {
+      if (image != null) {
+        final Completer<ui.Image> completer = Completer<ui.Image>();
+        image!.image.resolve(ImageConfiguration.empty).addListener(
+              ImageStreamListener(
+                (ImageInfo info, bool _) => completer.complete(info.image),
+              ),
+            );
+        completer.future.then((value) {
+          textHeight = value.height.toDouble();
+        });
+      }
+    }
+
+    return textHeight;
+  }
+
+  @override
+  void updateText(String newText) {
+    rawText = newText;
+    final regex = boldRegex;
+    text = newText.replaceAll(regex, '').trim();
+    updateStyle();
+    updateTextHeight();
+  }
 
   @override
   void updateStyle() {}
@@ -49,7 +84,7 @@ class ImageNode extends Node {
     final match2 = imageFilePathRegex.firstMatch(url);
 
     if (match1 != null) {
-      return Image.network(
+      image = Image.network(
         url,
         errorBuilder: (context, error, stackTrace) {
           return Text(
@@ -58,8 +93,9 @@ class ImageNode extends Node {
           );
         },
       );
+      textHeight = updateTextHeight();
     } else if (match2 != null) {
-      return Image.file(
+      image = Image.file(
         File(url),
         errorBuilder: (context, error, stackTrace) {
           return Text(
@@ -68,7 +104,8 @@ class ImageNode extends Node {
           );
         },
       );
+      textHeight = updateTextHeight();
     }
-    return Container();
+    return image ?? Container();
   }
 }

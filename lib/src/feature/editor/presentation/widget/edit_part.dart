@@ -143,17 +143,22 @@ class _EditPartState extends ConsumerState<EditPart>
             controller: scrollController1,
             itemCount: nodes.length,
             itemBuilder: (context, index) {
-              return Row(
-                children: [
-                  const Spacer(),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    height: nodes[index].textHeight,
-                    child: Text(
-                      "${index + 1}",
-                    ),
-                  ),
-                ],
+              return ValueListenableBuilder<double>(
+                valueListenable: nodes[index].textHeightNotifier,
+                builder: (context, height, child) {
+                  return Row(
+                    children: [
+                      const Spacer(),
+                      Container(
+                        alignment: Alignment.centerRight,
+                        height: height,
+                        child: Text(
+                          "${index + 1}",
+                        ),
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),
@@ -188,28 +193,53 @@ class _EditPartState extends ConsumerState<EditPart>
         onFocusChange: (hasFocus) {},
         onKeyEvent: (node, event) => _onKeyEvent(event, index),
         child: GestureDetector(
-          child: EditableText(
-            key: nodes[index].key,
-            controller: nodes[index].controller,
-            focusNode: nodes[index].focusNode,
-            cursorColor: Colors.blue,
-            backgroundCursorColor: Colors.blue,
-            style: nodes[index].style,
-            showCursor: true,
-            selectionColor: Colors.red,
-            rendererIgnoresPointer: true,
-            enableInteractiveSelection: true,
-            paintCursorAboveText: true,
-            onChanged: (value) {
-              _onChange(index, value);
-            },
-            onEditingComplete: () {
-              _onEditingComplete(index);
+          child: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: nodes[index].controller,
+            builder: (context, value, child) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _updateNodeHeight(index);
+              });
+              return EditableText(
+                key: nodes[index].key,
+                controller: nodes[index].controller,
+                focusNode: nodes[index].focusNode,
+                cursorColor: Colors.blue,
+                backgroundCursorColor: Colors.blue,
+                style: nodes[index].style,
+                showCursor: true,
+                selectionColor: Colors.red,
+                rendererIgnoresPointer: true,
+                enableInteractiveSelection: true,
+                paintCursorAboveText: true,
+                onChanged: (value) {
+                  _onChange(index, value);
+                },
+                onEditingComplete: () {
+                  _onEditingComplete(index);
+                },
+              );
             },
           ),
         ),
       ),
     );
+  }
+
+  void _updateNodeHeight(int index) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: nodes[index].controller.text,
+        style: nodes[index].style,
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: MediaQuery.of(context).size.width);
+
+    final newHeight = textPainter.height;
+    if (nodes[index].textHeight != newHeight) {
+      setState(() {
+        nodes[index].textHeight = newHeight;
+      });
+    }
   }
 
   void _onSingleTapUp(int index, TapDragUpDetails details) {
@@ -379,8 +409,8 @@ class _EditPartState extends ConsumerState<EditPart>
   Widget _buildRenderingWidget(int index) {
     return GestureDetector(
       onTapUp: (details) {
-        _resetAll();
         setState(() {
+          _resetAll();
           nodes[index].isEditing = true;
           nodes[index].controller.clear();
           nodes[index].controller.text = nodes[index].rawText;
@@ -513,6 +543,7 @@ class _EditPartState extends ConsumerState<EditPart>
     final selection = currentNode.controller.selection;
     setState(() {
       if (isLeft && selection.baseOffset == 0 && index > 0) {
+        nodes[index].isEditing = false;
         nodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index - 1].focusNode.requestFocus();
@@ -520,6 +551,7 @@ class _EditPartState extends ConsumerState<EditPart>
       } else if (!isLeft &&
           selection.baseOffset == currentNode.rawText.length &&
           index < nodes.length - 1) {
+        nodes[index].isEditing = false;
         nodes[index + 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           nodes[index + 1].focusNode.requestFocus();

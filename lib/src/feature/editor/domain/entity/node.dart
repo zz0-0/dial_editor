@@ -10,7 +10,7 @@ abstract class Node {
   bool _initializing = true;
   bool isEditing = false;
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
-  double textHeight;
+  final ValueNotifier<double> textHeightNotifier = ValueNotifier(0);
   late Widget widget;
 
   Node(
@@ -18,7 +18,6 @@ abstract class Node {
     this.rawText, [
     this.style = const TextStyle(),
     this.text = "",
-    this.textHeight = 0,
   ]) {
     controller = TextEditingController(text: rawText);
     widget = render();
@@ -27,6 +26,13 @@ abstract class Node {
       controller.addListener(_onTextChanged);
       _initializing = false;
     });
+  }
+
+  double get textHeight => textHeightNotifier.value;
+  set textHeight(double value) {
+    if (textHeightNotifier.value != value) {
+      textHeightNotifier.value = value;
+    }
   }
 
   void updateText(String newText);
