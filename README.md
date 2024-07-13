@@ -26,7 +26,17 @@
     - [X]  Emoji
     - [X]  Hightlight
     - [X]  Link
-    - [x]  Image
+    - [X]  Image
+    - [ ]  Table
+    - [ ]  Code block
+    - [ ]  Inline code
+    - [ ]  Footnote
+    - [ ]  Definition list
+    - [ ]  Math Equation
+    - [ ]  Diagram
+    - [ ]  Table of content
+    - [ ]  Video
+    - [ ]  Page breaks
   - [ ]  **Keyboard Shortcut**
     - [X]  Ctrl A: Select All
     - [X]  Key Arrow Up
