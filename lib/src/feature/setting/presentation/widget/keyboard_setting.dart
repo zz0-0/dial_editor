@@ -12,6 +12,6 @@ class KeyboardSetting extends ConsumerStatefulWidget {
 class _KeyboardSettingState extends ConsumerState<KeyboardSetting> {
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Appearance"));
+    return const Center(child: Text("Keyboard"));
   }
 }

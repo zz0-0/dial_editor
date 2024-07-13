@@ -6,13 +6,13 @@ import 'package:just_the_tooltip/just_the_tooltip.dart';
 enum SettingNavigation {
   appearance(
     text: "Appearance",
-    icon: Icon(Icons.adf_scanner_outlined),
-    selectedIcon: Icon(Icons.adf_scanner),
+    icon: Icon(Icons.auto_awesome_outlined),
+    selectedIcon: Icon(Icons.auto_awesome),
   ),
   keyboard(
     text: "Keyboard",
-    icon: Icon(Icons.person_search_outlined),
-    selectedIcon: Icon(Icons.person_search),
+    icon: Icon(Icons.keyboard_outlined),
+    selectedIcon: Icon(Icons.keyboard),
   );
   // setting(
   //   text: "Setting",
@@ -32,7 +32,6 @@ enum SettingNavigation {
 
 class SettingOptions extends ConsumerStatefulWidget {
   final StatefulNavigationShell? navigationShell;
-
   const SettingOptions({
     super.key,
     required this.navigationShell,
@@ -52,18 +51,10 @@ class _SettingOptionsState extends ConsumerState<SettingOptions> {
       );
     }
 
-    return SizedBox(
-      width: 200,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SettingNavigationSideBar(
-            body: widget.navigationShell!,
-            selectedIndex: widget.navigationShell!.currentIndex,
-            onDestinationSelected: goBranch,
-          ),
-        ],
-      ),
+    return SettingNavigationSideBar(
+      body: widget.navigationShell!,
+      selectedIndex: widget.navigationShell!.currentIndex,
+      onDestinationSelected: goBranch,
     );
   }
 }
@@ -86,6 +77,8 @@ class SettingNavigationSideBar extends ConsumerWidget {
       body: Row(
         children: [
           NavigationRail(
+            extended: true,
+            minExtendedWidth: 200,
             selectedIndex: selectedIndex,
             onDestinationSelected: onDestinationSelected,
             destinations: [
@@ -103,7 +96,7 @@ class SettingNavigationSideBar extends ConsumerWidget {
                     onPressed: () {},
                   ),
                 ),
-                label: const Text(''),
+                label: Text(SettingNavigation.appearance.text),
               ),
               NavigationRailDestination(
                 icon: JustTheTooltip(
@@ -119,7 +112,7 @@ class SettingNavigationSideBar extends ConsumerWidget {
                     onPressed: () {},
                   ),
                 ),
-                label: const Text(''),
+                label: Text(SettingNavigation.keyboard.text),
               ),
             ],
           ),
