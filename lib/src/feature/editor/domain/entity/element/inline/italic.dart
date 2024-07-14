@@ -1,9 +1,10 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class Italic extends Node {
+class Italic extends Inline {
   Italic(super.context, super.rawText, [super.text]) {
     controller.text = rawText;
   }

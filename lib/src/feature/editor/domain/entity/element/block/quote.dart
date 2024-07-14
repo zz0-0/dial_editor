@@ -1,7 +1,7 @@
-import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block.dart';
 import 'package:flutter/material.dart';
 
-class Quote extends Node {
+class Quote extends Block {
   Quote(super.context, super.rawText, [super.text]) {
     controller.text = rawText;
   }

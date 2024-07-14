@@ -1,3 +1,4 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_highlighting/flutter_highlighting.dart';
 import 'package:flutter_highlighting/themes/github.dart';
 
-class CodeBlock extends Node {
+class CodeBlock extends Block {
   final String language;
   final List<CodeLine> lines;
 

@@ -1,10 +1,11 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
-class EmojiNode extends Node {
+class EmojiNode extends Inline {
   EmojiNode(super.context, super.rawText) {
     controller.text = rawText;
   }

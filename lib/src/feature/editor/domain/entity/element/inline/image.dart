@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
-class ImageNode extends Node {
+class ImageNode extends Inline {
   String url = "";
   String linkText = "Link";
   Image? image;
