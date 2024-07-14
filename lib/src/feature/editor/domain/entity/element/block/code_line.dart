@@ -2,13 +2,13 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class CodeLine extends Node {
-  CodeLine(super.context, super.rawText) {
+  CodeLine({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
   @override
   Node createNewLine() {
-    return CodeLine(context, "");
+    return CodeLine(context: context, rawText: "");
   }
 
   @override

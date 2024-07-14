@@ -10,7 +10,7 @@ class Link extends Inline {
   String url = "";
   String linkText = "Link";
 
-  Link(super.context, super.rawText) {
+  Link({required super.context, required super.rawText}) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
   }
@@ -41,7 +41,7 @@ class Link extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   @override

@@ -5,7 +5,7 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Highlight extends Inline {
-  Highlight(super.context, super.rawText, [super.text]) {
+  Highlight({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
@@ -36,7 +36,7 @@ class Highlight extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   @override

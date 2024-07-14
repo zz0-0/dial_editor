@@ -1,5 +1,4 @@
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +7,12 @@ import 'package:flutter_highlighting/themes/github.dart';
 
 class CodeBlock extends Block {
   final String language;
-  final List<CodeLine> lines;
 
-  CodeBlock(BuildContext context, this.language, this.lines)
-      : super(context, lines.map((line) => line.rawText).join('\n'));
+  CodeBlock({
+    required super.context,
+    required this.language,
+    required super.children,
+  }) : super(rawText: '');
 
   @override
   Widget render() {
@@ -42,7 +43,7 @@ class CodeBlock extends Block {
 
   @override
   Node createNewLine() {
-    return TextNode(context, '');
+    return TextNode(context: context, rawText: '');
   }
 
   Widget _buildRichText() {

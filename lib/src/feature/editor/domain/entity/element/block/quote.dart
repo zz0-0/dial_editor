@@ -2,7 +2,10 @@ import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block
 import 'package:flutter/material.dart';
 
 class Quote extends Block {
-  Quote(super.context, super.rawText, [super.text]) {
+  Quote({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
@@ -38,7 +41,7 @@ class Quote extends Block {
 
   @override
   Quote createNewLine() {
-    return Quote(context, "> ");
+    return Quote(context: context, rawText: "> ");
   }
 
   Widget _buildRichText() {

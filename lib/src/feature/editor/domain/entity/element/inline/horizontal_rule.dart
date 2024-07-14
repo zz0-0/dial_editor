@@ -4,7 +4,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalRule extends Inline {
-  HorizontalRule(super.context, super.rawText) {
+  HorizontalRule({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
@@ -21,7 +21,7 @@ class HorizontalRule extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   @override

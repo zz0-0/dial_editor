@@ -7,12 +7,19 @@ class CodeBlockMarker extends Node {
   final String language;
   final bool isStart;
 
-  CodeBlockMarker(BuildContext context, this.language, this.isStart)
-      : super(context, isStart ? '```$language' : '```');
+  CodeBlockMarker({
+    required super.context,
+    required this.language,
+    required this.isStart,
+  }) : super(
+          rawText: isStart ? '```$language' : '```',
+        );
 
   @override
   Node createNewLine() {
-    return isStart ? CodeLine(context, "") : TextNode(context, "");
+    return isStart
+        ? CodeLine(context: context, rawText: "")
+        : TextNode(context: context, rawText: "");
   }
 
   @override

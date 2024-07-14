@@ -3,7 +3,11 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Diagram extends Block {
-  Diagram(super.context, super.rawText);
+  Diagram({
+    required super.context,
+    required super.rawText,
+    required super.children,
+  });
 
   @override
   Node createNewLine() {

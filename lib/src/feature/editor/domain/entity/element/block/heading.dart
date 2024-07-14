@@ -8,13 +8,13 @@ class Heading extends Block {
   int level;
   final regex = headingRegex;
 
-  Heading(
-    BuildContext context,
-    this.level,
-    String rawText, [
-    TextStyle style = const TextStyle(),
-    String text = "",
-  ]) : super(context, rawText, style, text) {
+  Heading({
+    required super.context,
+    required super.rawText,
+    required this.level,
+    super.style,
+    super.text,
+  }) {
     controller.text = rawText;
   }
 
@@ -71,6 +71,6 @@ class Heading extends Block {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 }

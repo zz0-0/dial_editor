@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:latext/latext.dart';
 
 class Math extends Inline {
-  Math(super.context, super.rawText) {
+  Math({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   @override

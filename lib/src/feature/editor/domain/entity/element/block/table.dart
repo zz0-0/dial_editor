@@ -3,7 +3,11 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class Table extends Block {
-  Table(super.context, super.rawText);
+  Table({
+    required super.context,
+    required super.rawText,
+    required super.children,
+  });
 
   @override
   Node createNewLine() {

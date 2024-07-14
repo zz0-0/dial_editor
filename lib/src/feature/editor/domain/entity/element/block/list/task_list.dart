@@ -3,7 +3,7 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class TaskList extends Node {
-  TaskList(super.context, super.rawText) {
+  TaskList({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
@@ -40,7 +40,7 @@ class TaskList extends Node {
 
   @override
   Node createNewLine() {
-    return TaskList(context, "- [ ] ");
+    return TaskList(context: context, rawText: "- [ ] ");
   }
 
   Widget _buildRichText() {

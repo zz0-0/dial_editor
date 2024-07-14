@@ -5,7 +5,7 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Superscript extends Inline {
-  Superscript(super.context, super.rawText, [super.text]) {
+  Superscript({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
@@ -41,7 +41,7 @@ class Superscript extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   Widget _buildRichText() {

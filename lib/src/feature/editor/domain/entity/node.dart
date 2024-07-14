@@ -13,12 +13,12 @@ abstract class Node {
   final ValueNotifier<double> textHeightNotifier = ValueNotifier(0);
   late Widget widget;
 
-  Node(
-    this.context,
-    this.rawText, [
+  Node({
+    required this.context,
+    required this.rawText,
     this.style = const TextStyle(),
     this.text = "",
-  ]) {
+  }) {
     controller = TextEditingController(text: rawText);
     widget = render();
     textHeight = updateTextHeight();

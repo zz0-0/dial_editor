@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
 class EmojiNode extends Inline {
-  EmojiNode(super.context, super.rawText) {
+  EmojiNode({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
@@ -38,7 +38,7 @@ class EmojiNode extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   @override

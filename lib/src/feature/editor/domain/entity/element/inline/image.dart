@@ -11,7 +11,7 @@ class ImageNode extends Inline {
   String linkText = "Link";
   Image? image;
 
-  ImageNode(super.context, super.rawText) {
+  ImageNode({required super.context, required super.rawText}) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
     controller.addListener(updateTextHeight);
@@ -62,7 +62,7 @@ class ImageNode extends Inline {
 
   @override
   Node createNewLine() {
-    return ImageNode(context, "");
+    return ImageNode(context: context, rawText: "");
   }
 
   @override

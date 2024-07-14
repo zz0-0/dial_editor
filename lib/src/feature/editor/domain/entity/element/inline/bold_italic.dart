@@ -5,7 +5,7 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class BoldItalic extends Inline {
-  BoldItalic(super.context, super.rawText, [super.text]) {
+  BoldItalic({required super.context, required super.rawText}) {
     controller.text = rawText;
   }
 
@@ -42,7 +42,7 @@ class BoldItalic extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context, "");
+    return TextNode(context: context, rawText: "");
   }
 
   Widget _buildRichText() {
