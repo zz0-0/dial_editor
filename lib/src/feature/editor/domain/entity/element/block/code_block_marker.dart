@@ -4,21 +4,20 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class CodeBlockMarker extends Node {
-  final String language;
   final bool isStart;
 
   CodeBlockMarker({
     required super.context,
-    required this.language,
+    required super.rawText,
     required this.isStart,
-  }) : super(
-          rawText: isStart ? '```$language' : '```',
-        );
+  }) {
+    controller.text = rawText;
+  }
 
   @override
   Node createNewLine() {
     return isStart
-        ? CodeLine(context: context, rawText: "")
+        ? CodeLine(context: context, language: "c", rawText: "")
         : TextNode(context: context, rawText: "");
   }
 
@@ -40,5 +39,10 @@ class CodeBlockMarker extends Node {
     text = newText;
     updateStyle();
     updateTextHeight();
+  }
+
+  @override
+  String toString() {
+    return rawText;
   }
 }

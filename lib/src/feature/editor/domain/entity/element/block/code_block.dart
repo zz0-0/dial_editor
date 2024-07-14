@@ -2,17 +2,17 @@ import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_highlighting/flutter_highlighting.dart';
-import 'package:flutter_highlighting/themes/github.dart';
 
 class CodeBlock extends Block {
-  final String language;
+  final String? language;
 
   CodeBlock({
     required super.context,
     required this.language,
     required super.children,
-  }) : super(rawText: '');
+  }) : super(rawText: children!.map((code) => code).join("\n")) {
+    controller.text = rawText;
+  }
 
   @override
   Widget render() {
@@ -47,12 +47,9 @@ class CodeBlock extends Block {
   }
 
   Widget _buildRichText() {
-    return HighlightView(
-      rawText,
-      // languageId: dart.id,
-      theme: githubTheme,
-      padding: const EdgeInsets.all(12),
-      textStyle: style,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children!.map((code) => code.render()).toList(),
     );
   }
 }

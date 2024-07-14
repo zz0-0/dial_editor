@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_marker.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
@@ -26,7 +25,8 @@ class _EditPartState extends ConsumerState<EditPart>
   Logger logger = Logger();
   late Document document;
   late String fileString;
-  List<Node> nodes = [];
+  List<Node> originNodes = [];
+  List<Node> flatNodes = [];
   List<Widget> markdownWidgetList = [];
   final GlobalKey<EditableTextState> _editorKey =
       GlobalKey<EditableTextState>();
@@ -51,16 +51,20 @@ class _EditPartState extends ConsumerState<EditPart>
   void didChangeDependencies() {
     super.didChangeDependencies();
     document = DocumentCodec(context).encode(fileString);
-    nodes = document.children;
-    markdownWidgetList = MarkdownRender().renderList(nodes);
+    originNodes = document.children;
+    _flattenNodes(originNodes, flatNodes);
+    markdownWidgetList = MarkdownRender().renderList(flatNodes);
   }
 
   @override
   void dispose() {
     super.dispose();
-    for (final node in nodes) {
-      node.dispose();
-    }
+    // for (final node in originNodes) {
+    //   node.dispose();
+    // }
+    // for (final node in flatNodes) {
+    //   node.dispose();
+    // }
   }
 
   @override
@@ -94,6 +98,16 @@ class _EditPartState extends ConsumerState<EditPart>
     );
   }
 
+  void _flattenNodes(List<Node> sourceNodes, List<Node> targetNodes) {
+    for (final node in sourceNodes) {
+      if (node is Block && node.children != null && node.children!.isNotEmpty) {
+        _flattenNodes(node.children!, targetNodes);
+      } else {
+        targetNodes.add(node);
+      }
+    }
+  }
+
   (List<int>, List<double>) _getVisibleNodeIndices() {
     if (scrollController2.positions.isEmpty) return ([], []);
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
@@ -105,8 +119,8 @@ class _EditPartState extends ConsumerState<EditPart>
     final List<int> visibleIndices = [];
     final List<double> cumulativeHeights = [];
     double currentHeight = 0;
-    for (int i = 0; i < nodes.length; i++) {
-      currentHeight += nodes[i].textHeight;
+    for (int i = 0; i < flatNodes.length; i++) {
+      currentHeight += flatNodes[i].textHeight;
       if (currentHeight >= scrollStart && currentHeight <= scrollEnd) {
         visibleIndices.add(i);
         cumulativeHeights.add(currentHeight);
@@ -143,10 +157,10 @@ class _EditPartState extends ConsumerState<EditPart>
           behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
           child: ListView.builder(
             controller: scrollController1,
-            itemCount: nodes.length,
+            itemCount: flatNodes.length,
             itemBuilder: (context, index) {
               return ValueListenableBuilder<double>(
-                valueListenable: nodes[index].textHeightNotifier,
+                valueListenable: flatNodes[index].textHeightNotifier,
                 builder: (context, height, child) {
                   return Row(
                     children: [
@@ -173,9 +187,9 @@ class _EditPartState extends ConsumerState<EditPart>
     return Expanded(
       child: ListView.builder(
         controller: scrollController2,
-        itemCount: nodes.length,
+        itemCount: flatNodes.length,
         itemBuilder: (context, index) {
-          return nodes[index].isEditing
+          return flatNodes[index].isEditing
               ? _buildEditingWidget(index)
               : _buildRenderingWidget(index);
         },
@@ -196,18 +210,18 @@ class _EditPartState extends ConsumerState<EditPart>
         onKeyEvent: (node, event) => _onKeyEvent(event, index),
         child: GestureDetector(
           child: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: nodes[index].controller,
+            valueListenable: flatNodes[index].controller,
             builder: (context, value, child) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 _updateNodeHeight(index);
               });
               return EditableText(
-                key: nodes[index].key,
-                controller: nodes[index].controller,
-                focusNode: nodes[index].focusNode,
+                key: flatNodes[index].key,
+                controller: flatNodes[index].controller,
+                focusNode: flatNodes[index].focusNode,
                 cursorColor: Colors.blue,
                 backgroundCursorColor: Colors.blue,
-                style: nodes[index].style,
+                style: flatNodes[index].style,
                 showCursor: true,
                 selectionColor: Colors.red,
                 rendererIgnoresPointer: true,
@@ -230,25 +244,25 @@ class _EditPartState extends ConsumerState<EditPart>
   void _updateNodeHeight(int index) {
     final textPainter = TextPainter(
       text: TextSpan(
-        text: nodes[index].controller.text,
-        style: nodes[index].style,
+        text: flatNodes[index].controller.text,
+        style: flatNodes[index].style,
       ),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: MediaQuery.of(context).size.width);
 
     final newHeight = textPainter.height;
-    if (nodes[index].textHeight != newHeight) {
+    if (flatNodes[index].textHeight != newHeight) {
       setState(() {
-        nodes[index].textHeight = newHeight;
+        flatNodes[index].textHeight = newHeight;
       });
     }
   }
 
   void _onSingleTapUp(int index, TapDragUpDetails details) {
-    if (index < 0 || index >= nodes.length) {
+    if (index < 0 || index >= flatNodes.length) {
       return;
     }
-    final node = nodes[index];
+    final node = flatNodes[index];
     final nodeKey = node.key;
     final EditableTextState? editableTextState = nodeKey.currentState;
     if (editableTextState == null) {
@@ -269,7 +283,7 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _onDragSelectionStart(int index, TapDragStartDetails details) {
-    final currentNode = nodes[index];
+    final currentNode = flatNodes[index];
     final RenderEditable renderEditable =
         currentNode.key.currentState!.renderEditable;
     renderEditable.selectPositionAt(
@@ -281,7 +295,7 @@ class _EditPartState extends ConsumerState<EditPart>
   void _onDragSelectionUpdate(int index, TapDragUpdateDetails details) {
     final mouseIndex = _getLineIndex(details.globalPosition.dy);
     if (mouseIndex == -1 || mouseIndex == index) {
-      final renderEditable = nodes[index].key.currentState!.renderEditable;
+      final renderEditable = flatNodes[index].key.currentState!.renderEditable;
       renderEditable.selectPositionAt(
         from: details.globalPosition - details.offsetFromOrigin,
         to: details.globalPosition,
@@ -294,7 +308,7 @@ class _EditPartState extends ConsumerState<EditPart>
     setState(() {
       final bool currentSelectingUp = mouseIndex < index;
       if (lastMouseIndex != -1 && currentSelectingUp != isSelectingUp) {
-        for (final node in nodes) {
+        for (final node in flatNodes) {
           node.isEditing = false;
           node.controller.selection = const TextSelection.collapsed(offset: 0);
         }
@@ -304,30 +318,30 @@ class _EditPartState extends ConsumerState<EditPart>
       final int startIndex = isSelectingUp ? mouseIndex : index;
       final int endIndex = isSelectingUp ? index : mouseIndex;
       for (int i = startIndex; i <= endIndex; i++) {
-        nodes[i].isEditing = true;
+        flatNodes[i].isEditing = true;
         if (i == startIndex) {
-          nodes[i].controller.selection = TextSelection(
+          flatNodes[i].controller.selection = TextSelection(
             baseOffset: 0,
-            extentOffset: nodes[i].controller.text.length,
+            extentOffset: flatNodes[i].controller.text.length,
           );
         } else if (i == endIndex) {
-          nodes[i].controller.selection = TextSelection(
+          flatNodes[i].controller.selection = TextSelection(
             baseOffset: 0,
             extentOffset: isSelectingUp
-                ? nodes[i].controller.selection.extentOffset
-                : nodes[i].controller.text.length,
+                ? flatNodes[i].controller.selection.extentOffset
+                : flatNodes[i].controller.text.length,
           );
         } else {
-          nodes[i].controller.selection = TextSelection(
+          flatNodes[i].controller.selection = TextSelection(
             baseOffset: 0,
-            extentOffset: nodes[i].controller.text.length,
+            extentOffset: flatNodes[i].controller.text.length,
           );
         }
       }
-      for (int i = 0; i < nodes.length; i++) {
+      for (int i = 0; i < flatNodes.length; i++) {
         if (i < startIndex || i > endIndex) {
-          nodes[i].isEditing = false;
-          nodes[i].controller.selection =
+          flatNodes[i].isEditing = false;
+          flatNodes[i].controller.selection =
               const TextSelection.collapsed(offset: 0);
         }
       }
@@ -364,20 +378,14 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _onChange(int index, String value) {
-    final currentSelection = nodes[index].controller.selection;
+    final currentSelection = flatNodes[index].controller.selection;
     setState(() {
-      if (nodes[index] is CodeBlockMarker || nodes[index] is CodeLine) {
-        nodes[index] =
-            StringToDocumentConverter(context).convertLine(value, true);
-      } else {
-        nodes[index] =
-            StringToDocumentConverter(context).convertLine(value, false);
-      }
-      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
-      nodes[index].isEditing = true;
+      flatNodes[index] = StringToDocumentConverter(context).convertLine(value);
+      markdownWidgetList[index] = MarkdownRender().render(flatNodes[index]);
+      flatNodes[index].isEditing = true;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[index].controller.selection = currentSelection;
-        nodes[index].focusNode.requestFocus();
+        flatNodes[index].controller.selection = currentSelection;
+        flatNodes[index].focusNode.requestFocus();
       });
       _updateDocument();
     });
@@ -385,25 +393,25 @@ class _EditPartState extends ConsumerState<EditPart>
 
   void _onEditingComplete(int index) {
     setState(() {
-      markdownWidgetList[index] = MarkdownRender().render(nodes[index]);
-      final newNode = nodes[index].createNewLine();
-      if (index < nodes.length - 1) {
-        nodes.insert(index + 1, newNode);
+      markdownWidgetList[index] = MarkdownRender().render(flatNodes[index]);
+      final newNode = flatNodes[index].createNewLine();
+      if (index < flatNodes.length - 1) {
+        flatNodes.insert(index + 1, newNode);
         markdownWidgetList.insert(
           index + 1,
-          MarkdownRender().render(nodes[index + 1]),
+          MarkdownRender().render(flatNodes[index + 1]),
         );
-        nodes[index + 1].isEditing = true;
+        flatNodes[index + 1].isEditing = true;
       } else {
-        nodes.add(newNode);
+        flatNodes.add(newNode);
         markdownWidgetList.add(
-          MarkdownRender().render(nodes[index + 1]),
+          MarkdownRender().render(flatNodes[index + 1]),
         );
-        nodes[nodes.length - 1].isEditing = true;
+        flatNodes[flatNodes.length - 1].isEditing = true;
       }
-      nodes[index].isEditing = false;
+      flatNodes[index].isEditing = false;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        nodes[index + 1].focusNode.requestFocus();
+        flatNodes[index + 1].focusNode.requestFocus();
       });
       _updateDocument();
     });
@@ -419,11 +427,11 @@ class _EditPartState extends ConsumerState<EditPart>
       onTapUp: (details) {
         setState(() {
           _resetAll();
-          nodes[index].isEditing = true;
-          nodes[index].controller.clear();
-          nodes[index].controller.text = nodes[index].rawText;
+          flatNodes[index].isEditing = true;
+          flatNodes[index].controller.clear();
+          flatNodes[index].controller.text = flatNodes[index].rawText;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            nodes[index].focusNode.requestFocus();
+            flatNodes[index].focusNode.requestFocus();
           });
         });
       },
@@ -433,30 +441,31 @@ class _EditPartState extends ConsumerState<EditPart>
 
   void _selectAll(int index) {
     setState(() {
-      for (var i = 0; i < nodes.length; i++) {
-        nodes[i].isEditing = true;
-        nodes[i].controller.selection = TextSelection(
+      for (var i = 0; i < flatNodes.length; i++) {
+        flatNodes[i].isEditing = true;
+        flatNodes[i].controller.selection = TextSelection(
           baseOffset: 0,
-          extentOffset: nodes[i].controller.text.length,
+          extentOffset: flatNodes[i].controller.text.length,
         );
       }
     });
   }
 
   void _onDelete(int index) {
-    if (nodes[index].text.isEmpty && nodes[index].controller.text.isEmpty) {
+    if (flatNodes[index].text.isEmpty &&
+        flatNodes[index].controller.text.isEmpty) {
       if (index > 0) {
         setState(() {
-          nodes.removeAt(index);
+          flatNodes.removeAt(index);
           markdownWidgetList.removeAt(index);
-          nodes[index - 1].isEditing = true;
+          flatNodes[index - 1].isEditing = true;
           fileString = document.toString();
           widget.file.writeAsStringSync(fileString);
-          final int newOffset = nodes[index - 1].rawText.length;
-          nodes[index - 1].controller.selection =
+          final int newOffset = flatNodes[index - 1].rawText.length;
+          flatNodes[index - 1].controller.selection =
               TextSelection.collapsed(offset: newOffset);
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            nodes[index - 1].focusNode.requestFocus();
+            flatNodes[index - 1].focusNode.requestFocus();
           });
           _updateDocument();
         });
@@ -468,29 +477,29 @@ class _EditPartState extends ConsumerState<EditPart>
     if (index > 0) {
       setState(() {
         _resetAll();
-        nodes[index].isEditing = false;
-        nodes[index - 1].isEditing = true;
-        final int newOffset = nodes[index - 1].rawText.length;
-        nodes[index - 1].controller.selection =
+        flatNodes[index].isEditing = false;
+        flatNodes[index - 1].isEditing = true;
+        final int newOffset = flatNodes[index - 1].rawText.length;
+        flatNodes[index - 1].controller.selection =
             TextSelection.collapsed(offset: newOffset);
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index - 1].focusNode.requestFocus();
+          flatNodes[index - 1].focusNode.requestFocus();
         });
       });
     }
   }
 
   void _onArrowDown(int index) {
-    if (index < nodes.length - 1) {
+    if (index < flatNodes.length - 1) {
       setState(() {
         _resetAll();
-        nodes[index].isEditing = false;
-        nodes[index + 1].isEditing = true;
-        final int newOffset = nodes[index + 1].rawText.length;
-        nodes[index + 1].controller.selection =
+        flatNodes[index].isEditing = false;
+        flatNodes[index + 1].isEditing = true;
+        final int newOffset = flatNodes[index + 1].rawText.length;
+        flatNodes[index + 1].controller.selection =
             TextSelection.collapsed(offset: newOffset);
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index + 1].focusNode.requestFocus();
+          flatNodes[index + 1].focusNode.requestFocus();
         });
       });
     }
@@ -505,9 +514,10 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _resetAll() {
-    for (int i = 0; i < nodes.length; i++) {
-      nodes[i].controller.selection = const TextSelection.collapsed(offset: 0);
-      nodes[i].isEditing = false;
+    for (int i = 0; i < flatNodes.length; i++) {
+      flatNodes[i].controller.selection =
+          const TextSelection.collapsed(offset: 0);
+      flatNodes[i].isEditing = false;
     }
   }
 
@@ -520,49 +530,49 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _handleSelectionExtension(int index, bool isLeft) {
-    final currentNode = nodes[index];
+    final currentNode = flatNodes[index];
     final selection = currentNode.controller.selection;
     if (isLeft && selection.extentOffset == 0 && index > 0) {
       setState(() {
-        final int newOffset = nodes[index - 1].rawText.length;
-        nodes[index - 1].isEditing = true;
+        final int newOffset = flatNodes[index - 1].rawText.length;
+        flatNodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index - 1].focusNode.requestFocus();
-          nodes[index - 1].controller.selection =
+          flatNodes[index - 1].focusNode.requestFocus();
+          flatNodes[index - 1].controller.selection =
               TextSelection.collapsed(offset: newOffset);
-          nodes[index].controller.selection = selection;
+          flatNodes[index].controller.selection = selection;
         });
       });
     } else if (!isLeft &&
         selection.extentOffset == currentNode.rawText.length &&
-        index < nodes.length - 1) {
+        index < flatNodes.length - 1) {
       setState(() {
-        nodes[index + 1].isEditing = true;
+        flatNodes[index + 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index + 1].focusNode.requestFocus();
-          nodes[index].controller.selection = selection;
+          flatNodes[index + 1].focusNode.requestFocus();
+          flatNodes[index].controller.selection = selection;
         });
       });
     }
   }
 
   void _moveCursor(int index, bool isLeft) {
-    final currentNode = nodes[index];
+    final currentNode = flatNodes[index];
     final selection = currentNode.controller.selection;
     setState(() {
       if (isLeft && selection.baseOffset == 0 && index > 0) {
-        nodes[index].isEditing = false;
-        nodes[index - 1].isEditing = true;
+        flatNodes[index].isEditing = false;
+        flatNodes[index - 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index - 1].focusNode.requestFocus();
+          flatNodes[index - 1].focusNode.requestFocus();
         });
       } else if (!isLeft &&
           selection.baseOffset == currentNode.rawText.length &&
-          index < nodes.length - 1) {
-        nodes[index].isEditing = false;
-        nodes[index + 1].isEditing = true;
+          index < flatNodes.length - 1) {
+        flatNodes[index].isEditing = false;
+        flatNodes[index + 1].isEditing = true;
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          nodes[index + 1].focusNode.requestFocus();
+          flatNodes[index + 1].focusNode.requestFocus();
         });
       }
     });

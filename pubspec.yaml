@@ -28,26 +28,19 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  # dotted_border: ^2.1.0
-  # equatable: ^2.0.5
   file_selector: ^1.0.3
   flex_color_scheme: ^7.3.1
   flutter:
     sdk: flutter
   flutter_context_menu: ^0.2.0
   flutter_emoji: ^2.5.1
-  flutter_highlighting: ^0.9.0+11.8.0
+  flutter_highlighter: ^0.1.1
   flutter_riverpod: ^2.4.9
   go_router: ^13.2.4
-  # http: ^1.2.1
   just_the_tooltip: ^0.0.12
   latext: ^0.4.1
-  # layout: ^1.0.5
   logger: ^2.3.0
-  # open_filex: ^4.4.0
-  # readmore: ^3.0.0
   riverpod_annotation: ^2.3.3
-  # super_clipboard: ^0.8.17
   url_launcher: ^6.3.0
 
 dev_dependencies:
