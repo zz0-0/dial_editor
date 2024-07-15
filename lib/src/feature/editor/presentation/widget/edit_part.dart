@@ -469,7 +469,7 @@ class _EditPartState extends ConsumerState<EditPart>
   }
 
   void _updateDocument() {
-    fileString = document.toString();
+    fileString = flatNodes.map((node) => node.toString()).join("\n");
     widget.file.writeAsStringSync(fileString);
   }
 

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_marker.dart';
-// import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/list/ordered_list.dart';
@@ -52,7 +51,8 @@ class StringToDocumentConverter extends Converter<String, Document> {
           isInCodeBlock = true;
           final match = codeBlockRegex.firstMatch(line);
           language = match?.group(0);
-          block!.children!.add(
+          block!.language = language;
+          block.children!.add(
             CodeBlockMarker(
               context: context,
               rawText: line,

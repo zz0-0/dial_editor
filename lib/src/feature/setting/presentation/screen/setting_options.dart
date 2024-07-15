@@ -14,11 +14,6 @@ enum SettingNavigation {
     icon: Icon(Icons.keyboard_outlined),
     selectedIcon: Icon(Icons.keyboard),
   );
-  // setting(
-  //   text: "Setting",
-  //   // icon: Icon(Icons.admin_panel_settings_outlined),
-  //   // selectedIcon: Icon(Icons.admin_panel_settings),
-  // );
 
   final String text;
   final Icon icon;

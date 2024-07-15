@@ -56,12 +56,5 @@ class Math extends Inline {
         style: style,
       ),
     );
-
-    // return RichText(
-    //   text: TextSpan(
-    //     style: Theme.of(super.context!).textTheme.titleSmall,
-    //     children: textSpans,
-    //   ),
-    // );
   }
 }

@@ -4,7 +4,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class CodeBlock extends Block with ChangeNotifier {
-  final String? language;
+  String? language;
   GlobalKey blockKey;
 
   CodeBlock({
