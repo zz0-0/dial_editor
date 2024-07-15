@@ -10,7 +10,10 @@ class Link extends Inline {
   String url = "";
   String linkText = "Link";
 
-  Link({required super.context, required super.rawText}) {
+  Link({
+    required super.context,
+    required super.rawText,
+  }) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
   }
@@ -32,7 +35,7 @@ class Link extends Inline {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.bodyMedium!.fontSize,
       color: Colors.blue,
@@ -41,7 +44,7 @@ class Link extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: context, rawText: "");
+    return TextNode(context: super.context, rawText: "");
   }
 
   @override

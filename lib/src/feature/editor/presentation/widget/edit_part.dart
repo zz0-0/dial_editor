@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_provider.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
@@ -50,8 +54,18 @@ class _EditPartState extends ConsumerState<EditPart>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    document = DocumentCodec(context).encode(fileString);
+    document = DocumentCodec(ref, context).encode(fileString);
     originNodes = document.children;
+    for (final node in originNodes) {
+      if (node is CodeBlock) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref
+              .read(codeBlockNotifierProvider(node.key).notifier)
+              .updateCodeBlock(node);
+        });
+      }
+    }
+
     _flattenNodes(originNodes, flatNodes);
     markdownWidgetList = MarkdownRender().renderList(flatNodes);
   }
@@ -228,7 +242,12 @@ class _EditPartState extends ConsumerState<EditPart>
                 enableInteractiveSelection: true,
                 paintCursorAboveText: true,
                 onChanged: (value) {
-                  _onChange(index, value);
+                  _onChange(
+                    index,
+                    value,
+                    flatNodes[index] is CodeLine ||
+                        flatNodes[index] is CodeBlockMarker,
+                  );
                 },
                 onEditingComplete: () {
                   _onEditingComplete(index);
@@ -377,10 +396,42 @@ class _EditPartState extends ConsumerState<EditPart>
     return KeyEventResult.ignored;
   }
 
-  void _onChange(int index, String value) {
+  void _onChange(int index, String value, bool isInCodeBlock) {
     final currentSelection = flatNodes[index].controller.selection;
     setState(() {
-      flatNodes[index] = StringToDocumentConverter(context).convertLine(value);
+      if (flatNodes[index] is CodeLine) {
+        ref
+            .read(
+              codeBlockNotifierProvider(
+                (flatNodes[index] as CodeLine).parentKey,
+              ).notifier,
+            )
+            .updateLine(index, value);
+        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
+          line: value,
+          isInCodeBlock: isInCodeBlock,
+          language: (flatNodes[index] as CodeLine).language,
+          key: (flatNodes[index] as CodeLine).parentKey,
+        );
+      } else if (flatNodes[index] is CodeBlockMarker) {
+        ref
+            .read(
+              codeBlockNotifierProvider(
+                (flatNodes[index] as CodeBlockMarker).parentKey,
+              ).notifier,
+            )
+            .updateLine(index, value);
+        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
+          line: value,
+          isInCodeBlock: isInCodeBlock,
+          key: (flatNodes[index] as CodeBlockMarker).parentKey,
+        );
+      } else {
+        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
+          line: value,
+          isInCodeBlock: isInCodeBlock,
+        );
+      }
       markdownWidgetList[index] = MarkdownRender().render(flatNodes[index]);
       flatNodes[index].isEditing = true;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

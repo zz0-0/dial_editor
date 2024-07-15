@@ -1,16 +1,19 @@
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
 import 'package:flutter_highlighter/themes/dark.dart';
 import 'package:flutter_highlighter/themes/github.dart';
 
-class CodeLine extends Node {
+class CodeLine extends Node with ChangeNotifier {
   final String? language;
+  final GlobalKey parentKey;
 
   CodeLine({
     required super.context,
     required this.language,
     required super.rawText,
+    required this.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -18,9 +21,10 @@ class CodeLine extends Node {
   @override
   Node createNewLine() {
     return CodeLine(
-      context: context,
+      context: super.context,
       language: language,
       rawText: "",
+      parentKey: parentKey,
     );
   }
 
@@ -28,7 +32,7 @@ class CodeLine extends Node {
   Widget render() {
     updateStyle();
     updateTextHeight();
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
 
     return HighlightView(
       rawText,
@@ -54,5 +58,24 @@ class CodeLine extends Node {
   @override
   String toString() {
     return rawText;
+  }
+
+  CodeBlock? get parent => null;
+
+  set parent(CodeBlock? parent) {
+    this.parent = parent;
+  }
+
+  CodeLine copyWith({
+    BuildContext? context,
+    String? language,
+    String? rawText,
+  }) {
+    return CodeLine(
+      context: super.context,
+      language: language ?? this.language,
+      rawText: rawText ?? this.rawText,
+      parentKey: parentKey,
+    );
   }
 }

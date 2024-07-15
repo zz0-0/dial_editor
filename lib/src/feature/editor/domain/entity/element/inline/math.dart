@@ -6,13 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:latext/latext.dart';
 
 class Math extends Inline {
-  Math({required super.context, required super.rawText}) {
+  Math({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
   @override
   Node createNewLine() {
-    return TextNode(context: context, rawText: "");
+    return TextNode(context: super.context, rawText: "");
   }
 
   @override
@@ -24,7 +27,7 @@ class Math extends Inline {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
     );
@@ -56,7 +59,7 @@ class Math extends Inline {
 
     // return RichText(
     //   text: TextSpan(
-    //     style: Theme.of(context).textTheme.titleSmall,
+    //     style: Theme.of(super.context!).textTheme.titleSmall,
     //     children: textSpans,
     //   ),
     // );

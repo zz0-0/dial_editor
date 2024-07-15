@@ -26,7 +26,7 @@ class Quote extends Block {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
       fontStyle: FontStyle.italic,
@@ -41,7 +41,7 @@ class Quote extends Block {
 
   @override
   Quote createNewLine() {
-    return Quote(context: context, rawText: "> ");
+    return Quote(context: super.context, rawText: "> ");
   }
 
   Widget _buildRichText() {

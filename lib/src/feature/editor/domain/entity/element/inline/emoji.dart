@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
 class EmojiNode extends Inline {
-  EmojiNode({required super.context, required super.rawText}) {
+  EmojiNode({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
@@ -30,7 +33,7 @@ class EmojiNode extends Inline {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
     );
@@ -38,7 +41,7 @@ class EmojiNode extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: context, rawText: "");
+    return TextNode(context: super.context, rawText: "");
   }
 
   @override
@@ -49,7 +52,7 @@ class EmojiNode extends Inline {
   Widget _buildEmoji() {
     final parser = EmojiParser();
     final parsedEmoji = parser.emojify(rawText);
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     return Text(
       parsedEmoji,
       style: TextStyle(

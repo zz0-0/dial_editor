@@ -3,7 +3,10 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class TextNode extends Inline {
-  TextNode({required super.context, required super.rawText}) {
+  TextNode({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
@@ -34,6 +37,6 @@ class TextNode extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: context, rawText: "");
+    return TextNode(context: super.context, rawText: "");
   }
 }

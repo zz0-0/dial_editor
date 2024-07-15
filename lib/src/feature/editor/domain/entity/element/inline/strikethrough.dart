@@ -5,7 +5,10 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Strikethrough extends Inline {
-  Strikethrough({required super.context, required super.rawText}) {
+  Strikethrough({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
@@ -27,7 +30,7 @@ class Strikethrough extends Inline {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
       decoration: TextDecoration.lineThrough,
@@ -41,7 +44,7 @@ class Strikethrough extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: context, rawText: "");
+    return TextNode(context: super.context, rawText: "");
   }
 
   Widget _buildRichText() {
@@ -86,7 +89,7 @@ class Strikethrough extends Inline {
 
     return RichText(
       text: TextSpan(
-        style: Theme.of(context).textTheme.titleSmall,
+        style: Theme.of(super.context).textTheme.titleSmall,
         children: textSpans,
       ),
     );

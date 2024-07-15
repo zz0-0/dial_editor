@@ -29,7 +29,7 @@ class Heading extends Block {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     switch (level) {
       case 1:
         style = theme.textTheme.headlineLarge!
@@ -71,6 +71,6 @@ class Heading extends Block {
 
   @override
   Node createNewLine() {
-    return TextNode(context: context, rawText: "");
+    return TextNode(context: super.context, rawText: "");
   }
 }

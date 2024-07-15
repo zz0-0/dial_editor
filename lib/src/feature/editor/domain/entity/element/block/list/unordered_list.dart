@@ -2,7 +2,10 @@ import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:flutter/material.dart';
 
 class UnorderedList extends Node {
-  UnorderedList({required super.context, required super.rawText}) {
+  UnorderedList({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
@@ -22,7 +25,7 @@ class UnorderedList extends Node {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
     );
@@ -35,7 +38,7 @@ class UnorderedList extends Node {
 
   @override
   Node createNewLine() {
-    return UnorderedList(context: context, rawText: "- ");
+    return UnorderedList(context: super.context, rawText: "- ");
   }
 
   Widget _buildRichText() {

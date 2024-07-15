@@ -3,7 +3,10 @@ import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class OrderedList extends Node {
-  OrderedList({required super.context, required super.rawText}) {
+  OrderedList({
+    required super.context,
+    required super.rawText,
+  }) {
     controller.text = rawText;
   }
 
@@ -23,7 +26,7 @@ class OrderedList extends Node {
 
   @override
   void updateStyle() {
-    final theme = Theme.of(context);
+    final theme = Theme.of(super.context);
     style = TextStyle(
       fontSize: theme.textTheme.titleSmall!.fontSize,
     );
@@ -42,9 +45,9 @@ class OrderedList extends Node {
       final currentNumber =
           int.tryParse(match.group(0)!.trim().replaceFirst('.', '')) ?? 0;
       final newNumber = currentNumber + 1;
-      return OrderedList(context: context, rawText: "$newNumber. ");
+      return OrderedList(context: super.context, rawText: "$newNumber. ");
     }
-    return OrderedList(context: context, rawText: "1. ");
+    return OrderedList(context: super.context, rawText: "1. ");
   }
 
   Widget _buildRichText() {
