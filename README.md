@@ -39,12 +39,12 @@
     - [X]  Image
     - [ ]  Table
       - [ ]  Table block (https://github.com/zz0-0/dial_editor/issues/8)
-    - [ ]  Code
-      - [ ]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
+    - [x]  Code
+      - [x]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
     - [ ]  Footnote
     - [ ]  Math Equation (https://github.com/zz0-0/dial_editor/issues/19)
     - [ ]  Diagram (https://github.com/zz0-0/dial_editor/issues/9)
-      - [ ]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
+      - [x]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
     - [ ]  Table of content
     - [ ]  Video
     - [ ]  Page breaks
