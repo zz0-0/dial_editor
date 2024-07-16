@@ -13,6 +13,7 @@ class Link extends Inline {
   Link({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
@@ -44,7 +45,11 @@ class Link extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: super.context, rawText: "");
+    return TextNode(
+      context: super.context,
+      rawText: "",
+      parentKey: super.parentKey,
+    );
   }
 
   @override

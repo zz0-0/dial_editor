@@ -14,6 +14,9 @@ class Heading extends Block {
     required this.level,
     super.style,
     super.text,
+    super.children,
+    super.parentKey,
+    required super.blockKey,
   }) {
     controller.text = rawText;
   }
@@ -71,6 +74,10 @@ class Heading extends Block {
 
   @override
   Node createNewLine() {
-    return TextNode(context: super.context, rawText: "");
+    return TextNode(
+      context: super.context,
+      rawText: "",
+      parentKey: super.parentKey,
+    );
   }
 }

@@ -5,6 +5,8 @@ class Quote extends Block {
   Quote({
     required super.context,
     required super.rawText,
+    required super.blockKey,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -41,7 +43,12 @@ class Quote extends Block {
 
   @override
   Quote createNewLine() {
-    return Quote(context: super.context, rawText: "> ");
+    return Quote(
+      context: super.context,
+      rawText: "> ",
+      blockKey: super.blockKey,
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {

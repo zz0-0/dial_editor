@@ -14,6 +14,7 @@ class ImageNode extends Inline {
   ImageNode({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
@@ -65,7 +66,11 @@ class ImageNode extends Inline {
 
   @override
   Node createNewLine() {
-    return ImageNode(context: super.context, rawText: "");
+    return ImageNode(
+      context: super.context,
+      rawText: "",
+      parentKey: super.parentKey,
+    );
   }
 
   @override

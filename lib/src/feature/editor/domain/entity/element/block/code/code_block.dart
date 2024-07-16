@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 class CodeBlock extends Block with ChangeNotifier {
   String? language;
-  GlobalKey blockKey;
 
   CodeBlock({
     required super.context,
-    required this.blockKey,
+    required super.blockKey,
+    required super.parentKey,
     this.language,
     super.children,
   }) : super(rawText: '') {
@@ -48,7 +48,11 @@ class CodeBlock extends Block with ChangeNotifier {
 
   @override
   Node createNewLine() {
-    return TextNode(context: super.context, rawText: '');
+    return TextNode(
+      context: super.context,
+      rawText: '',
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {
@@ -67,6 +71,7 @@ class CodeBlock extends Block with ChangeNotifier {
       blockKey: key,
       language: language ?? this.language,
       children: children ?? this.children,
+      parentKey: super.parentKey,
     );
   }
 }

@@ -7,6 +7,8 @@ class Footnote extends Block {
     required super.context,
     required super.rawText,
     required super.children,
+    required super.blockKey,
+    required super.parentKey,
   });
 
   @override

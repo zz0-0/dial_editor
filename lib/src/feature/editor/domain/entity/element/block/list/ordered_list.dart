@@ -6,6 +6,7 @@ class OrderedList extends Node {
   OrderedList({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -45,9 +46,17 @@ class OrderedList extends Node {
       final currentNumber =
           int.tryParse(match.group(0)!.trim().replaceFirst('.', '')) ?? 0;
       final newNumber = currentNumber + 1;
-      return OrderedList(context: super.context, rawText: "$newNumber. ");
+      return OrderedList(
+        context: super.context,
+        rawText: "$newNumber. ",
+        parentKey: super.parentKey,
+      );
     }
-    return OrderedList(context: super.context, rawText: "1. ");
+    return OrderedList(
+      context: super.context,
+      rawText: "1. ",
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {

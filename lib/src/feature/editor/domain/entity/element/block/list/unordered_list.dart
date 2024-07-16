@@ -5,6 +5,7 @@ class UnorderedList extends Node {
   UnorderedList({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -38,7 +39,11 @@ class UnorderedList extends Node {
 
   @override
   Node createNewLine() {
-    return UnorderedList(context: super.context, rawText: "- ");
+    return UnorderedList(
+      context: super.context,
+      rawText: "- ",
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {

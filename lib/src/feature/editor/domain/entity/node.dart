@@ -12,10 +12,12 @@ abstract class Node {
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
   final ValueNotifier<double> textHeightNotifier = ValueNotifier(0);
   late Widget widget;
+  final GlobalKey? parentKey;
 
   Node({
     required this.context,
     required this.rawText,
+    required this.parentKey,
     this.style = const TextStyle(),
     this.text = "",
   }) {

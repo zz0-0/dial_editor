@@ -8,6 +8,7 @@ class Strikethrough extends Inline {
   Strikethrough({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -44,7 +45,11 @@ class Strikethrough extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: super.context, rawText: "");
+    return TextNode(
+      context: super.context,
+      rawText: "",
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {

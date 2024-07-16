@@ -6,6 +6,7 @@ class TaskList extends Node {
   TaskList({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -43,7 +44,11 @@ class TaskList extends Node {
 
   @override
   Node createNewLine() {
-    return TaskList(context: super.context, rawText: "- [ ] ");
+    return TaskList(
+      context: super.context,
+      rawText: "- [ ] ",
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {

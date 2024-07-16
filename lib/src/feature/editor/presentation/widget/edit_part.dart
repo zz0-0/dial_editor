@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/block.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_marker.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_block_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code_line.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_block_provider.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_line.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/node.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
@@ -56,6 +57,7 @@ class _EditPartState extends ConsumerState<EditPart>
     super.didChangeDependencies();
     document = DocumentCodec(ref, context).encode(fileString);
     originNodes = document.children;
+
     for (final node in originNodes) {
       if (node is CodeBlock) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -84,6 +86,7 @@ class _EditPartState extends ConsumerState<EditPart>
   @override
   Widget build(BuildContext context) {
     bool isScrolling = false;
+
     return NotificationListener(
       onNotification: (ScrollNotification scrollInfo) {
         if (!isScrolling && scrollInfo.depth == 0) {
@@ -115,6 +118,9 @@ class _EditPartState extends ConsumerState<EditPart>
   void _flattenNodes(List<Node> sourceNodes, List<Node> targetNodes) {
     for (final node in sourceNodes) {
       if (node is Block && node.children != null && node.children!.isNotEmpty) {
+        if (node is Heading) {
+          targetNodes.add(node);
+        }
         _flattenNodes(node.children!, targetNodes);
       } else {
         targetNodes.add(node);
@@ -133,6 +139,7 @@ class _EditPartState extends ConsumerState<EditPart>
     final List<int> visibleIndices = [];
     final List<double> cumulativeHeights = [];
     double currentHeight = 0;
+
     for (int i = 0; i < flatNodes.length; i++) {
       currentHeight += flatNodes[i].textHeight;
       if (currentHeight >= scrollStart && currentHeight <= scrollEnd) {
@@ -141,16 +148,15 @@ class _EditPartState extends ConsumerState<EditPart>
       }
       if (currentHeight > scrollEnd) break;
     }
+
     return (visibleIndices, cumulativeHeights);
   }
 
   int _getLineIndex(double dy) {
     final (visibleIndices, cumulativeHeights) = _getVisibleNodeIndices();
     if (visibleIndices.isEmpty) return -1;
-
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return -1;
-
     final double verticalOffset = renderBox.localToGlobal(Offset.zero).dy;
     final double adjustedDy = dy - verticalOffset + scrollController2.offset;
 
@@ -159,6 +165,7 @@ class _EditPartState extends ConsumerState<EditPart>
         return visibleIndices[i];
       }
     }
+
     return visibleIndices.last;
   }
 
@@ -268,8 +275,8 @@ class _EditPartState extends ConsumerState<EditPart>
       ),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: MediaQuery.of(context).size.width);
-
     final newHeight = textPainter.height;
+
     if (flatNodes[index].textHeight != newHeight) {
       setState(() {
         flatNodes[index].textHeight = newHeight;
@@ -288,6 +295,7 @@ class _EditPartState extends ConsumerState<EditPart>
       return;
     }
     final RenderEditable renderEditable = editableTextState.renderEditable;
+
     try {
       _resetAll();
       final TapDownDetails tapDownDetails =
@@ -313,6 +321,7 @@ class _EditPartState extends ConsumerState<EditPart>
 
   void _onDragSelectionUpdate(int index, TapDragUpdateDetails details) {
     final mouseIndex = _getLineIndex(details.globalPosition.dy);
+
     if (mouseIndex == -1 || mouseIndex == index) {
       final renderEditable = flatNodes[index].key.currentState!.renderEditable;
       renderEditable.selectPositionAt(
@@ -322,8 +331,10 @@ class _EditPartState extends ConsumerState<EditPart>
       );
       return;
     }
+
     int lastMouseIndex = -1;
     bool isSelectingUp = false;
+
     setState(() {
       final bool currentSelectingUp = mouseIndex < index;
       if (lastMouseIndex != -1 && currentSelectingUp != isSelectingUp) {
@@ -373,37 +384,44 @@ class _EditPartState extends ConsumerState<EditPart>
         HardwareKeyboard.instance.isControlPressed) {
       _selectAll(index);
     }
+
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.backspace) {
       _onDelete(index);
     }
+
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowUp) {
       _onArrowUp(index);
     }
+
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowDown) {
       _onArrowDown(index);
     }
+
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       _onArrowLeft(index, HardwareKeyboard.instance.isShiftPressed);
     }
+
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
       _onArrowRight(index, HardwareKeyboard.instance.isShiftPressed);
     }
+
     return KeyEventResult.ignored;
   }
 
   void _onChange(int index, String value, bool isInCodeBlock) {
     final currentSelection = flatNodes[index].controller.selection;
+
     setState(() {
       if (flatNodes[index] is CodeLine) {
         ref
             .read(
               codeBlockNotifierProvider(
-                (flatNodes[index] as CodeLine).parentKey,
+                (flatNodes[index] as CodeLine).parentKey!,
               ).notifier,
             )
             .updateLine(index, value);
@@ -411,20 +429,27 @@ class _EditPartState extends ConsumerState<EditPart>
           line: value,
           isInCodeBlock: isInCodeBlock,
           language: (flatNodes[index] as CodeLine).language,
-          key: (flatNodes[index] as CodeLine).parentKey,
+          parentKey: (flatNodes[index] as CodeLine).parentKey,
         );
       } else if (flatNodes[index] is CodeBlockMarker) {
         ref
             .read(
               codeBlockNotifierProvider(
-                (flatNodes[index] as CodeBlockMarker).parentKey,
+                (flatNodes[index] as CodeBlockMarker).parentKey!,
               ).notifier,
             )
             .updateLine(index, value);
         flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
           line: value,
           isInCodeBlock: isInCodeBlock,
-          key: (flatNodes[index] as CodeBlockMarker).parentKey,
+          parentKey: (flatNodes[index] as CodeBlockMarker).parentKey,
+        );
+      } else if (flatNodes[index] is Heading) {
+        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
+          line: value,
+          isInCodeBlock: isInCodeBlock,
+          parentKey: (flatNodes[index] as Heading).parentKey,
+          blockKey: (flatNodes[index] as Heading).blockKey,
         );
       } else {
         flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
@@ -460,6 +485,7 @@ class _EditPartState extends ConsumerState<EditPart>
         );
         flatNodes[flatNodes.length - 1].isEditing = true;
       }
+
       flatNodes[index].isEditing = false;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         flatNodes[index + 1].focusNode.requestFocus();
@@ -583,6 +609,7 @@ class _EditPartState extends ConsumerState<EditPart>
   void _handleSelectionExtension(int index, bool isLeft) {
     final currentNode = flatNodes[index];
     final selection = currentNode.controller.selection;
+
     if (isLeft && selection.extentOffset == 0 && index > 0) {
       setState(() {
         final int newOffset = flatNodes[index - 1].rawText.length;
@@ -610,6 +637,7 @@ class _EditPartState extends ConsumerState<EditPart>
   void _moveCursor(int index, bool isLeft) {
     final currentNode = flatNodes[index];
     final selection = currentNode.controller.selection;
+
     setState(() {
       if (isLeft && selection.baseOffset == 0 && index > 0) {
         flatNodes[index].isEditing = false;
@@ -640,9 +668,11 @@ class CustomTextSelectionGestureDetectorBuilder
   })  : _state = state,
         _index = index,
         super(delegate: state);
+
   @override
   RenderEditable get renderEditable =>
       _state.editableTextKey.currentState!.renderEditable;
+
   @override
   void onSingleTapUp(TapDragUpDetails details) {
     _state._onSingleTapUp(_index, details);
@@ -650,6 +680,7 @@ class CustomTextSelectionGestureDetectorBuilder
 
   @override
   void onTapDown(TapDragDownDetails details) {}
+
   @override
   void onDragSelectionStart(TapDragStartDetails details) {
     _state._onDragSelectionStart(_index, details);

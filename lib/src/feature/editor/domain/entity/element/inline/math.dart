@@ -9,13 +9,18 @@ class Math extends Inline {
   Math({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
 
   @override
   Node createNewLine() {
-    return TextNode(context: super.context, rawText: "");
+    return TextNode(
+      context: super.context,
+      rawText: "",
+      parentKey: super.parentKey,
+    );
   }
 
   @override

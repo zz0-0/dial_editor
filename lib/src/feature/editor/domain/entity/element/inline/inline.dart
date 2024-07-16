@@ -6,5 +6,6 @@ abstract class Inline extends Node {
     required super.rawText,
     super.style,
     super.text,
+    required super.parentKey,
   });
 }

@@ -8,6 +8,7 @@ class BoldItalic extends Inline {
   BoldItalic({
     required super.context,
     required super.rawText,
+    required super.parentKey,
   }) {
     controller.text = rawText;
   }
@@ -45,7 +46,11 @@ class BoldItalic extends Inline {
 
   @override
   Node createNewLine() {
-    return TextNode(context: super.context, rawText: "");
+    return TextNode(
+      context: super.context,
+      rawText: "",
+      parentKey: super.parentKey,
+    );
   }
 
   Widget _buildRichText() {
