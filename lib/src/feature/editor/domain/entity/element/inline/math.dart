@@ -23,6 +23,9 @@ class Math extends Inline {
     );
   }
 
+  // @override
+  // double updateTextHeight() {}
+
   @override
   Widget render() {
     updateStyle();
@@ -54,10 +57,9 @@ class Math extends Inline {
 
   Widget _buildRichText() {
     text = rawText.replaceAll('\$', '').trim();
-
     return LaTexT(
       laTeXCode: Text(
-        text,
+        rawText,
         style: style,
       ),
     );

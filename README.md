@@ -15,7 +15,7 @@
 - [ ]  **Markdown Support**
   - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data. **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
     - [X]  Heading (https://github.com/zz0-0/dial_editor/issues/34)
-      - [ ]  Heading block (https://github.com/zz0-0/dial_editor/issues/38)
+      - [x]  Heading block (https://github.com/zz0-0/dial_editor/issues/38)
       - [ ]  Heading id (https://github.com/zz0-0/dial_editor/issues/35)
       - [ ]  Bidirectional link (https://github.com/zz0-0/dial_editor/issues/36)
     - [X]  Bold
@@ -42,7 +42,8 @@
     - [x]  Code
       - [x]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
     - [ ]  Footnote
-    - [ ]  Math Equation (https://github.com/zz0-0/dial_editor/issues/19)
+    - [x]  Math Equation (https://github.com/zz0-0/dial_editor/issues/19)
+      - [ ]  Math Block
     - [ ]  Diagram (https://github.com/zz0-0/dial_editor/issues/9)
       - [x]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
     - [ ]  Table of content

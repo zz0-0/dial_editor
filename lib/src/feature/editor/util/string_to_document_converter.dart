@@ -15,6 +15,7 @@ import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/hori
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/image.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/italic.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/link.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/math.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/strikethrough.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/subscript.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/inline/superscript.dart';
@@ -198,6 +199,12 @@ class StringToDocumentConverter extends Converter<String, Document> {
           rawText: line,
           parentKey: parentKey,
           blockKey: blockKey!,
+        );
+      } else if (inlineMathRegex.hasMatch(line)) {
+        return Math(
+          context: context,
+          rawText: line,
+          parentKey: parentKey,
         );
       } else if (boldItalicRegex.hasMatch(line)) {
         return BoldItalic(
