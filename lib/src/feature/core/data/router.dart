@@ -1,9 +1,9 @@
-import 'package:dial_editor/src/feature/core/presentation/screen/branch/file_branch.dart';
-import 'package:dial_editor/src/feature/core/presentation/screen/branch/search_branch.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/branch/file_branch.dart';
+import 'package:dial_editor/src/feature/core/presentation/widget/branch/search_branch.dart';
 import 'package:dial_editor/src/feature/core/presentation/widget/sidebar/sidebar.dart';
-import 'package:dial_editor/src/feature/setting/presentation/screen/setting_options.dart';
 import 'package:dial_editor/src/feature/setting/presentation/widget/appearance_setting.dart';
 import 'package:dial_editor/src/feature/setting/presentation/widget/keyboard_setting.dart';
+import 'package:dial_editor/src/feature/setting/presentation/widget/setting_options.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -417,46 +417,15 @@ class _EditPartState extends ConsumerState<EditPart>
     final currentSelection = flatNodes[index].controller.selection;
 
     setState(() {
-      if (flatNodes[index] is CodeLine) {
-        ref
-            .read(
-              codeBlockNotifierProvider(
-                (flatNodes[index] as CodeLine).parentKey!,
-              ).notifier,
-            )
-            .updateLine(index, value);
-        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
-          line: value,
-          isInCodeBlock: isInCodeBlock,
-          language: (flatNodes[index] as CodeLine).language,
-          parentKey: (flatNodes[index] as CodeLine).parentKey,
-        );
-      } else if (flatNodes[index] is CodeBlockMarker) {
-        ref
-            .read(
-              codeBlockNotifierProvider(
-                (flatNodes[index] as CodeBlockMarker).parentKey!,
-              ).notifier,
-            )
-            .updateLine(index, value);
-        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
-          line: value,
-          isInCodeBlock: isInCodeBlock,
-          parentKey: (flatNodes[index] as CodeBlockMarker).parentKey,
-        );
-      } else if (flatNodes[index] is Heading) {
-        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
-          line: value,
-          isInCodeBlock: isInCodeBlock,
-          parentKey: (flatNodes[index] as Heading).parentKey,
-          blockKey: (flatNodes[index] as Heading).blockKey,
-        );
-      } else {
-        flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
-          line: value,
-          isInCodeBlock: isInCodeBlock,
-        );
-      }
+      flatNodes[index] = StringToDocumentConverter(ref, context).convertLine(
+        line: value,
+        isInCodeBlock: isInCodeBlock,
+        parentKey: flatNodes[index].parentKey,
+        blockKey: flatNodes[index] is Block
+            ? (flatNodes[index] as Block).blockKey
+            : null,
+        index: index,
+      );
       markdownWidgetList[index] = MarkdownRender().render(flatNodes[index]);
       flatNodes[index].isEditing = true;
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

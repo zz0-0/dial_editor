@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_block.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_block_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/code/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/entity/element/block/list/ordered_list.dart';
@@ -143,9 +144,17 @@ class StringToDocumentConverter extends Converter<String, Document> {
     String? language,
     GlobalKey? parentKey,
     GlobalKey? blockKey,
+    int? index,
   }) {
     if (isInCodeBlock) {
       if (codeBlockRegex.hasMatch(line)) {
+        ref
+            .read(
+              codeBlockNotifierProvider(
+                parentKey!,
+              ).notifier,
+            )
+            .updateLine(index!, line);
         return CodeBlockMarker(
           context: context,
           rawText: line,
@@ -153,6 +162,13 @@ class StringToDocumentConverter extends Converter<String, Document> {
           parentKey: parentKey,
         );
       } else {
+        ref
+            .read(
+              codeBlockNotifierProvider(
+                parentKey!,
+              ).notifier,
+            )
+            .updateLine(index!, line);
         return CodeLine(
           context: context,
           language: language,
@@ -198,7 +214,7 @@ class StringToDocumentConverter extends Converter<String, Document> {
           level: level,
           rawText: line,
           parentKey: parentKey,
-          blockKey: blockKey!,
+          blockKey: blockKey ?? GlobalKey(),
         );
       } else if (inlineMathRegex.hasMatch(line)) {
         return Math(
