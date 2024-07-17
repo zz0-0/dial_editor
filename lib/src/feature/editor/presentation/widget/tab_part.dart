@@ -17,6 +17,7 @@ class TabPart extends ConsumerStatefulWidget {
 class _TabPartState extends ConsumerState<TabPart>
     with TickerProviderStateMixin {
   TabController? tabController;
+  View view = View.file;
 
   @override
   void initState() {
@@ -34,7 +35,6 @@ class _TabPartState extends ConsumerState<TabPart>
   Widget build(BuildContext context) {
     final openedFiles = ref.watch(openedFilesProvider);
     final String? selectedFile = ref.watch(selectedFileProvider);
-    View view = View.file;
 
     if (tabController?.length != openedFiles.length) {
       tabController = TabController(length: openedFiles.length, vsync: this);
