@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:dial_editor/src/feature/editor/domain/entity/document.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/document.dart';
 
 class DocumentToStringConverter extends Converter<Document, String> {
   @override

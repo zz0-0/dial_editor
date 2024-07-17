@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:dial_editor/src/feature/editor/presentation/widget/edit_part_provider.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/file_view_provider.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/domain/model/directory_node.dart';
 import 'package:dial_editor/src/feature/file_management/directory/file_directory/presentation/widget/directory_provider.dart';
 import 'package:flutter/material.dart';

@@ -41,12 +41,12 @@
       - [ ]  Table block (https://github.com/zz0-0/dial_editor/issues/8)
     - [x]  Code
       - [x]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
-    - [ ]  Footnote
+    - [ ]  Footnote (https://github.com/zz0-0/dial_editor/issues/11)
     - [x]  Math Equation (https://github.com/zz0-0/dial_editor/issues/19)
       - [ ]  Math Block
     - [ ]  Diagram (https://github.com/zz0-0/dial_editor/issues/9)
       - [x]  Code block (https://github.com/zz0-0/dial_editor/issues/6)
-    - [ ]  Table of content
+    - [ ]  Table of content (https://github.com/zz0-0/dial_editor/issues/10)
     - [ ]  Video
     - [ ]  Page breaks
   - [ ]  **Keyboard Shortcut**
@@ -72,14 +72,14 @@
   - [ ]  crdt
 - [ ]  **Export Options**: Enable users to export Markdown files to PDF, HTML, etc.
 - [ ]  **Spell Check**: Implement functionality to ensure error-free Markdown.
-- [ ]  **Version Control**: Track changes and allow users to revert to previous versions.
+- [ ]  **Version Control**: Track changes and allow users to revert to previous versions. (https://github.com/zz0-0/dial_editor/issues/12)
 - [ ]  **Third Party Integration**: Integrate with third-party services or APIs for extended functionality.
 - [X]  **Live Preview**: See your Markdown rendered in real-time.
 - [ ]  **Syntax Highlighting**: Easily distinguish between different elements of your Markdown.
 - [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
 - [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
 - [X]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
-- [ ]  Infinite Canvas: Interchangeable markdown canvas that constructs and edits your markdown file visually
+- [ ]  **Infinite Canvas**: Interchangeable markdown canvas that constructs and edits your markdown file visually (https://github.com/zz0-0/dial_editor/issues/16)
 
 ## 🖥️ Getting Started
 
