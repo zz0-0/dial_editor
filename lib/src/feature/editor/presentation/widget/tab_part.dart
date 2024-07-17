@@ -1,17 +1,20 @@
 import 'dart:io';
+import 'package:dial_editor/src/feature/editor/presentation/widget/canvas_view/infinite_canvas.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/file_view.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/file_view_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FileTabPart extends ConsumerStatefulWidget {
-  const FileTabPart({super.key});
+enum View { file, canvas }
+
+class TabPart extends ConsumerStatefulWidget {
+  const TabPart({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _FileTabPartState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TabPartState();
 }
 
-class _FileTabPartState extends ConsumerState<FileTabPart>
+class _TabPartState extends ConsumerState<TabPart>
     with TickerProviderStateMixin {
   TabController? tabController;
 
@@ -31,6 +34,7 @@ class _FileTabPartState extends ConsumerState<FileTabPart>
   Widget build(BuildContext context) {
     final openedFiles = ref.watch(openedFilesProvider);
     final String? selectedFile = ref.watch(selectedFileProvider);
+    View view = View.file;
 
     if (tabController?.length != openedFiles.length) {
       tabController = TabController(length: openedFiles.length, vsync: this);
@@ -75,8 +79,38 @@ class _FileTabPartState extends ConsumerState<FileTabPart>
       ),
       body: TabBarView(
         controller: tabController,
-        children:
-            openedFiles.map((file) => FileView(file: File(file))).toList(),
+        children: openedFiles
+            .map(
+              (file) => Column(
+                children: [
+                  SegmentedButton<View>(
+                    segments: const [
+                      ButtonSegment(
+                        value: View.file,
+                        label: Text('File'),
+                        icon: Icon(Icons.file_open),
+                      ),
+                      ButtonSegment(
+                        value: View.canvas,
+                        label: Text('Canvas'),
+                        icon: Icon(Icons.account_tree),
+                      ),
+                    ],
+                    selected: {view},
+                    onSelectionChanged: (Set<View> newView) {
+                      setState(() {
+                        view = newView.first;
+                      });
+                    },
+                  ),
+                  if (view == View.file)
+                    Expanded(child: FileView(file: File(file))),
+                  if (view == View.canvas)
+                    const Expanded(child: InfiniteCanvas()),
+                ],
+              ),
+            )
+            .toList(),
       ),
     );
   }
