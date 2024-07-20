@@ -7,6 +7,7 @@ import 'package:dial_editor/src/feature/editor/domain/model/element/block/code/c
 import 'package:dial_editor/src/feature/editor/domain/model/element/block/code/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/block/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/util/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/util/markdown_render.dart';
 import 'package:dial_editor/src/feature/editor/util/string_to_document_converter.dart';
@@ -57,6 +58,10 @@ class _FileViewState extends ConsumerState<FileView>
     super.didChangeDependencies();
     document = DocumentCodec(ref, context).encode(fileString);
     originNodes = document.children;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(documentChildrenProvider.notifier).setChildren(originNodes);
+    });
 
     for (final node in originNodes) {
       if (node is CodeBlock) {
