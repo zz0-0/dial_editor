@@ -78,8 +78,14 @@
 - [ ]  **Syntax Highlighting**: Easily distinguish between different elements of your Markdown.
 - [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
 - [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
-- [X]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
+- [ ]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.
+  - [x]  Flutter supports all platforms.
+  - [ ]  Desktop UI
+  - [ ]  Mobile UI
+  - [ ]  Web UI
 - [ ]  **Infinite Canvas**: Interchangeable markdown canvas that constructs and edits your markdown file visually (https://github.com/zz0-0/dial_editor/issues/16)
+  - [x]  standalone canvas view (https://github.com/zz0-0/dial_editor/issues/42)
+  - [ ]  integrate with markdown file (https://github.com/zz0-0/dial_editor/issues/43)
 
 ## 🖥️ Getting Started
 
