@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:dial_editor/main_provider.dart';
 import 'package:dial_editor/src/feature/core/data/router.dart';
 import 'package:dial_editor/src/feature/core/presentation/theme/app_theme.dart';
 import 'package:dial_editor/src/feature/core/presentation/theme/theme_provider.dart';
@@ -17,8 +17,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.watch(themeNotifierProvider);
-    final isDesktop =
-        Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+    final isDesktop = ref.read(isDesktopProvider);
     final app = MaterialApp.router(
       theme: lightTheme,
       darkTheme: darkTheme,

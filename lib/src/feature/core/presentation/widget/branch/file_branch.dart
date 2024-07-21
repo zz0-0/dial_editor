@@ -1,3 +1,4 @@
+import 'package:dial_editor/main_provider.dart';
 import 'package:dial_editor/src/feature/core/presentation/widget/sidepanel/side_panel_provider.dart';
 import 'package:dial_editor/src/feature/core/presentation/widget/topbar/top_bar_provider.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/tab_part.dart';
@@ -17,6 +18,7 @@ class FileBranch extends ConsumerStatefulWidget {
 class _FileBranchState extends ConsumerState<FileBranch> {
   @override
   Widget build(BuildContext context) {
+    final isDesktop = ref.read(isDesktopProvider);
     if (ref.watch(openFolderProvider)) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,14 +30,23 @@ class _FileBranchState extends ConsumerState<FileBranch> {
         ],
       );
     } else {
-      return Row(
-        children: [
-          if (ref.watch(fileEmptySidePanelProvider)) const EmptyDirectory(),
-          if (ref.watch(fileEmptySidePanelProvider))
-            const VerticalDivider(thickness: 1, width: 1),
-          const Expanded(child: Center(child: Text("Dial Editor"))),
-        ],
-      );
+      if (isDesktop) {
+        return Row(
+          children: [
+            if (ref.watch(fileEmptySidePanelProvider)) const EmptyDirectory(),
+            if (ref.watch(fileEmptySidePanelProvider))
+              const VerticalDivider(thickness: 1, width: 1),
+            const Expanded(child: Center(child: Text("Dial Editor"))),
+          ],
+        );
+      } else {
+        return Row(
+          children: [
+            if (ref.watch(fileProvider) != null)
+              const Expanded(child: TabPart()),
+          ],
+        );
+      }
     }
   }
 }
