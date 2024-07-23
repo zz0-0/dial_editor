@@ -5,19 +5,21 @@ abstract class Node {
   String rawText;
   String text;
   TextStyle style;
-  late TextEditingController controller;
   FocusNode focusNode = FocusNode();
   bool _initializing = true;
   bool isEditing = false;
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
   final ValueNotifier<double> textHeightNotifier = ValueNotifier(0);
+  late TextEditingController controller;
   late Widget widget;
+  RegExp? regex;
   final GlobalKey? parentKey;
 
   Node({
     required this.context,
     required this.rawText,
     required this.parentKey,
+    this.regex,
     this.style = const TextStyle(),
     this.text = "",
   }) {

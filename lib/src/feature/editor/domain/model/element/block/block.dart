@@ -8,10 +8,13 @@ abstract class Block extends Node {
   Block({
     required super.context,
     required super.rawText,
+    required this.blockKey,
     this.children,
     super.style,
     super.text,
     super.parentKey,
-    required this.blockKey,
-  });
+    super.regex,
+  }) {
+    controller.text = rawText;
+  }
 }

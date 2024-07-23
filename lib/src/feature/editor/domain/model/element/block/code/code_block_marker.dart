@@ -12,6 +12,7 @@ class CodeBlockMarker extends Node {
     required super.rawText,
     required this.isStart,
     required super.parentKey,
+    super.regex,
   }) {
     controller.text = rawText;
   }

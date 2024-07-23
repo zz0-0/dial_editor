@@ -1,7 +1,6 @@
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
-import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class BoldItalic extends Inline {
@@ -9,6 +8,7 @@ class BoldItalic extends Inline {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }
@@ -23,8 +23,8 @@ class BoldItalic extends Inline {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = boldItalicRegex;
-    text = newText.replaceAll(regex, '').trim();
+
+    text = newText.replaceAll(regex!, '').trim();
     updateStyle();
     updateTextHeight();
   }
@@ -54,8 +54,7 @@ class BoldItalic extends Inline {
   }
 
   Widget _buildRichText() {
-    final regex = boldItalicRegex;
-    final matches = regex.allMatches(rawText);
+    final matches = regex!.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
         rawText,

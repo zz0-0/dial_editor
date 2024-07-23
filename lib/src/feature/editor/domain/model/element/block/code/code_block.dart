@@ -1,6 +1,7 @@
 import 'package:dial_editor/src/feature/editor/domain/model/element/block/block.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class CodeBlock extends Block with ChangeNotifier {
@@ -12,6 +13,7 @@ class CodeBlock extends Block with ChangeNotifier {
     required super.parentKey,
     this.language,
     super.children,
+    super.regex,
   }) : super(rawText: '') {
     if (children!.isNotEmpty) {
       super.rawText = children!.map((code) => code).join("\n");
@@ -72,6 +74,7 @@ class CodeBlock extends Block with ChangeNotifier {
       language: language ?? this.language,
       children: children ?? this.children,
       parentKey: super.parentKey,
+      regex: codeBlockRegex,
     );
   }
 }

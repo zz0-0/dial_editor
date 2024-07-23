@@ -1,7 +1,6 @@
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
-import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
@@ -10,6 +9,7 @@ class EmojiNode extends Inline {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }
@@ -24,10 +24,10 @@ class EmojiNode extends Inline {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = emojiRegex;
+
     final parser = EmojiParser();
     final parsedEmoji = parser.emojify(newText);
-    text = parsedEmoji.replaceAll(regex, '').trim();
+    text = parsedEmoji.replaceAll(regex!, '').trim();
     updateStyle();
     updateTextHeight();
   }

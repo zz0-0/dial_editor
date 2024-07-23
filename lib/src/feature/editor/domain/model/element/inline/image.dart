@@ -15,6 +15,7 @@ class ImageNode extends Inline {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     _parseMarkdownLink(rawText);
     controller.text = rawText;
@@ -55,8 +56,7 @@ class ImageNode extends Inline {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = boldRegex;
-    text = newText.replaceAll(regex, '').trim();
+    text = newText.replaceAll(regex!, '').trim();
     updateStyle();
     updateTextHeight();
   }
@@ -70,6 +70,7 @@ class ImageNode extends Inline {
       context: super.context,
       rawText: "",
       parentKey: super.parentKey,
+      regex: imageRegex,
     );
   }
 

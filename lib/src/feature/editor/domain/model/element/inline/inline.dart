@@ -4,8 +4,11 @@ abstract class Inline extends Node {
   Inline({
     required super.context,
     required super.rawText,
+    required super.parentKey,
     super.style,
     super.text,
-    required super.parentKey,
-  });
+    super.regex,
+  }) {
+    controller.text = rawText;
+  }
 }

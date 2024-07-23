@@ -13,6 +13,7 @@ class CodeLine extends Node with ChangeNotifier {
     required this.language,
     required super.rawText,
     required super.parentKey,
+    super.regex,
   }) {
     controller.text = rawText;
   }

@@ -1,7 +1,6 @@
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
-import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Superscript extends Inline {
@@ -9,6 +8,7 @@ class Superscript extends Inline {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }
@@ -23,8 +23,7 @@ class Superscript extends Inline {
   @override
   void updateText(String newText) {
     rawText = newText;
-    final regex = superscriptRegex;
-    text = newText.replaceAll(regex, '').trim();
+    text = newText.replaceAll(regex!, '').trim();
     updateStyle();
     updateTextHeight();
   }
@@ -53,8 +52,7 @@ class Superscript extends Inline {
   }
 
   Widget _buildRichText() {
-    final regex = superscriptRegex;
-    final matches = regex.allMatches(rawText);
+    final matches = regex!.allMatches(rawText);
     if (matches.isEmpty) {
       return Text(
         rawText,

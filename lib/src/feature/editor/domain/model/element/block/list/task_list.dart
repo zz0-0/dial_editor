@@ -7,6 +7,7 @@ class TaskList extends Node {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }
@@ -48,12 +49,12 @@ class TaskList extends Node {
       context: super.context,
       rawText: "- [ ] ",
       parentKey: super.parentKey,
+      regex: taskListRegex,
     );
   }
 
   Widget _buildRichText() {
-    final regex = taskListRegex;
-    final matches = regex.firstMatch(rawText);
+    final matches = regex!.firstMatch(rawText);
     if (matches == null) {
       return Text(
         rawText,

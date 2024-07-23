@@ -1,4 +1,5 @@
 import 'package:dial_editor/src/feature/editor/domain/model/element/block/block.dart';
+import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Quote extends Block {
@@ -7,6 +8,7 @@ class Quote extends Block {
     required super.rawText,
     required super.blockKey,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }
@@ -48,6 +50,7 @@ class Quote extends Block {
       rawText: "> ",
       blockKey: super.blockKey,
       parentKey: super.parentKey,
+      regex: quoteRegex,
     );
   }
 

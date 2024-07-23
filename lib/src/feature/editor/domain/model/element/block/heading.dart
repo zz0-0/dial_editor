@@ -1,22 +1,21 @@
 import 'package:dial_editor/src/feature/editor/domain/model/element/block/block.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
-import 'package:dial_editor/src/feature/editor/util/regex.dart';
 import 'package:flutter/material.dart';
 
 class Heading extends Block {
-  int level;
-  final regex = headingRegex;
+  int? level;
+  String? id;
 
   Heading({
     required super.context,
     required super.rawText,
-    required this.level,
+    required super.blockKey,
+    required super.regex,
     super.style,
     super.text,
     super.children,
     super.parentKey,
-    required super.blockKey,
   }) {
     controller.text = rawText;
   }
@@ -24,9 +23,13 @@ class Heading extends Block {
   @override
   void updateText(String newText) {
     rawText = newText;
-    text = newText.replaceAll(regex, '').trim();
-    level = regex.allMatches(newText).first.group(0)?.length ?? 1;
-    updateStyle();
+    final match = regex!.firstMatch(newText);
+    if (match != null) {
+      level = match.group(1)?.length ?? 1;
+      text = match.group(2)!;
+      id = match.group(3);
+      id ??= generateCustomId(text);
+    }
     updateTextHeight();
   }
 
@@ -58,7 +61,7 @@ class Heading extends Block {
 
   @override
   Widget render() {
-    text = rawText.replaceAll(regex, '').trim();
+    text = rawText.replaceAll(regex!, '').trim();
     updateStyle();
     updateTextHeight();
     return Text(
@@ -79,5 +82,9 @@ class Heading extends Block {
       rawText: "",
       parentKey: super.parentKey,
     );
+  }
+
+  String? generateCustomId(String text) {
+    return text.hashCode.toString();
   }
 }

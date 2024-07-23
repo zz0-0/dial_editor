@@ -1,4 +1,6 @@
 final headingRegex = RegExp("^#{1,6}");
+final customIdHeadingRegex =
+    RegExp(r"^(#{1,6})\s+(.+?)(?:\s+\{#([a-zA-Z0-9\-_]+)\})?$");
 final boldRegex = RegExp(r'(\*\*|__)(.*?)\1');
 final italicRegex = RegExp(r'(\*|_)(.*?)\1');
 final boldItalicRegex = RegExp(r'(\*\*\*|___)(.*?)\1');
@@ -33,3 +35,4 @@ final emojiRegex = RegExp(':([a-zA-Z0-9_]+):');
 final inlineMathRegex = RegExp(r'\$([^\$]*)\$');
 final blockMathRegex = RegExp(r'\$\$(.*?)\$\$');
 final codeBlockRegex = RegExp(r'^```(?:[^\S\r\n].*)?$');
+final quoteRegex = RegExp("^> .+");

@@ -8,6 +8,7 @@ class HorizontalRule extends Inline {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }

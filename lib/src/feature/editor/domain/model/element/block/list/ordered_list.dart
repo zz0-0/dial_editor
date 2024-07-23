@@ -7,6 +7,7 @@ class OrderedList extends Node {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    required super.regex,
   }) {
     controller.text = rawText;
   }
@@ -40,8 +41,7 @@ class OrderedList extends Node {
 
   @override
   Node createNewLine() {
-    final regex = orderListRegex;
-    final match = regex.firstMatch(rawText);
+    final match = regex!.firstMatch(rawText);
     if (match != null) {
       final currentNumber =
           int.tryParse(match.group(0)!.trim().replaceFirst('.', '')) ?? 0;
@@ -50,12 +50,14 @@ class OrderedList extends Node {
         context: super.context,
         rawText: "$newNumber. ",
         parentKey: super.parentKey,
+        regex: orderListRegex,
       );
     }
     return OrderedList(
       context: super.context,
       rawText: "1. ",
       parentKey: super.parentKey,
+      regex: orderListRegex,
     );
   }
 

@@ -7,6 +7,7 @@ class TextNode extends Inline {
     required super.context,
     required super.rawText,
     required super.parentKey,
+    super.regex,
   }) {
     controller.text = rawText;
   }

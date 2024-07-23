@@ -75,6 +75,7 @@ class StringToDocumentConverter extends Converter<String, Document> {
           children: [],
           blockKey: GlobalKey(),
           parentKey: currentHeading?.blockKey ?? key,
+          regex: codeBlockRegex,
         );
         currentCodeBlock!.children!.add(
           CodeBlockMarker(
@@ -122,19 +123,13 @@ class StringToDocumentConverter extends Converter<String, Document> {
   }
 
   Heading? createHeading(String line, [GlobalKey? parentKey]) {
-    int level = 0;
-
-    while (level < line.length && line[level] == '#') {
-      level++;
-    }
-
     return Heading(
       context: context,
-      level: level,
       rawText: line,
       children: [],
       parentKey: parentKey,
       blockKey: GlobalKey(),
+      regex: customIdHeadingRegex,
     );
   }
 
@@ -191,102 +186,113 @@ class StringToDocumentConverter extends Converter<String, Document> {
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: taskListRegex,
         );
       } else if (orderListRegex.hasMatch(line)) {
         return OrderedList(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: orderListRegex,
         );
       } else if (unorderedListRegex.hasMatch(line)) {
         return UnorderedList(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: unorderedListRegex,
         );
       } else if (line.startsWith('#')) {
-        int level = 0;
-        while (line[level] == '#') {
-          level++;
-        }
         return Heading(
           context: context,
-          level: level,
           rawText: line,
           parentKey: parentKey,
           blockKey: blockKey ?? GlobalKey(),
+          regex: customIdHeadingRegex,
         );
       } else if (inlineMathRegex.hasMatch(line)) {
         return Math(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: inlineMathRegex,
         );
       } else if (boldItalicRegex.hasMatch(line)) {
         return BoldItalic(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: boldItalicRegex,
         );
       } else if (boldRegex.hasMatch(line)) {
         return Bold(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: boldRegex,
         );
       } else if (italicRegex.hasMatch(line)) {
         return Italic(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: italicRegex,
         );
       } else if (highlightRegex.hasMatch(line)) {
         return Highlight(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: highlightRegex,
         );
       } else if (strikethroughRegex.hasMatch(line)) {
         return Strikethrough(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: strikethroughRegex,
         );
       } else if (imageRegex.hasMatch(line) || imageUrlRegex.hasMatch(line)) {
         return ImageNode(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: imageRegex,
         );
       } else if (linkRegex.hasMatch(line) || urlRegex.hasMatch(line)) {
         return Link(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: linkRegex,
         );
       } else if (subscriptRegex.hasMatch(line)) {
         return Subscript(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: subscriptRegex,
         );
       } else if (superscriptRegex.hasMatch(line)) {
         return Superscript(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: superscriptRegex,
         );
       } else if (horizontalRuleRegex.hasMatch(line)) {
         return HorizontalRule(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: horizontalRuleRegex,
         );
       } else if (emojiRegex.hasMatch(line)) {
         return EmojiNode(
           context: context,
           rawText: line,
           parentKey: parentKey,
+          regex: emojiRegex,
         );
       } else {
         return TextNode(

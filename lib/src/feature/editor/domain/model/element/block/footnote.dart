@@ -9,7 +9,10 @@ class Footnote extends Block {
     required super.children,
     required super.blockKey,
     required super.parentKey,
-  });
+    required super.regex,
+  }) {
+    controller.text = rawText;
+  }
 
   @override
   Node createNewLine() {
