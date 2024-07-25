@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 
 class Heading extends Block {
   int? level;
+  String? heading;
   String? id;
+  TextStyle? idStyle;
 
   Heading({
     required super.context,
@@ -18,18 +20,15 @@ class Heading extends Block {
     super.parentKey,
   }) {
     controller.text = rawText;
+    matchRegex();
   }
 
   @override
   void updateText(String newText) {
     rawText = newText;
-    final match = regex!.firstMatch(newText);
-    if (match != null) {
-      level = match.group(1)?.length ?? 1;
-      text = match.group(2)!;
-      id = match.group(3);
-      id ??= generateCustomId(text);
-    }
+    matchRegex();
+    updateStyle();
+    updateIdStyle();
     updateTextHeight();
   }
 
@@ -61,13 +60,10 @@ class Heading extends Block {
 
   @override
   Widget render() {
-    text = rawText.replaceAll(regex!, '').trim();
     updateStyle();
+    updateIdStyle();
     updateTextHeight();
-    return Text(
-      text,
-      style: style,
-    );
+    return _buildRichText();
   }
 
   @override
@@ -86,5 +82,52 @@ class Heading extends Block {
 
   String? generateCustomId(String text) {
     return text.hashCode.toString();
+  }
+
+  void matchRegex() {
+    final match = regex!.firstMatch(rawText);
+    if (match != null) {
+      level = match.group(1)?.length ?? 1;
+      heading = match.group(1);
+      text = match.group(2)!.trim();
+
+      final idMatch = RegExp(r'\s*\{#(.*?)\}$').firstMatch(text);
+      if (idMatch != null) {
+        id = idMatch.group(1);
+        text = text.substring(0, text.length - idMatch.group(0)!.length).trim();
+      } else {
+        id = generateCustomId(text);
+      }
+      rawText = "$heading $text {#$id}";
+    } else {
+      text = rawText.trim();
+      id = generateCustomId(text);
+      rawText = "$text {#$id}";
+    }
+
+    // updateStyle();
+    // updateIdStyle();
+    // updateTextHeight();
+  }
+
+  void updateIdStyle() {
+    idStyle = style.copyWith(backgroundColor: Colors.yellow);
+  }
+
+  Widget _buildRichText() {
+    final headingText = heading != null ? '$heading ' : '';
+    final mainText = text;
+    final idText = id ?? '';
+
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(text: headingText, style: style),
+          TextSpan(text: mainText, style: style),
+          TextSpan(text: " ", style: style),
+          TextSpan(text: idText, style: idStyle),
+        ],
+      ),
+    );
   }
 }
