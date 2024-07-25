@@ -117,7 +117,7 @@ flutter run
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read the [CONTRIBUTING.md](../CONTRIBUTING/CONTRIBUTING.md) file for guidelines.
+Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines.
 
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/your_feature`).
@@ -127,7 +127,7 @@ Contributions are welcome! Please read the [CONTRIBUTING.md](../CONTRIBUTING/CON
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📬 Contact
 
