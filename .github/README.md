@@ -6,7 +6,9 @@
 
 ## ⚠️ Disclaimer
 
-**Warning:** This project is in its early stage and under active development. Use at your own risk.
+**Warning:** I am currently pursuing a master's degree, so I don't have much time for development right now. I plan to continue working on this personal project later on. 
+
+**Warning 2:** This project is in its early stage. Use at your own risk.
 
 ## 🚀 Features
 
@@ -127,7 +129,7 @@ Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) fi
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
 
 ## 📬 Contact
 
