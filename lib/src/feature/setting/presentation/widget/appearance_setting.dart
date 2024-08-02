@@ -1,4 +1,4 @@
-import 'package:dial_editor/src/feature/core/presentation/theme/theme_provider.dart';
+import 'package:dial_editor/src/core/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:dial_editor/src/feature/editor/domain/model/canvas/overlap.dart';
-import 'package:dial_editor/src/feature/editor/presentation/widget/canvas_view/canvas_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/canvas_view/resizer.dart';
+import 'package:dial_editor/src/feature/ui/presentation/provider/canvas_view_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:readmore/readmore.dart';
