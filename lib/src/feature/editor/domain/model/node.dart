@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 abstract class Node {
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
+  GlobalKey<EditableTextState>? parentKey;
   String rawText;
   String text = '';
   TextEditingController controller = TextEditingController();
@@ -12,10 +13,13 @@ abstract class Node {
   bool isEditing = false;
   Offset globalPosition = Offset.zero;
   Offset previousGlobalPosition = Offset.zero;
+  bool isExpanded = true;
 
   Node({required this.rawText}) {
     controller.text = rawText;
   }
 
   RenderInstruction render();
+
+  Node createNewLine();
 }

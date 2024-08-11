@@ -73,7 +73,3 @@ final widgetListStateNotifierProvider =
 final scrollController1Provider = Provider((ref) => ScrollController());
 final scrollController2Provider = Provider((ref) => ScrollController());
 final scrollController3Provider = Provider((ref) => ScrollController());
-
-final fileNodeExpandedProvider = StateProvider.family<bool, Key>((ref, arg) {
-  return true;
-});

@@ -27,6 +27,7 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
   Widget build(BuildContext context) {
     final scrollController1 = ref.watch(scrollController1Provider);
     final scrollController2 = ref.watch(scrollController2Provider);
+    final scrollController3 = ref.watch(scrollController3Provider);
     bool isScrolling = false;
     return NotificationListener(
       onNotification: (ScrollNotification scrollInfo) {
@@ -35,7 +36,8 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               setState(() {
-                scrollController1.jumpTo(scrollController2.offset);
+                scrollController1.jumpTo(scrollController3.offset);
+                scrollController2.jumpTo(scrollController3.offset);
               });
             }
             isScrolling = false;
@@ -47,8 +49,8 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
         children: [
           Row(
             children: [
-              Expand(),
               LineNumber(),
+              Expand(),
               EditingArea(),
             ],
           ),

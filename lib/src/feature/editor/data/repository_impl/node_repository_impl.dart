@@ -33,6 +33,7 @@ class NodeRepositoryImpl implements NodeRepository {
             currentHeading = node;
             children.add(node);
           } else {
+            node.parentKey = currentHeading.key;
             currentHeading.children.add(node);
           }
         } else {
@@ -40,6 +41,7 @@ class NodeRepositoryImpl implements NodeRepository {
           children.add(node);
         }
       } else if (currentHeading != null) {
+        node.parentKey = currentHeading.key;
         currentHeading.children.add(node);
       } else {
         children.add(node);

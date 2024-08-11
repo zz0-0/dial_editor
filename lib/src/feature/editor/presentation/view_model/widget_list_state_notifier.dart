@@ -40,4 +40,16 @@ class WidgetListStateNotifier extends StateNotifier<List<Widget>> {
     list.removeAt(index);
     state = list;
   }
+
+  void insertWidgetByIndex(int i, Widget widget) {
+    final List<Widget> list = [...state];
+    list.insert(i, widget);
+    state = list;
+  }
+
+  void addWidget(Widget widget) {
+    final List<Widget> list = [...state];
+    list.add(widget);
+    state = list;
+  }
 }

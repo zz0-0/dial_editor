@@ -104,8 +104,28 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
 
   void onEditingComplete(int index) {
     final List<Node> list = [...state];
+    final newNode = list[index].createNewLine();
+    final renderAdapter = ref.read(renderAdapterProvider);
+    if (index < list.length - 1) {
+      list.insert(index + 1, newNode);
+      final instruction = list[index + 1].render();
+      final widget = renderAdapter.adapt(list[index + 1], instruction);
+      ref
+          .read(widgetListStateNotifierProvider.notifier)
+          .insertWidgetByIndex(index + 1, widget);
+
+      list[index + 1].isEditing = true;
+    } else {
+      list.add(newNode);
+      final instruction = newNode.render();
+      final widget = renderAdapter.adapt(list[index + 1], instruction);
+      ref.read(widgetListStateNotifierProvider.notifier).addWidget(widget);
+      list[list.length - 1].isEditing = true;
+    }
+
     list[index].isEditing = false;
-    list[index].controller.selection = const TextSelection.collapsed(offset: 0);
+    list[index + 1].focusNode.requestFocus();
+
     saveDocument(list);
     state = list;
   }
@@ -347,6 +367,17 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
       list[index].isEditing = false;
       list[index + 1].isEditing = true;
       list[index + 1].focusNode.requestFocus();
+    }
+    state = list;
+  }
+
+  void toggleNodeExpansion(int index) {
+    final List<Node> list = [...state];
+    list[index].isExpanded = !list[index].isExpanded;
+    for (final node in list) {
+      if (node.parentKey == list[index].key) {
+        node.isExpanded = list[index].isExpanded;
+      }
     }
     state = list;
   }

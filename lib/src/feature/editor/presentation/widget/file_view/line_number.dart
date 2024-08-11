@@ -1,4 +1,7 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,24 +10,28 @@ class LineNumber extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(flatNodeListStateNotifierProvider);
+    final List<Node> flatNodeList =
+        ref.watch(flatNodeListStateNotifierProvider);
     final flatNodeListStateNotifier =
         ref.read(flatNodeListStateNotifierProvider.notifier);
     final scrollController1 = ref.watch(scrollController1Provider);
 
-    return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
-      child: SizedBox(
-        width: 30,
-        child: ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-          child: ListView.builder(
-            controller: scrollController1,
-            itemCount: flatNodeListStateNotifier.getListLength(),
-            itemBuilder: (context, index) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                flatNodeListStateNotifier.updateNodeHeight(index, context);
-              });
+    return SizedBox(
+      width: 30,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: ListView.builder(
+          controller: scrollController1,
+          itemCount: flatNodeListStateNotifier.getListLength(),
+          itemBuilder: (context, index) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              flatNodeListStateNotifier.updateNodeHeight(index, context);
+            });
+            final node = flatNodeList[index];
+            final isBlock = node is Block;
+            final isInline = node is Inline;
+
+            if (isBlock || (isInline && node.isExpanded)) {
               return Row(
                 children: [
                   const Spacer(),
@@ -39,8 +46,10 @@ class LineNumber extends ConsumerWidget {
                   ),
                 ],
               );
-            },
-          ),
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
         ),
       ),
     );
