@@ -1,7 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,7 +8,7 @@ class LineNumber extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Node> flatNodeList =
+    final List<Inline> flatNodeList =
         ref.watch(flatNodeListStateNotifierProvider);
     final flatNodeListStateNotifier =
         ref.read(flatNodeListStateNotifierProvider.notifier);
@@ -28,10 +26,8 @@ class LineNumber extends ConsumerWidget {
               flatNodeListStateNotifier.updateNodeHeight(index, context);
             });
             final node = flatNodeList[index];
-            final isBlock = node is Block;
-            final isInline = node is Inline;
 
-            if (isBlock || (isInline && node.isExpanded)) {
+            if (node.isBlockStart && node.isExpanded) {
               return Row(
                 children: [
                   const Spacer(),

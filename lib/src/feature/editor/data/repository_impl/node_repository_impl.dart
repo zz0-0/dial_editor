@@ -1,8 +1,18 @@
 import 'package:dial_editor/src/feature/editor/data/repository_impl/regex.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/block/heading.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/code_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/heading_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/list/ordered_list_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/list/task_list_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/list/unordered_list_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/math_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/block/quote_block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/bold.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/bold_italic.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline/code/code_block_marker.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline/code/code_line.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/emoji.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/highlight.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/horizontal_rule.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/image.dart';
@@ -12,38 +22,153 @@ import 'package:dial_editor/src/feature/editor/domain/model/element/inline/list/
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/list/task_list_node.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/list/unordered_list_node.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/math.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline/quote.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/strikethrough.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/subscript.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/superscript.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
+import 'package:flutter/material.dart';
 
 class NodeRepositoryImpl implements NodeRepository {
   @override
   List<Node> convertDocument(List<String> lines) {
     final List<Node> children = [];
-    Heading? currentHeading;
+    OrderedListBlock? currentOrderedListBlock;
+    TaskListBlock? currentTaskListBlock;
+    UnorderedListBlock? currentUnorderedListBlock;
+    CodeBlock? currentCodeBlock;
+    HeadingBlock? currentHeadingBlock;
+    MathBlock? currentMathBlock;
+    QuoteBlock? currentQuoteBlock;
+    bool isCodeBlock = false;
 
     for (final line in lines) {
-      final Node node = convert(line);
-      if (node is Heading) {
-        if (currentHeading != null) {
-          if (node.level >= currentHeading.level) {
-            currentHeading = node;
-            children.add(node);
-          } else {
-            node.parentKey = currentHeading.key;
-            currentHeading.children.add(node);
-          }
-        } else {
-          currentHeading = node;
-          children.add(node);
-        }
-      } else if (currentHeading != null) {
-        node.parentKey = currentHeading.key;
-        currentHeading.children.add(node);
+      final Node node;
+      if (isCodeBlock) {
+        node = CodeLine(rawText: line);
       } else {
+        node = convert(line);
+      }
+      if (node is Heading) {
+        if (currentHeadingBlock != null) {
+          if (node.level >= currentHeadingBlock.level) {
+            children.add(currentHeadingBlock);
+            currentHeadingBlock = HeadingBlock(level: node.level);
+            currentHeadingBlock.key = GlobalKey();
+            node.isBlockStart = true;
+            node.parentKey = currentHeadingBlock.key;
+            currentHeadingBlock.children.add(node);
+          } else {
+            node.parentKey = currentHeadingBlock.key;
+            currentHeadingBlock.children.add(node);
+          }
+        }
+      } else if (currentHeadingBlock != null) {
+        if (node is OrderedListNode) {
+          if (currentOrderedListBlock != null) {
+            node.parentKey = currentOrderedListBlock.key;
+            currentOrderedListBlock.children.add(node);
+          } else {
+            currentOrderedListBlock = OrderedListBlock();
+            currentOrderedListBlock.key = GlobalKey();
+            node.isBlockStart = true;
+            node.parentKey = currentOrderedListBlock.key;
+            currentOrderedListBlock.children.add(node);
+            currentHeadingBlock.children.add(currentOrderedListBlock);
+          }
+        } else if (node is TaskListNode) {
+          if (currentTaskListBlock != null) {
+            node.parentKey = currentTaskListBlock.key;
+            currentTaskListBlock.children.add(node);
+          } else {
+            currentTaskListBlock = TaskListBlock();
+            currentTaskListBlock.key = GlobalKey();
+            node.isBlockStart = true;
+            node.parentKey = currentTaskListBlock.key;
+            currentTaskListBlock.children.add(node);
+            currentHeadingBlock.children.add(currentTaskListBlock);
+          }
+        } else if (node is UnorderedListNode) {
+          if (currentUnorderedListBlock != null) {
+            node.parentKey = currentUnorderedListBlock.key;
+            currentUnorderedListBlock.children.add(node);
+          } else {
+            currentUnorderedListBlock = UnorderedListBlock();
+            currentUnorderedListBlock.key = GlobalKey();
+            node.isBlockStart = true;
+            node.parentKey = currentUnorderedListBlock.key;
+            currentUnorderedListBlock.children.add(node);
+            currentHeadingBlock.children.add(currentUnorderedListBlock);
+          }
+        } else if (node is Math) {
+          if (currentMathBlock != null) {
+            node.parentKey = currentMathBlock.key;
+            currentMathBlock.children.add(node);
+          } else {
+            currentMathBlock = MathBlock();
+            currentMathBlock.key = GlobalKey();
+            node.isBlockStart = true;
+            node.parentKey = currentMathBlock.key;
+            currentMathBlock.children.add(node);
+            currentHeadingBlock.children.add(currentMathBlock);
+          }
+        } else if (node is Quote) {
+          if (currentQuoteBlock != null) {
+            node.parentKey = currentQuoteBlock.key;
+            currentQuoteBlock.children.add(node);
+          } else {
+            currentQuoteBlock = QuoteBlock();
+            currentQuoteBlock.key = GlobalKey();
+            node.isBlockStart = true;
+            node.parentKey = currentQuoteBlock.key;
+            currentQuoteBlock.children.add(node);
+            currentHeadingBlock.children.add(currentQuoteBlock);
+          }
+        } else if (node is CodeBlockMarker) {
+          if (isCodeBlock == false) {
+            isCodeBlock = true;
+            final match = codeBlockRegex.firstMatch(line);
+            final String language =
+                match!.groupCount >= 1 && match.group(1) != null
+                    ? match.group(1)!
+                    : 'c';
+            currentCodeBlock = CodeBlock();
+            currentCodeBlock.key = GlobalKey();
+            currentCodeBlock.language = language;
+            node.language = language;
+            node.isBlockStart = true;
+            node.parentKey = currentCodeBlock.key;
+            currentCodeBlock.children.add(node);
+          } else {
+            isCodeBlock = false;
+            currentHeadingBlock.children.add(node);
+            children.add(currentCodeBlock!);
+            currentCodeBlock = null;
+          }
+        } else if (node is CodeLine) {
+          if (currentCodeBlock != null) {
+            node.parentKey = currentCodeBlock.key;
+            currentCodeBlock.children.add(node);
+          }
+        } else if (node is CodeBlockMarker && currentCodeBlock != null) {
+          children.add(currentCodeBlock);
+          currentCodeBlock = null;
+        }
+      } else {
+        if (currentHeadingBlock != null) {
+          children.add(currentHeadingBlock);
+          currentHeadingBlock = null;
+        }
+        if (currentTaskListBlock != null) {
+          children.add(currentTaskListBlock);
+          currentTaskListBlock = null;
+        }
+        if (currentUnorderedListBlock != null) {
+          children.add(currentUnorderedListBlock);
+          currentUnorderedListBlock = null;
+        }
         children.add(node);
       }
     }
@@ -51,8 +176,10 @@ class NodeRepositoryImpl implements NodeRepository {
   }
 
   @override
-  Node convert(String input) {
-    if (taskListRegex.hasMatch(input)) {
+  Inline convert(String input) {
+    if (codeBlockRegex.hasMatch(input)) {
+      return CodeBlockMarker(rawText: input);
+    } else if (taskListRegex.hasMatch(input)) {
       return TaskListNode(rawText: input);
     } else if (orderListRegex.hasMatch(input)) {
       return OrderedListNode(rawText: input);
@@ -62,6 +189,8 @@ class NodeRepositoryImpl implements NodeRepository {
       return Heading(rawText: input);
     } else if (inlineMathRegex.hasMatch(input)) {
       return Math(rawText: input);
+    } else if (quoteRegex.hasMatch(input)) {
+      return Quote(rawText: input);
     } else if (boldItalicRegex.hasMatch(input)) {
       return BoldItalic(rawText: input);
     } else if (boldRegex.hasMatch(input)) {

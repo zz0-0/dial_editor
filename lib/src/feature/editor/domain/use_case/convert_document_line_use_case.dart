@@ -1,4 +1,4 @@
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
 
 class ConvertStringToLineUseCase {
@@ -6,7 +6,7 @@ class ConvertStringToLineUseCase {
 
   ConvertStringToLineUseCase(this._nodeRepository);
 
-  Node convertLine(String value) {
+  Inline convertLine(String value) {
     return _nodeRepository.convert(value);
   }
 }

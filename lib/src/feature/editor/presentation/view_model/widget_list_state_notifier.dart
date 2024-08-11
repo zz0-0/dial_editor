@@ -1,5 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,7 +16,7 @@ class WidgetListStateNotifier extends StateNotifier<List<Widget>> {
     return state.length;
   }
 
-  void updateList(List<Node> list) {
+  void updateList(List<Inline> list) {
     final renderAdapter = ref.read(renderAdapterProvider);
     final widgetList = list.map((node) {
       final instruction = node.render();

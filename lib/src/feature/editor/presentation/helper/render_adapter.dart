@@ -2,7 +2,7 @@ import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/core/provider/theme/theme_provider.dart';
 import 'package:dial_editor/src/feature/editor/data/repository_impl/regex.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,7 +11,7 @@ class RenderAdapter {
 
   RenderAdapter(this.ref);
 
-  Widget adapt(Node node, RenderInstruction instruction) {
+  Widget adapt(Inline node, RenderInstruction instruction) {
     if (instruction is TextRenderInstruction) {
       final TextStyle newStyle =
           _getTextStyle(instruction.text, instruction.formatting);

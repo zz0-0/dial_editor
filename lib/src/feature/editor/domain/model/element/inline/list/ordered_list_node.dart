@@ -1,7 +1,6 @@
 import 'package:dial_editor/src/feature/editor/data/repository_impl/regex.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
 
 class OrderedListNode extends Inline {
   OrderedListNode({required super.rawText});
@@ -12,7 +11,7 @@ class OrderedListNode extends Inline {
   }
 
   @override
-  Node createNewLine() {
+  Inline createNewLine() {
     final match = orderListRegex.firstMatch(rawText);
     if (match != null) {
       final currentNumber =

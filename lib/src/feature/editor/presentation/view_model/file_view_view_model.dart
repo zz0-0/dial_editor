@@ -1,6 +1,7 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/block/heading.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline/heading.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/get_document_children_use_case.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class FileViewViewModel extends ChangeNotifier {
   FileViewViewModel(this.ref);
 
   List<Node> get nodeList => getDocumentChildren();
-  List<Node> get flatNodeList => ref.watch(flatNodeListStateNotifierProvider);
+  List<Inline> get flatNodeList => ref.watch(flatNodeListStateNotifierProvider);
   List<Widget> get widgetList => ref.watch(widgetListStateNotifierProvider);
 
   List<Node> getNodeList() {
@@ -26,7 +27,7 @@ class FileViewViewModel extends ChangeNotifier {
   }
 
   void updateFlatNodeList() {
-    final List<Node> flatNodeList = [];
+    final List<Inline> flatNodeList = [];
     flattenNodeList(nodeList, flatNodeList);
     ref
         .read(flatNodeListStateNotifierProvider.notifier)

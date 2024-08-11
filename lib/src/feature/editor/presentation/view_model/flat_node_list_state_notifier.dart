@@ -1,5 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/convert_document_line_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/save_document_use_case.dart';
 import 'package:flutter/gestures.dart';
@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
+class FlatNodeListStateNotifier extends StateNotifier<List<Inline>> {
   Ref ref;
 
   FlatNodeListStateNotifier(this.ref) : super([]);
 
-  List<Node> getList() {
+  List<Inline> getList() {
     return state;
   }
 
@@ -20,16 +20,16 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
     return state.length;
   }
 
-  void updateList(List<Node> list) {
+  void updateList(List<Inline> list) {
     state = list;
   }
 
-  Node getNodeByIndex(int index) {
+  Inline getNodeByIndex(int index) {
     return state[index];
   }
 
   void setNodeToEditingModeByIndex(int index, TapUpDetails details) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     resetFlatNodeListEditingMode();
     final Offset globalPosition = details.globalPosition;
     list[index].isEditing = true;
@@ -41,7 +41,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void setEditingNodeCursorPosition(int index) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     if (list[index].globalPosition != list[index].previousGlobalPosition) {
       list[index].previousGlobalPosition = list[index].globalPosition;
       final EditableTextState? editableTextState = list[index].key.currentState;
@@ -55,7 +55,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void resetFlatNodeListEditingMode() {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     for (int i = 0; i < state.length; i++) {
       list[i].controller.selection = const TextSelection.collapsed(offset: 0);
       list[i].isEditing = false;
@@ -63,7 +63,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void updateNodeHeight(int index, BuildContext context) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     final text = list[index].controller.text;
     final style = list[index].style;
     final maxWidth = MediaQuery.of(context).size.width;
@@ -86,7 +86,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onChange(int index, String value) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     final ConvertStringToLineUseCase convertStringToLineUseCase =
         ref.read(convertStringToLineUseCaseProvider);
     final renderAdapter = ref.read(renderAdapterProvider);
@@ -103,7 +103,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onEditingComplete(int index) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     final newNode = list[index].createNewLine();
     final renderAdapter = ref.read(renderAdapterProvider);
     if (index < list.length - 1) {
@@ -131,7 +131,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onDelete(int index) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     if (list[index].text.isEmpty && list[index].controller.text.isEmpty) {
       if (index > 0) {
         list.removeAt(index);
@@ -148,7 +148,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
     state = list;
   }
 
-  void saveDocument(List<Node> list) {
+  void saveDocument(List<Inline> list) {
     final SaveDocumentUseCase saveDocumentUseCase =
         ref.read(saveDocumentUseCaseProvider);
     saveDocumentUseCase
@@ -156,7 +156,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onSingleTapUp(int index, TapDragUpDetails details) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     final node = list[index];
     final nodeKey = node.key;
     final EditableTextState? editableTextState = nodeKey.currentState;
@@ -182,7 +182,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onDragSelectionStart(int index, TapDragStartDetails details) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     final currentNode = list[index];
     final RenderEditable renderEditable =
         currentNode.key.currentState!.renderEditable;
@@ -197,7 +197,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
     TapDragUpdateDetails details,
     BuildContext context,
   ) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     final mouseIndex = getLineIndex(context, details.globalPosition.dy);
 
     if (mouseIndex == -1 || mouseIndex == index) {
@@ -298,7 +298,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void selectAll() {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     for (int i = 0; i < list.length; i++) {
       list[i].controller.selection = TextSelection(
         baseOffset: 0,
@@ -309,7 +309,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onArrowUp(int index) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     if (index > 0) {
       resetFlatNodeListEditingMode();
       list[index - 1].isEditing = true;
@@ -322,7 +322,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void onArrowDown(int index) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     if (index < list.length - 1) {
       resetFlatNodeListEditingMode();
       list[index + 1].isEditing = true;
@@ -353,7 +353,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   void handleSelectionExtension(int index, bool isLeft) {}
 
   void moveCursor(int index, bool isLeft) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     if (isLeft &&
         list[index].controller.selection.baseOffset == 0 &&
         index > 0) {
@@ -372,7 +372,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void toggleNodeExpansion(int index) {
-    final List<Node> list = [...state];
+    final List<Inline> list = [...state];
     list[index].isExpanded = !list[index].isExpanded;
     for (final node in list) {
       if (node.parentKey == list[index].key) {
