@@ -1,9 +1,6 @@
-import 'package:dial_editor/main_provider.dart';
-import 'package:dial_editor/src/core/router.dart';
-import 'package:dial_editor/src/core/theme/app_theme.dart';
-import 'package:dial_editor/src/core/theme/theme_provider.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/desktop_editor.dart';
-import 'package:dial_editor/src/feature/ui/presentation/widget/mobile_editor.dart';
+import 'package:dial_editor/src/core/provider/router/router_provider.dart';
+import 'package:dial_editor/src/core/provider/theme/theme_provider.dart';
+import 'package:dial_editor/src/core/theme/domain/model/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,22 +13,15 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.watch(themeNotifierProvider);
-    final isDesktop = ref.read(isDesktopProvider);
-    final app = MaterialApp.router(
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: themeNotifier.themeMode,
-      debugShowCheckedModeBanner: false,
-      routerConfig: router,
-    );
+    final theme = ref.watch(themeProvider);
+    final ui = ref.watch(uiProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: themeNotifier.themeMode,
-      home: isDesktop ? DesktopEditor(child: app) : MobileEditor(child: app),
+      themeMode: theme.themeMode,
+      home: ui,
     );
   }
 }

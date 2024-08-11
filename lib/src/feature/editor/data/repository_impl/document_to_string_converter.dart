@@ -1,0 +1,12 @@
+import 'dart:convert';
+
+import 'package:dial_editor/src/feature/editor/domain/model/document.dart';
+
+class DocumentToStringConverter extends Converter<Document, String> {
+  @override
+  String convert(Document input) {
+    return input.children.map((e) {
+      return "${e.text}\n";
+    }).toString();
+  }
+}

@@ -1,73 +1,21 @@
-import 'package:flutter/widgets.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
+import 'package:flutter/material.dart';
 
 abstract class Node {
-  BuildContext context;
-  String rawText;
-  String text;
-  TextStyle style;
-  FocusNode focusNode = FocusNode();
-  bool _initializing = true;
-  bool isEditing = false;
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
-  final ValueNotifier<double> textHeightNotifier = ValueNotifier(0);
-  late TextEditingController controller;
-  late Widget widget;
-  RegExp? regex;
-  final GlobalKey? parentKey;
+  String rawText;
+  String text = '';
+  TextEditingController controller = TextEditingController();
+  TextStyle style = const TextStyle();
+  double textHeight = 0;
+  FocusNode focusNode = FocusNode();
+  bool isEditing = false;
+  Offset globalPosition = Offset.zero;
+  Offset previousGlobalPosition = Offset.zero;
 
-  Node({
-    required this.context,
-    required this.rawText,
-    required this.parentKey,
-    this.regex,
-    this.style = const TextStyle(),
-    this.text = "",
-  }) {
-    controller = TextEditingController(text: rawText);
-    widget = render();
-    textHeight = updateTextHeight();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.addListener(_onTextChanged);
-      _initializing = false;
-    });
+  Node({required this.rawText}) {
+    controller.text = rawText;
   }
 
-  double get textHeight => textHeightNotifier.value;
-  set textHeight(double value) {
-    if (textHeightNotifier.value != value) {
-      textHeightNotifier.value = value;
-    }
-  }
-
-  void updateText(String newText);
-
-  void updateStyle();
-
-  double updateTextHeight() {
-    final textPainter = TextPainter(
-      text: TextSpan(text: rawText, style: style),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    return textPainter.height;
-  }
-
-  Widget render();
-
-  Node createNewLine();
-
-  void _onTextChanged() {
-    if (!_initializing && controller.text.isNotEmpty) {
-      rawText = controller.text;
-      updateText(rawText);
-    }
-  }
-
-  void dispose() {
-    controller.removeListener(_onTextChanged);
-    controller.dispose();
-    focusNode.dispose();
-  }
-
-  @override
-  String toString();
+  RenderInstruction render();
 }
