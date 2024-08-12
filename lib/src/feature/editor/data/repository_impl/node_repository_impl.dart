@@ -64,6 +64,12 @@ class NodeRepositoryImpl implements NodeRepository {
             node.parentKey = currentHeadingBlock.key;
             currentHeadingBlock.children.add(node);
           }
+        } else {
+          currentHeadingBlock = HeadingBlock(level: node.level);
+          currentHeadingBlock.key = GlobalKey();
+          node.isBlockStart = true;
+          node.parentKey = currentHeadingBlock.key;
+          currentHeadingBlock.children.add(node);
         }
       } else if (currentHeadingBlock != null) {
         if (node is OrderedListNode) {
@@ -155,23 +161,33 @@ class NodeRepositoryImpl implements NodeRepository {
         } else if (node is CodeBlockMarker && currentCodeBlock != null) {
           children.add(currentCodeBlock);
           currentCodeBlock = null;
+        } else {
+          (node as Inline).parentKey = currentHeadingBlock.key;
+          currentHeadingBlock.children.add(node);
         }
       } else {
-        if (currentHeadingBlock != null) {
-          children.add(currentHeadingBlock);
-          currentHeadingBlock = null;
-        }
-        if (currentTaskListBlock != null) {
-          children.add(currentTaskListBlock);
-          currentTaskListBlock = null;
-        }
-        if (currentUnorderedListBlock != null) {
-          children.add(currentUnorderedListBlock);
-          currentUnorderedListBlock = null;
-        }
         children.add(node);
       }
     }
+    if (currentHeadingBlock != null) {
+      children.add(currentHeadingBlock);
+    }
+    if (currentTaskListBlock != null) {
+      children.add(currentTaskListBlock);
+    }
+    if (currentUnorderedListBlock != null) {
+      children.add(currentUnorderedListBlock);
+    }
+    if (currentCodeBlock != null) {
+      children.add(currentCodeBlock);
+    }
+    if (currentMathBlock != null) {
+      children.add(currentMathBlock);
+    }
+    if (currentQuoteBlock != null) {
+      children.add(currentQuoteBlock);
+    }
+
     return children;
   }
 

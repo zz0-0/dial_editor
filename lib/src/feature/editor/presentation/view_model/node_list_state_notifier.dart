@@ -14,6 +14,7 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     return state.length;
   }
 
+  // ignore: use_setters_to_change_properties
   void updateList(List<Node> list) {
     state = list;
   }

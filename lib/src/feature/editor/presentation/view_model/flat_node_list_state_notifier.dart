@@ -20,6 +20,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Inline>> {
     return state.length;
   }
 
+  // ignore: use_setters_to_change_properties
   void updateList(List<Inline> list) {
     state = list;
   }
@@ -80,9 +81,8 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Inline>> {
 
     if (list[index].style.height != newHeight) {
       list[index].textHeight = newHeight;
+      state = list;
     }
-
-    state = list;
   }
 
   void onChange(int index, String value) {
@@ -175,9 +175,8 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Inline>> {
       renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
       editableTextState.hideToolbar();
       editableTextState.requestKeyboard();
-    } catch (e) {
-      // print(e);
-    }
+    // ignore: empty_catches
+    } catch (e) {}
     state = list;
   }
 
@@ -375,7 +374,7 @@ class FlatNodeListStateNotifier extends StateNotifier<List<Inline>> {
     final List<Inline> list = [...state];
     list[index].isExpanded = !list[index].isExpanded;
     for (final node in list) {
-      if (node.parentKey == list[index].key) {
+      if (node.parentKey == list[index].parentKey) {
         node.isExpanded = list[index].isExpanded;
       }
     }

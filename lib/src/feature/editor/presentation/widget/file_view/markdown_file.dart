@@ -20,6 +20,13 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
       ref.read(fileViewViewModelProvider.notifier).getNodeList();
       ref.read(fileViewViewModelProvider.notifier).updateFlatNodeList();
       ref.read(fileViewViewModelProvider.notifier).updateWidgetList();
+      for (int i = 0;
+          i < ref.read(flatNodeListStateNotifierProvider).length;
+          i++) {
+        ref
+            .read(flatNodeListStateNotifierProvider.notifier)
+            .updateNodeHeight(i, context);
+      }
     });
   }
 
@@ -33,15 +40,13 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
       onNotification: (ScrollNotification scrollInfo) {
         if (!isScrolling && scrollInfo.depth == 0) {
           isScrolling = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              setState(() {
-                scrollController1.jumpTo(scrollController3.offset);
-                scrollController2.jumpTo(scrollController3.offset);
-              });
-            }
-            isScrolling = false;
-          });
+          if (mounted) {
+            setState(() {
+              scrollController1.jumpTo(scrollController3.offset);
+              scrollController2.jumpTo(scrollController3.offset);
+            });
+          }
+          isScrolling = false;
         }
         return true;
       },

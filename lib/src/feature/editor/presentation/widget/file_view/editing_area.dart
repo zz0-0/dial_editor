@@ -20,8 +20,7 @@ class EditingArea extends ConsumerWidget {
         itemCount: flatNodeList.length,
         itemBuilder: (context, index) {
           final node = flatNodeList[index];
-
-          if (node.isBlockStart && node.isExpanded) {
+          if (node.isBlockStart || (!node.isBlockStart && node.isExpanded)) {
             return node.isEditing ? Editing(index) : Rendering(index);
           } else {
             return const SizedBox.shrink();

@@ -1,5 +1,4 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,9 +23,7 @@ class Expand extends ConsumerWidget {
           itemCount: flatNodeListStateNotifier.getListLength(),
           itemBuilder: (context, index) {
             final node = flatNodeList[index];
-            final isBlock = node is Block;
-
-            if (node.isBlockStart && node.isExpanded) {
+            if (node.isBlockStart || (!node.isBlockStart && node.isExpanded)) {
               return Row(
                 children: [
                   const Spacer(),
@@ -37,7 +34,7 @@ class Expand extends ConsumerWidget {
                       onTap: () {
                         flatNodeListStateNotifier.toggleNodeExpansion(index);
                       },
-                      child: isBlock
+                      child: node.isBlockStart
                           ? flatNodeListStateNotifier
                                   .getNodeByIndex(index)
                                   .isExpanded

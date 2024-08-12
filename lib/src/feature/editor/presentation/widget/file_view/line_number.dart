@@ -22,12 +22,8 @@ class LineNumber extends ConsumerWidget {
           controller: scrollController1,
           itemCount: flatNodeListStateNotifier.getListLength(),
           itemBuilder: (context, index) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              flatNodeListStateNotifier.updateNodeHeight(index, context);
-            });
             final node = flatNodeList[index];
-
-            if (node.isBlockStart && node.isExpanded) {
+            if (node.isBlockStart || (!node.isBlockStart && node.isExpanded)) {
               return Row(
                 children: [
                   const Spacer(),

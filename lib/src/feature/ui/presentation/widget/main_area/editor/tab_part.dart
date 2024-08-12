@@ -44,9 +44,7 @@ class _TabPartState extends ConsumerState<TabPart>
     if (selectedFile != null) {
       final selectedIndex = openedFiles.toList().indexOf(selectedFile);
       if (selectedIndex != -1) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          tabController!.animateTo(selectedIndex);
-        });
+        tabController!.animateTo(selectedIndex);
       }
     }
 

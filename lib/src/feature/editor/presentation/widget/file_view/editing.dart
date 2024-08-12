@@ -55,9 +55,6 @@ class EditingState extends ConsumerState<Editing>
           child: ValueListenableBuilder<TextEditingValue>(
             valueListenable: node.controller,
             builder: (context, value, child) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _updateNodeHeight(widget.index, context);
-              });
               return EditableText(
                 key: node.key,
                 controller: node.controller,
@@ -73,8 +70,8 @@ class EditingState extends ConsumerState<Editing>
                   _onChange(
                     widget.index,
                     value,
-                    // node is CodeLine || node is CodeBlockMarker,
                   );
+                  _updateNodeHeight(widget.index, context);
                 },
                 onEditingComplete: () {
                   _onEditingComplete(widget.index);
