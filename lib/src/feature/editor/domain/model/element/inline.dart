@@ -3,7 +3,6 @@ import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
 import 'package:flutter/material.dart';
 
 abstract class Inline extends Node {
-  GlobalKey<EditableTextState>? parentKey;
   String rawText;
   String text = '';
   TextEditingController controller = TextEditingController();
@@ -15,6 +14,7 @@ abstract class Inline extends Node {
   Offset previousGlobalPosition = Offset.zero;
   bool isExpanded = true;
   bool isBlockStart = false;
+  int depth = 0;
 
   Inline({required this.rawText}) {
     controller.text = rawText;
