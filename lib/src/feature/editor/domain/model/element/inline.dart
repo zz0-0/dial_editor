@@ -7,7 +7,7 @@ abstract class Inline extends Node {
   String text = '';
   TextEditingController controller = TextEditingController();
   TextStyle style = const TextStyle();
-  double textHeight = 0;
+  double? textHeight;
   FocusNode focusNode = FocusNode();
   bool isEditing = false;
   Offset globalPosition = Offset.zero;

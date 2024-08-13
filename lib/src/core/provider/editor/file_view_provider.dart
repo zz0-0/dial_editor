@@ -10,10 +10,8 @@ import 'package:dial_editor/src/feature/editor/domain/use_case/get_document_chil
 import 'package:dial_editor/src/feature/editor/domain/use_case/save_document_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/update_node_style_use_case.dart';
 import 'package:dial_editor/src/feature/editor/presentation/helper/render_adapter.dart';
-import 'package:dial_editor/src/feature/editor/presentation/view_model/file_view_view_model.dart';
-import 'package:dial_editor/src/feature/editor/presentation/view_model/flat_node_list_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/node_list_state_notifier.dart';
-import 'package:dial_editor/src/feature/editor/presentation/view_model/widget_list_state_notifier.dart';
+import 'package:dial_editor/src/feature/editor/presentation/view_model/node_state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,23 +50,15 @@ final updateNodeStyleUseCaseProvider = Provider<UpdateNodeStyleUseCase>((ref) {
   return UpdateNodeStyleUseCase();
 });
 
-final fileViewViewModelProvider = ChangeNotifierProvider((ref) {
-  return FileViewViewModel(ref);
-});
-
 final nodeListStateNotifierProvider =
     StateNotifierProvider<NodeListStateNotifier, List<Node>>((ref) {
   return NodeListStateNotifier(ref);
 });
 
-final flatNodeListStateNotifierProvider =
-    StateNotifierProvider<FlatNodeListStateNotifier, List<Inline>>((ref) {
-  return FlatNodeListStateNotifier(ref);
-});
-
-final widgetListStateNotifierProvider =
-    StateNotifierProvider<WidgetListStateNotifier, List<Widget>>((ref) {
-  return WidgetListStateNotifier(ref);
+final nodeStateProvider =
+    StateNotifierProvider.family<NodeStateNotifier, List<Inline?>, GlobalKey>(
+        (ref, key) {
+  return NodeStateNotifier(ref, key);
 });
 
 final scrollController1Provider = Provider((ref) => ScrollController());

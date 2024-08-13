@@ -1,7 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing_area.dart';
-import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/expand.dart';
-import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/line_number.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,23 +11,6 @@ class MarkdownFile extends ConsumerStatefulWidget {
 }
 
 class _MarkdownFileState extends ConsumerState<MarkdownFile> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(fileViewViewModelProvider.notifier).getNodeList();
-      ref.read(fileViewViewModelProvider.notifier).updateFlatNodeList();
-      ref.read(fileViewViewModelProvider.notifier).updateWidgetList();
-      for (int i = 0;
-          i < ref.read(flatNodeListStateNotifierProvider).length;
-          i++) {
-        ref
-            .read(flatNodeListStateNotifierProvider.notifier)
-            .updateNodeHeight(i, context);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final scrollController1 = ref.watch(scrollController1Provider);
@@ -50,17 +31,7 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
         }
         return true;
       },
-      child: const Stack(
-        children: [
-          Row(
-            children: [
-              LineNumber(),
-              Expand(),
-              EditingArea(),
-            ],
-          ),
-        ],
-      ),
+      child: const EditingArea(),
     );
   }
 }

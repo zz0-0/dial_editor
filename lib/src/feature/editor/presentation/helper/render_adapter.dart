@@ -11,19 +11,46 @@ class RenderAdapter {
 
   RenderAdapter(this.ref);
 
-  Widget adapt(Inline node, RenderInstruction instruction) {
+  Text adapt(
+    Inline node,
+    RenderInstruction instruction,
+    BuildContext context,
+  ) {
     if (instruction is TextRenderInstruction) {
       final TextStyle newStyle =
           _getTextStyle(instruction.text, instruction.formatting);
 
       ref.read(updateNodeStyleUseCaseProvider).update(node, newStyle);
-
+      final double newHeight = _calculateHeight(node, context);
+      if (node.textHeight != newHeight) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref
+              .read(nodeStateProvider(node.key).notifier)
+              .updateNodeHeight(context);
+        });
+      }
       return Text(
         instruction.text,
         style: newStyle,
       );
     }
-    return Container();
+    return const Text("");
+  }
+
+  double _calculateHeight(Inline node, BuildContext context) {
+    final text = node.controller.text;
+    final style = node.style;
+    final maxWidth = MediaQuery.of(context).size.width;
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: maxWidth);
+
+    return textPainter.height;
   }
 
   TextStyle _getTextStyle(String text, MarkdownElement formatting) {

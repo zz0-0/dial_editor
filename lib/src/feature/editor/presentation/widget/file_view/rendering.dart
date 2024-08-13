@@ -1,23 +1,24 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Rendering extends ConsumerWidget {
-  final int index;
-  const Rendering(this.index, {super.key});
+  final Inline node;
+  const Rendering(this.node, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final flatNodeListStateNotifier =
-        ref.watch(flatNodeListStateNotifierProvider.notifier);
-    final widgetListStateNotifier =
-        ref.watch(widgetListStateNotifierProvider.notifier);
-
+    final renderAdapter = ref.read(renderAdapterProvider);
+    final instruction = node.render();
+    final w = renderAdapter.adapt(node, instruction, context);
     return GestureDetector(
       onTapUp: (details) {
-        flatNodeListStateNotifier.setNodeToEditingModeByIndex(index, details);
+        ref
+            .read(nodeStateProvider(node.key).notifier)
+            .setNodeToEditingModeByIndex(node, details);
       },
-      child: widgetListStateNotifier.getWidgetByIndex(index),
+      child: w,
     );
   }
 }

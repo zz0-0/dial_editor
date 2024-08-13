@@ -4,51 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Expand extends ConsumerWidget {
-  const Expand({super.key});
+  final Inline node;
+  const Expand(this.node, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Inline> flatNodeList =
-        ref.watch(flatNodeListStateNotifierProvider);
-    final flatNodeListStateNotifier =
-        ref.read(flatNodeListStateNotifierProvider.notifier);
-    final scrollController2 = ref.watch(scrollController2Provider);
-
     return SizedBox(
       width: 30,
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: ListView.builder(
-          controller: scrollController2,
-          itemCount: flatNodeListStateNotifier.getListLength(),
-          itemBuilder: (context, index) {
-            final node = flatNodeList[index];
-            if (node.isBlockStart || (!node.isBlockStart && node.isExpanded)) {
-              return Row(
-                children: [
-                  const Spacer(),
-                  Container(
-                    alignment: Alignment.center,
-                    height: node.textHeight,
-                    child: GestureDetector(
-                      onTap: () {
-                        flatNodeListStateNotifier.toggleNodeExpansion(index);
-                      },
-                      child: node.isBlockStart
-                          ? flatNodeListStateNotifier
-                                  .getNodeByIndex(index)
-                                  .isExpanded
-                              ? const Icon(Icons.expand_more)
-                              : const Icon(Icons.chevron_right)
-                          : Container(),
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
+      child: Container(
+        alignment: Alignment.center,
+        height: node.textHeight,
+        child: GestureDetector(
+          onTap: () {
+            ref
+                .read(nodeStateProvider(node.key).notifier)
+                .toggleNodeExpansion();
           },
+          child: node.isBlockStart
+              ? node.isExpanded
+                  ? const Icon(Icons.expand_more)
+                  : const Icon(Icons.chevron_right)
+              : Container(),
         ),
       ),
     );

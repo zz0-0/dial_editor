@@ -1,65 +1,47 @@
+import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/use_case/get_document_children_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NodeListStateNotifier extends StateNotifier<List<Node>> {
   Ref ref;
+  final Map<GlobalKey, Block> blockMap = {};
 
-  NodeListStateNotifier(this.ref) : super([]);
-
-  List<Node> getList() {
-    return state;
+  NodeListStateNotifier(this.ref) : super([]) {
+    getList();
   }
 
-  int getListLength() {
-    return state.length;
+  void getList() {
+    final GetDocumentChildrenUseCase getDocumentChildren =
+        ref.watch(getDocumentChildrenUseCaseProvider);
+    final newList = getDocumentChildren.getChildren();
+    if (state != newList) {
+      state = newList;
+    } else {
+      // print('State not updated, list is the same');
+    }
   }
 
-  // ignore: use_setters_to_change_properties
-  void updateList(List<Node> list) {
-    state = list;
+  void updateList() {
+    state = [...state];
   }
 
-  Node getNodeByIndex(int index) {
-    return state[index];
+  void insertBlockNodeIntoMap(GlobalKey key, Block node) {
+    blockMap[key] = node;
   }
 
-  Block? findBlockByKey(GlobalKey key) {
-    final List<Node> list = [...state];
-    return findBlock(list, key);
-  }
-
-  Block? findBlock(List<Node> list, GlobalKey key) {
-    for (final node in list) {
-      if (node is Block && node.key == key) {
-        return node;
-      } else if (node is Block && node.children.isNotEmpty) {
-        final Block? result = findBlock(node.children, key);
-        if (result != null) {
-          return result;
+  void toggleNodeExpansion(Inline node) {
+    if (blockMap[node.parentKey] != null) {
+      for (final n in blockMap[node.parentKey]!.children) {
+        if (n is Inline) {
+          if (!n.isBlockStart) {
+            ref.read(nodeStateProvider(n.key).notifier).toggleNodeExpansion();
+          }
         }
       }
     }
-    return null;
-  }
-
-  void updateBlock(Block block) {
-    final List<Node> list = [...state];
-    final index = list.indexWhere((element) => element.key == block.key);
-    list[index] = block;
-    state = list;
-  }
-
-  void findFollowingBlockAndInsert(GlobalKey key, Block block) {
-    final List<Node> list = [...state];
-    int index = 0;
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].key == key) {
-        index = i;
-      }
-    }
-    list.insert(index, block);
-    state = list;
   }
 }
