@@ -16,7 +16,7 @@ class Rendering extends ConsumerWidget {
       onTapUp: (details) {
         ref
             .read(nodeStateProvider(node.key).notifier)
-            .setNodeToEditingModeByIndex(node, details);
+            .setNodeToEditingModeOnTap(node, details);
       },
       child: w,
     );

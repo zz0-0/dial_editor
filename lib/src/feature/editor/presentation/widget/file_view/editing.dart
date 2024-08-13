@@ -35,7 +35,7 @@ class _EditingState extends ConsumerState<Editing> {
               enableInteractiveSelection: true,
               paintCursorAboveText: true,
               onChanged: (value) => _onChange(widget.node, value, context),
-              onEditingComplete: () => _onEditingComplete(),
+              onEditingComplete: () => _onEditingComplete(context),
             );
           },
         ),
@@ -80,8 +80,8 @@ class _EditingState extends ConsumerState<Editing> {
     nodeStateNotifier.onChange(node, value, context);
   }
 
-  void _onEditingComplete() {
-    nodeStateNotifier.onEditingComplete();
+  void _onEditingComplete(BuildContext context) {
+    nodeStateNotifier.onEditingComplete(context);
   }
 
   void _selectAll() {

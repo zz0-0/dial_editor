@@ -35,12 +35,21 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     }
   }
 
-  void setNodeToEditingModeByIndex(Inline node, TapUpDetails details) {
-    final Offset globalPosition = details.globalPosition;
+  void setNodeToEditingMode() {
+    final Inline node = state[0]!;
     node.isEditing = true;
     node.controller.clear();
     node.controller.text = node.rawText;
-    node.globalPosition = globalPosition;
+    node.focusNode.requestFocus();
+    state = [node];
+  }
+
+  void setNodeToEditingModeOnTap(Inline node, TapUpDetails details) {
+    // final Offset globalPosition = details.globalPosition;
+    node.isEditing = true;
+    node.controller.clear();
+    node.controller.text = node.rawText;
+    // node.globalPosition = globalPosition;
     node.focusNode.requestFocus();
     state = [node];
   }
@@ -67,9 +76,28 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     state = [temp];
   }
 
-  void onEditingComplete() {
+  void onEditingComplete(BuildContext context) {
     if (state[0] != null) {
       final Inline node = state[0]!;
+      final newNode = node.createNewLine();
+      ref.read(nodeStateProvider(newNode.key).notifier).initialize(newNode);
+      if (node.parentKey != null) {
+        newNode.parentKey = node.parentKey;
+        ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .insertNodeToBlock(node, newNode);
+      }
+      // final instruction = newNode.render();
+      // final renderAdapter = ref.read(renderAdapterProvider);
+      // final widget = renderAdapter.adapt(newNode, instruction, context);
+      // newNode.style = widget.style!;
+      // ref
+      //     .read(nodeStateProvider(newNode.key).notifier)
+      //     .updateNodeHeight(context);
+      // ref.read(nodeListStateNotifierProvider.notifier).addNode(newNode);
+      ref.read(nodeStateProvider(newNode.key).notifier).setNodeToEditingMode();
+      node.isEditing = false;
+
       state = [node];
     }
   }
@@ -84,6 +112,17 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
   void onDelete() {
     if (state[0] != null) {
       final Inline node = state[0]!;
+      if (node.rawText.isEmpty) {
+        final previousNode = ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .getPreviousNode(node);
+        ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .removeNodeFromBlock(node);
+        ref
+            .read(nodeStateProvider(previousNode.key).notifier)
+            .setNodeToEditingMode();
+      }
       state = [node];
     }
   }

@@ -44,4 +44,52 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       }
     }
   }
+
+  void addNode(Inline newNode) {}
+
+  void addNodeToBlock(Inline newNode) {
+    if (_blockExists(newNode.parentKey)) {
+      final block = blockMap[newNode.parentKey]!;
+      block.children.add(newNode);
+      _updateBlock(newNode.parentKey!, block);
+    }
+  }
+
+  void insertNodeToBlock(Inline oldNode, Inline newNode) {
+    if (_blockExists(newNode.parentKey)) {
+      final block = blockMap[newNode.parentKey]!;
+      final index = block.children.indexOf(oldNode);
+      block.children.insert(index + 1, newNode);
+      _updateBlock(newNode.parentKey!, block);
+    }
+  }
+
+  Inline getPreviousNode(Inline node) {
+    late Inline previousNode;
+    if (_blockExists(node.parentKey)) {
+      final block = blockMap[node.parentKey]!;
+      final index = block.children.indexOf(node);
+      if (index > 0) {
+        previousNode = block.children[index - 1] as Inline;
+      }
+    }
+    return previousNode;
+  }
+
+  void removeNodeFromBlock(Inline node) {
+    if (_blockExists(node.parentKey)) {
+      final block = blockMap[node.parentKey]!;
+      block.children.remove(node);
+      _updateBlock(node.parentKey!, block);
+    }
+  }
+
+  bool _blockExists(GlobalKey? key) {
+    return key != null && blockMap[key] != null;
+  }
+
+  void _updateBlock(GlobalKey key, Block block) {
+    blockMap[key] = block;
+    updateList();
+  }
 }

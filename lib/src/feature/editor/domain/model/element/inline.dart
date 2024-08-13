@@ -10,8 +10,8 @@ abstract class Inline extends Node {
   double? textHeight;
   FocusNode focusNode = FocusNode();
   bool isEditing = false;
-  Offset globalPosition = Offset.zero;
-  Offset previousGlobalPosition = Offset.zero;
+  // Offset globalPosition = Offset.zero;
+  // Offset previousGlobalPosition = Offset.zero;
   bool isExpanded = true;
   bool isBlockStart = false;
   int depth = 0;
