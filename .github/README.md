@@ -6,9 +6,9 @@
 
 ## ⚠️ Disclaimer
 
-**Warning:** I am currently pursuing a master's degree, so I don't have much time for development right now. I plan to continue working on this personal project later on. 
+**Warning:** I am currently pursuing a master's degree and do not have much time for development at the moment. I intend to resume work on this personal project later on.. 
 
-**Warning 2:** This project is in its early stage. Use at your own risk.
+**Warning:** This project is in its early stages. Use it at your own risk.
 
 ## 🚀 Features
 
@@ -18,7 +18,7 @@
   - [ ]  **Markdown Parser**: Implement a parser for converting Markdown text into structured data. **Markdown Render**: Develop a renderer to display Markdown content with proper formatting.
     - [X]  Heading (https://github.com/zz0-0/dial_editor/issues/34)
       - [x]  Heading block (https://github.com/zz0-0/dial_editor/issues/38)
-      - [x]  Heading id (https://github.com/zz0-0/dial_editor/issues/35)
+      - [ ]  Heading id (https://github.com/zz0-0/dial_editor/issues/35)
       - [ ]  Bidirectional link (https://github.com/zz0-0/dial_editor/issues/36)
     - [X]  Bold
     - [X]  Italic
@@ -86,7 +86,7 @@
   - [ ]  Mobile UI
   - [ ]  Web UI
 - [ ]  **Infinite Canvas**: Interchangeable markdown canvas that constructs and edits your markdown file visually (https://github.com/zz0-0/dial_editor/issues/16)
-  - [x]  standalone canvas view (https://github.com/zz0-0/dial_editor/issues/42)
+  - [ ]  standalone canvas view (https://github.com/zz0-0/dial_editor/issues/42)
   - [ ]  integrate with markdown file (https://github.com/zz0-0/dial_editor/issues/43)
 
 ## 🖥️ Getting Started
