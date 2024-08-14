@@ -48,13 +48,30 @@ class Recursive extends ConsumerWidget {
               .insertNodeIntoFlatNodeList(inlineNode);
         });
       }
-      return _buildNodeContent(updatedNode[0]!, currentIndex);
+      return _buildNodeContent(ref, updatedNode[0]!, currentIndex);
     }
     return Container();
   }
 
-  Widget _buildNodeContent(Inline inline, int currentIndex) {
-    return (inline.isBlockStart || (!inline.isBlockStart && inline.isExpanded))
+  bool _shouldExpanded(WidgetRef ref, Inline inline) {
+    if (ref.read(toggleNodeExpansionKeyProvider) == null) {
+      if (inline.isBlockStart || (!inline.isBlockStart && inline.isExpanded)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (inline.isBlockStart &&
+          inline.key == ref.read(toggleNodeExpansionKeyProvider)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  Widget _buildNodeContent(WidgetRef ref, Inline inline, int currentIndex) {
+    return _shouldExpanded(ref, inline)
         ? Row(
             children: [
               LineNumber(inline, currentIndex),

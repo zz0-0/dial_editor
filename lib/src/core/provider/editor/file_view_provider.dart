@@ -63,3 +63,5 @@ final nodeStateProvider =
 final scrollController1Provider = Provider((ref) => ScrollController());
 final scrollController2Provider = Provider((ref) => ScrollController());
 final scrollController3Provider = Provider((ref) => ScrollController());
+
+final toggleNodeExpansionKeyProvider = StateProvider<GlobalKey?>((ref) => null);

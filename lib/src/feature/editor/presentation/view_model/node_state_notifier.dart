@@ -211,6 +211,11 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
         ref
             .read(nodeListStateNotifierProvider.notifier)
             .toggleNodeExpansion(node);
+        if (node.isExpanded) {
+          ref.read(toggleNodeExpansionKeyProvider.notifier).state = node.key;
+        } else {
+          ref.read(toggleNodeExpansionKeyProvider.notifier).state = null;
+        }
       }
       node.isExpanded = !node.isExpanded;
       state = [node];

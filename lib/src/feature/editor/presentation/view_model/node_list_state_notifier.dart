@@ -40,13 +40,8 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
 
   void toggleNodeExpansion(Inline node) {
     if (blockMap[node.parentKey] != null) {
-      for (final n in blockMap[node.parentKey]!.children) {
-        if (n is Inline) {
-          if (!n.isBlockStart) {
-            ref.read(nodeStateProvider(n.key).notifier).toggleNodeExpansion();
-          }
-        }
-      }
+      final Block block = blockMap[node.parentKey]!;
+      _toggleChildren(block, node.isExpanded);
     }
   }
 
@@ -121,5 +116,20 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   void _updateBlock(GlobalKey key, Block block) {
     blockMap[key] = block;
     updateList();
+  }
+
+  void _toggleChildren(Block block, bool isExpanded, [bool nested = false]) {
+    for (final child in block.children) {
+      if (child is Inline) {
+        if (!child.isBlockStart) {
+          ref.read(nodeStateProvider(child.key).notifier).toggleNodeExpansion();
+        }
+        if (nested) {
+          ref.read(nodeStateProvider(child.key).notifier).toggleNodeExpansion();
+        }
+      } else if (child is Block) {
+        _toggleChildren(child, isExpanded, true);
+      }
+    }
   }
 }
