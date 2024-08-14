@@ -40,16 +40,16 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     node.isEditing = true;
     node.controller.clear();
     node.controller.text = node.rawText;
+    node.controller.selection =
+        TextSelection.collapsed(offset: node.rawText.length);
     node.focusNode.requestFocus();
     state = [node];
   }
 
   void setNodeToEditingModeOnTap(Inline node, TapUpDetails details) {
-    // final Offset globalPosition = details.globalPosition;
     node.isEditing = true;
     node.controller.clear();
     node.controller.text = node.rawText;
-    // node.globalPosition = globalPosition;
     node.focusNode.requestFocus();
     state = [node];
   }
@@ -62,18 +62,23 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     final ConvertStringToLineUseCase convertStringToLineUseCase =
         ref.read(convertStringToLineUseCaseProvider);
     final int cursorPosition = node.controller.selection.baseOffset;
-    final Inline temp = convertStringToLineUseCase.convertLine(value);
-    temp.key = node.key;
-    state = [temp];
-    final instruction = temp.render();
+    final Inline newNode = convertStringToLineUseCase.convertLine(value);
+    newNode.key = node.key;
+    newNode.parentKey = node.parentKey;
+    ref
+        .read(nodeListStateNotifierProvider.notifier)
+        .replaceNodeInBlock(node, newNode);
+    state = [newNode];
+    final instruction = newNode.render();
     final renderAdapter = ref.read(renderAdapterProvider);
-    final widget = renderAdapter.adapt(temp, instruction, context);
-    temp.style = widget.style!;
+    final widget = renderAdapter.adapt(newNode, instruction, context);
+    newNode.style = widget.style!;
     updateNodeHeight(context);
-    temp.isEditing = true;
-    temp.focusNode.requestFocus();
-    temp.controller.selection = TextSelection.collapsed(offset: cursorPosition);
-    state = [temp];
+    newNode.isEditing = true;
+    newNode.focusNode.requestFocus();
+    newNode.controller.selection =
+        TextSelection.collapsed(offset: cursorPosition);
+    state = [newNode];
   }
 
   void onEditingComplete(BuildContext context) {
@@ -87,17 +92,8 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
             .read(nodeListStateNotifierProvider.notifier)
             .insertNodeToBlock(node, newNode);
       }
-      // final instruction = newNode.render();
-      // final renderAdapter = ref.read(renderAdapterProvider);
-      // final widget = renderAdapter.adapt(newNode, instruction, context);
-      // newNode.style = widget.style!;
-      // ref
-      //     .read(nodeStateProvider(newNode.key).notifier)
-      //     .updateNodeHeight(context);
-      // ref.read(nodeListStateNotifierProvider.notifier).addNode(newNode);
       ref.read(nodeStateProvider(newNode.key).notifier).setNodeToEditingMode();
       node.isEditing = false;
-
       state = [node];
     }
   }

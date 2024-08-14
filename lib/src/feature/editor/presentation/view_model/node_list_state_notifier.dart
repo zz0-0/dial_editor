@@ -66,6 +66,18 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       final index = block.children.indexOf(oldNode);
       block.children.insert(index + 1, newNode);
       _updateBlock(newNode.parentKey!, block);
+      oldNode.insertAfter(newNode);
+    }
+  }
+
+  void replaceNodeInBlock(Inline oldNode, Inline newNode) {
+    if (_blockExists(oldNode.parentKey)) {
+      final block = blockMap[oldNode.parentKey]!;
+      final index = block.children.indexOf(oldNode);
+      block.children[index] = newNode;
+      _updateBlock(newNode.parentKey!, block);
+      oldNode.insertAfter(newNode);
+      nodeLinkedList.remove(oldNode);
     }
   }
 
@@ -73,7 +85,11 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     Inline? previousNode;
     if (nodeLinkedList.isNotEmpty) {
       if (node.previous != null) {
-        previousNode = node.previous! as Inline;
+        if (node.previous is Inline) {
+          previousNode = node.previous! as Inline;
+        } else if (node.previous is Block) {
+          previousNode = (node.previous! as Block).children.last as Inline;
+        }
       }
     }
     return previousNode;
@@ -94,6 +110,7 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       final block = blockMap[node.parentKey]!;
       block.children.remove(node);
       _updateBlock(node.parentKey!, block);
+      nodeLinkedList.remove(node);
     }
   }
 

@@ -27,7 +27,11 @@ class Recursive extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: (node as Block).children.map((child) {
           final widget = Recursive(child, currentIndex);
-          currentIndex++;
+          if (child is Block) {
+            currentIndex += child.children.length;
+          } else {
+            currentIndex++;
+          }
           return widget;
         }).toList(),
       );
