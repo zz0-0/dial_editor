@@ -1,5 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/node_state_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

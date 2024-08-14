@@ -1,4 +1,4 @@
-import 'package:dial_editor/src/feature/editor/domain/model/document.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 
 abstract class DocumentRepository {
   Document encode();

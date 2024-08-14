@@ -1,5 +1,4 @@
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 
 abstract class NodeRepository {
   List<Node> convertDocument(List<String> lines);

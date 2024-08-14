@@ -1,7 +1,7 @@
+import 'dart:collection';
+
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/get_document_children_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class NodeListStateNotifier extends StateNotifier<List<Node>> {
   Ref ref;
   final Map<GlobalKey, Block> blockMap = {};
+  final LinkedList<Node> nodeLinkedList = LinkedList<Node>();
 
   NodeListStateNotifier(this.ref) : super([]) {
     getList();
@@ -31,6 +32,10 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
 
   void insertBlockNodeIntoMap(GlobalKey key, Block node) {
     blockMap[key] = node;
+  }
+
+  void insertNodeIntoFlatNodeList(Inline node) {
+    nodeLinkedList.add(node);
   }
 
   void toggleNodeExpansion(Inline node) {
@@ -64,16 +69,24 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     }
   }
 
-  Inline getPreviousNode(Inline node) {
-    late Inline previousNode;
-    if (_blockExists(node.parentKey)) {
-      final block = blockMap[node.parentKey]!;
-      final index = block.children.indexOf(node);
-      if (index > 0) {
-        previousNode = block.children[index - 1] as Inline;
+  Inline? getPreviousNode(Inline node) {
+    Inline? previousNode;
+    if (nodeLinkedList.isNotEmpty) {
+      if (node.previous != null) {
+        previousNode = node.previous! as Inline;
       }
     }
     return previousNode;
+  }
+
+  Inline? getNextNode(Inline node) {
+    Inline? nextNode;
+    if (nodeLinkedList.isNotEmpty) {
+      if (node.next != null) {
+        nextNode = node.next! as Inline;
+      }
+    }
+    return nextNode;
   }
 
   void removeNodeFromBlock(Inline node) {

@@ -1,17 +1,13 @@
-import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline/text.dart';
+/// library for markdown element
+library node;
 
-class Subscript extends Inline {
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+
+base class Subscript extends Inline {
   Subscript({required super.rawText});
 
   @override
   RenderInstruction render() {
     return TextRenderInstruction(rawText, MarkdownElement.subscipt);
-  }
-
-  @override
-  Inline createNewLine() {
-    return TextNode(rawText: '');
   }
 }

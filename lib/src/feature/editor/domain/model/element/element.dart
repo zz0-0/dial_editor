@@ -1,4 +1,5 @@
 enum MarkdownElement {
+  inlne,
   heading,
   orderedListNode,
   taskListNode,
@@ -14,8 +15,9 @@ enum MarkdownElement {
   math,
   strikethrough,
   subscipt,
-  superscipt,
-  text
+  text,
+  quote,
+  superscript
 }
 
 abstract class RenderInstruction {}

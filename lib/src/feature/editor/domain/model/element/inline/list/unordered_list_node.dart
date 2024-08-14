@@ -1,7 +1,9 @@
-import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+/// library for markdown element
+library node;
 
-class UnorderedListNode extends Inline {
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+
+base class UnorderedListNode extends Inline {
   UnorderedListNode({required super.rawText});
 
   @override

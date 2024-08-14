@@ -1,4 +1,4 @@
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 
 class Document {
   List<Node> children;

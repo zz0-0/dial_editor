@@ -1,8 +1,10 @@
-import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+/// library for markdown element
+library node;
+
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 
-abstract class Inline extends Node {
+base class Inline extends Node {
   String rawText;
   String text = '';
   TextEditingController controller = TextEditingController();
@@ -20,9 +22,13 @@ abstract class Inline extends Node {
     controller.text = rawText;
   }
 
-  RenderInstruction render();
+  RenderInstruction render() {
+    return TextRenderInstruction(rawText, MarkdownElement.inlne);
+  }
 
-  Inline createNewLine();
+  Inline createNewLine() {
+    return TextNode(rawText: '');
+  }
 
   @override
   String toString() {

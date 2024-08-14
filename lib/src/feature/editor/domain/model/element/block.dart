@@ -1,6 +1,9 @@
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+/// library for markdown element
+library node;
 
-abstract class Block extends Node {
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+
+base class Block extends Node {
   List<Node> children = [];
 
   @override

@@ -1,18 +1,18 @@
-import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+/// library for markdown element
+library node;
 
-class Quote extends Inline {
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+
+base class Quote extends Inline {
   Quote({required super.rawText});
 
   @override
-  Inline createNewLine() {
-    // TODO: implement createNewLine
-    throw UnimplementedError();
+  RenderInstruction render() {
+    return TextRenderInstruction(rawText, MarkdownElement.quote);
   }
 
   @override
-  RenderInstruction render() {
-    // TODO: implement render
-    throw UnimplementedError();
+  Inline createNewLine() {
+    return Quote(rawText: '> ');
   }
 }

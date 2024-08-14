@@ -1,7 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/block.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/expand.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/line_number.dart';
@@ -41,6 +39,9 @@ class Recursive extends ConsumerWidget {
         updatedNode.add(inlineNode);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ref.read(nodeStateProvider(node.key).notifier).initialize(inlineNode);
+          ref
+              .read(nodeListStateNotifierProvider.notifier)
+              .insertNodeIntoFlatNodeList(inlineNode);
         });
       }
       return _buildNodeContent(updatedNode[0]!, currentIndex);

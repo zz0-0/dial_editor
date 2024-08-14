@@ -1,8 +1,9 @@
-import 'package:dial_editor/src/feature/editor/data/repository_impl/regex.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+/// library for markdown element
+library node;
 
-class OrderedListNode extends Inline {
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+
+base class OrderedListNode extends Inline {
   OrderedListNode({required super.rawText});
 
   @override

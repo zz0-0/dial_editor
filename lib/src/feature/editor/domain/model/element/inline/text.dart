@@ -1,16 +1,13 @@
-import 'package:dial_editor/src/feature/editor/domain/model/element/element.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/element/inline.dart';
+/// library for markdown element
+library node;
 
-class TextNode extends Inline {
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+
+base class TextNode extends Inline {
   TextNode({required super.rawText});
 
   @override
   RenderInstruction render() {
-    return TextRenderInstruction(rawText, MarkdownElement.boldItalic);
-  }
-
-  @override
-  Inline createNewLine() {
-    return TextNode(rawText: '');
+    return TextRenderInstruction(rawText, MarkdownElement.text);
   }
 }
