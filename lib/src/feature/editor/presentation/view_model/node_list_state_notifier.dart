@@ -47,7 +47,7 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
 
   void addNode(Inline newNode) {}
 
-  void addNodeToBlock(Inline newNode) {
+  void addNodeToBlock(Node newNode) {
     if (_blockExists(newNode.parentKey)) {
       final block = blockMap[newNode.parentKey]!;
       block.children.add(newNode);
@@ -55,7 +55,7 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     }
   }
 
-  void insertNodeToBlock(Inline oldNode, Inline newNode) {
+  void insertNodeToBlock(Node oldNode, Node newNode) {
     if (_blockExists(newNode.parentKey)) {
       final block = blockMap[newNode.parentKey]!;
       final index = block.children.indexOf(oldNode);
@@ -66,14 +66,128 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void replaceNodeInBlock(Inline oldNode, Inline newNode) {
-    if (_blockExists(oldNode.parentKey)) {
-      final block = blockMap[oldNode.parentKey]!;
-      final index = block.children.indexOf(oldNode);
-      block.children[index] = newNode;
-      _updateBlock(newNode.parentKey!, block);
-      oldNode.insertAfter(newNode);
-      nodeLinkedList.remove(oldNode);
+    if (!_blockExists(oldNode.parentKey)) return;
+
+    final block = blockMap[oldNode.parentKey]!;
+    final index = block.children.indexOf(oldNode);
+
+    if (oldNode is Heading && newNode is! Heading) {
+      _handleHeadingToTextConversion(block, index, newNode);
+    } else if (newNode is Heading) {
+      _handleHeadingReplacement(block, index, newNode);
+    } else if (_isSpecialBlockNode(newNode)) {
+      _handleSpecialBlockReplacement(block, index, newNode, oldNode);
+    } else {
+      _handleSimpleReplacement(block, index, newNode, oldNode);
     }
+  }
+
+  void _handleHeadingToTextConversion(Block block, int index, Inline newNode) {}
+
+  void _handleHeadingReplacement(Block block, int index, Heading newNode) {
+    final HeadingBlock newBlock = _createHeadingBlock(newNode);
+    _moveChildrenToNewBlock(block, index, newBlock);
+
+    if (block is HeadingBlock) {
+      if (newBlock.level >= block.level) {
+        _moveBlockToHigherLevel(block, index, newBlock);
+      } else {
+        _replaceExistingBlock(block, index, newBlock);
+      }
+    }
+  }
+
+  HeadingBlock _createHeadingBlock(Heading newNode) {
+    newNode.isBlockStart = true;
+    final HeadingBlock newBlock = HeadingBlock(level: newNode.level);
+    newBlock.children.add(newNode);
+    newNode.parentKey = newBlock.key;
+    return newBlock;
+  }
+
+  void _moveChildrenToNewBlock(Block block, int index, Block newBlock) {
+    if (index < block.children.length - 1) {
+      for (final child in block.children.sublist(index + 1)) {
+        if (child is Inline) child.parentKey = newBlock.key;
+        newBlock.children.add(child);
+      }
+      block.children.removeRange(index + 1, block.children.length);
+    }
+  }
+
+  void _moveBlockToHigherLevel(
+    HeadingBlock block,
+    int index,
+    HeadingBlock newBlock,
+  ) {
+    block.children.removeAt(index);
+    newBlock.parentKey = block.parentKey;
+
+    if (block.parentKey != null) {
+      final parentBlock = blockMap[block.parentKey]!;
+      final blockIndex = parentBlock.children.indexOf(block);
+      parentBlock.children.insert(blockIndex + 1, newBlock);
+      _moveChildrenToNewBlock(parentBlock, blockIndex + 1, newBlock);
+      blockMap[block.parentKey!] = parentBlock;
+    } else {
+      state.insert(state.indexOf(block) + 1, newBlock);
+    }
+
+    blockMap[newBlock.key] = newBlock;
+  }
+
+  void _replaceExistingBlock(Block block, int index, Block newBlock) {
+    block.children[index] = newBlock;
+    newBlock.parentKey = block.key;
+    blockMap[newBlock.key] = newBlock;
+    blockMap[block.key] = block;
+  }
+
+  bool _isSpecialBlockNode(Inline node) {
+    return node is CodeBlockMarker ||
+        node is OrderedListNode ||
+        node is TaskListNode ||
+        node is UnorderedListNode ||
+        node is Math ||
+        node is Quote;
+  }
+
+  void _handleSpecialBlockReplacement(
+    Block block,
+    int index,
+    Inline newNode,
+    Inline oldNode,
+  ) {
+    newNode.isBlockStart = true;
+    final Block newBlock = _createSpecialBlock(newNode);
+    _moveChildrenToNewBlock(block, index, newBlock);
+    block.children[index] = newBlock;
+    newBlock.parentKey = block.key;
+    blockMap[newBlock.key] = newBlock;
+    blockMap[block.key] = block;
+    oldNode.insertAfter(newNode);
+    nodeLinkedList.remove(oldNode);
+  }
+
+  Block _createSpecialBlock(Inline newNode) {
+    if (newNode is CodeBlockMarker) return CodeBlock();
+    if (newNode is OrderedListNode) return OrderedListBlock();
+    if (newNode is TaskListNode) return TaskListBlock();
+    if (newNode is UnorderedListNode) return UnorderedListBlock();
+    if (newNode is Math) return MathBlock();
+    return QuoteBlock();
+  }
+
+  void _handleSimpleReplacement(
+    Block block,
+    int index,
+    Inline newNode,
+    Inline oldNode,
+  ) {
+    block.children[index] = newNode;
+    oldNode.insertAfter(newNode);
+    nodeLinkedList.remove(oldNode);
+    _updateBlock(oldNode.parentKey!, block);
   }
 
   Inline? getPreviousNode(Inline node) {
