@@ -72,7 +72,7 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     final instruction = newNode.render();
     final renderAdapter = ref.read(renderAdapterProvider);
     final widget = renderAdapter.adapt(newNode, instruction, context);
-    newNode.style = widget.style!;
+    newNode.style = (widget as Text).style!;
     updateNodeHeight(context);
     newNode.isEditing = true;
     newNode.focusNode.requestFocus();

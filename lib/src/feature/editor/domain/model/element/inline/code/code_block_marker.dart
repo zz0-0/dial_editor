@@ -10,13 +10,14 @@ base class CodeBlockMarker extends Inline {
 
   @override
   Inline createNewLine() {
-    // TODO: implement createNewLine
-    throw UnimplementedError();
+    if (language.isNotEmpty) {
+      return CodeLine(rawText: '');
+    }
+    return TextNode(rawText: '');
   }
 
   @override
   RenderInstruction render() {
-    // TODO: implement render
-    throw UnimplementedError();
+    return TextRenderInstruction(rawText, MarkdownElement.codeBlockMarker);
   }
 }

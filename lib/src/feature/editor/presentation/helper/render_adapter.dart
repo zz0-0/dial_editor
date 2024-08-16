@@ -2,6 +2,9 @@ import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/core/provider/theme/theme_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_highlighter/flutter_highlighter.dart';
+import 'package:flutter_highlighter/themes/dark.dart';
+import 'package:flutter_highlighter/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RenderAdapter {
@@ -9,7 +12,7 @@ class RenderAdapter {
 
   RenderAdapter(this.ref);
 
-  Text adapt(
+  Widget adapt(
     Inline node,
     RenderInstruction instruction,
     BuildContext context,
@@ -27,10 +30,21 @@ class RenderAdapter {
               .updateNodeHeight(context);
         });
       }
-      return Text(
-        instruction.text,
-        style: newStyle,
-      );
+      if (node is CodeLine) {
+        return HighlightView(
+          instruction.text,
+          language: 'c',
+          theme: Theme.of(context).brightness == Brightness.dark
+              ? darkTheme
+              : githubTheme,
+          textStyle: newStyle,
+        );
+      } else {
+        return Text(
+          instruction.text,
+          style: newStyle,
+        );
+      }
     }
     return const Text("");
   }
@@ -57,6 +71,29 @@ class RenderAdapter {
     final textTheme = theme.themeData.textTheme;
 
     switch (formatting) {
+      case MarkdownElement.codeBlockMarker:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.codeLine:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.orderedListNode:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.taskListNode:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.unorderedListNode:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.boldItalic:
+        return TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.italic,
+        );
+      case MarkdownElement.bold:
+        return TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+        );
+      case MarkdownElement.emoji:
+        return TextStyle(fontSize: fontSize);
       case MarkdownElement.heading:
         final match = headingRegex.firstMatch(text);
         TextStyle style = TextStyle(fontSize: fontSize);
@@ -78,25 +115,6 @@ class RenderAdapter {
           }
         }
         return style;
-      case MarkdownElement.orderedListNode:
-        return TextStyle(fontSize: fontSize);
-      case MarkdownElement.taskListNode:
-        return TextStyle(fontSize: fontSize);
-      case MarkdownElement.unorderedListNode:
-        return TextStyle(fontSize: fontSize);
-      case MarkdownElement.boldItalic:
-        return TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-          fontStyle: FontStyle.italic,
-        );
-      case MarkdownElement.bold:
-        return TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-        );
-      case MarkdownElement.emoji:
-        return TextStyle(fontSize: fontSize);
       case MarkdownElement.highlight:
         return TextStyle(fontSize: fontSize);
       case MarkdownElement.horizontalRule:

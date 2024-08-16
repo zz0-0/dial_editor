@@ -17,7 +17,7 @@ enum MarkdownElement {
   subscipt,
   text,
   quote,
-  superscript
+  superscript, codeBlockMarker, codeLine
 }
 
 abstract class RenderInstruction {}
