@@ -239,7 +239,8 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   ) {
     newNode.isBlockStart = true;
     final Block newBlock = _createSpecialBlock(newNode);
-    _moveChildrenToNewBlock(block, index, newBlock);
+    newBlock.children.add(newNode);
+    newNode.parentKey = newBlock.key;
     block.children[index] = newBlock;
     newBlock.parentKey = block.key;
     blockMap[newBlock.key] = newBlock;
@@ -312,6 +313,7 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void _toggleChildren(Block block, bool isExpanded, [bool nested = false]) {
+    // print(block.children);
     for (final child in block.children) {
       if (child is Inline) {
         if (!child.isBlockStart) {

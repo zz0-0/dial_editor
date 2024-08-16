@@ -35,4 +35,4 @@ final emojiRegex = RegExp(':([a-zA-Z0-9_]+):');
 final inlineMathRegex = RegExp(r'\$([^\$]*)\$');
 final blockMathRegex = RegExp(r'\$\$(.*?)\$\$');
 final codeBlockRegex = RegExp(r'^```(?:[^\S\r\n].*)?$');
-final quoteRegex = RegExp("^> .+");
+final quoteRegex = RegExp("^>.+");

@@ -13,8 +13,6 @@ base class UnorderedListNode extends Inline {
 
   @override
   Inline createNewLine() {
-    return UnorderedListNode(
-      rawText: "- ",
-    );
+    return UnorderedListNode(rawText: "- ");
   }
 }

@@ -18,12 +18,8 @@ base class OrderedListNode extends Inline {
       final currentNumber =
           int.tryParse(match.group(0)!.trim().replaceFirst('.', '')) ?? 0;
       final newNumber = currentNumber + 1;
-      return OrderedListNode(
-        rawText: "$newNumber. ",
-      );
+      return OrderedListNode(rawText: "$newNumber. ");
     }
-    return OrderedListNode(
-      rawText: "1. ",
-    );
+    return OrderedListNode(rawText: "1. ");
   }
 }

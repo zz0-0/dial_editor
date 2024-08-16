@@ -143,22 +143,21 @@ class NodeRepositoryImpl implements NodeRepository {
     if (currentHeadingBlock != null) {
       children.add(currentHeadingBlock);
     }
-    if (currentTaskListBlock != null) {
-      children.add(currentTaskListBlock);
-    }
-    if (currentUnorderedListBlock != null) {
-      children.add(currentUnorderedListBlock);
-    }
-    if (currentCodeBlock != null) {
-      children.add(currentCodeBlock);
-    }
-    if (currentMathBlock != null) {
-      children.add(currentMathBlock);
-    }
-    if (currentQuoteBlock != null) {
-      children.add(currentQuoteBlock);
-    }
-
+    // if (currentTaskListBlock != null) {
+    //   children.add(currentTaskListBlock);
+    // }
+    // if (currentUnorderedListBlock != null) {
+    //   children.add(currentUnorderedListBlock);
+    // }
+    // if (currentCodeBlock != null) {
+    //   children.add(currentCodeBlock);
+    // }
+    // if (currentMathBlock != null) {
+    //   children.add(currentMathBlock);
+    // }
+    // if (currentQuoteBlock != null) {
+    //   children.add(currentQuoteBlock);
+    // }
     return children;
   }
 

@@ -13,8 +13,6 @@ base class TaskListNode extends Inline {
 
   @override
   Inline createNewLine() {
-    return TaskListNode(
-      rawText: "- [ ] ",
-    );
+    return TaskListNode(rawText: "- [ ] ");
   }
 }
