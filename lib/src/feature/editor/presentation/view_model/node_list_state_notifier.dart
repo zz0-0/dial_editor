@@ -72,19 +72,96 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     final index = block.children.indexOf(oldNode);
 
     if (oldNode is Heading && newNode is! Heading) {
-      _handleHeadingToTextConversion(block, index, newNode);
+      _handleHeadingToTextConversion(block, index, oldNode, newNode);
     } else if (newNode is Heading) {
-      _handleHeadingReplacement(block, index, newNode);
+      _handleHeadingReplacement(block, index, oldNode, newNode);
     } else if (_isSpecialBlockNode(newNode)) {
-      _handleSpecialBlockReplacement(block, index, newNode, oldNode);
+      _handleSpecialBlockReplacement(block, index, oldNode, newNode);
     } else {
-      _handleSimpleReplacement(block, index, newNode, oldNode);
+      _handleSimpleReplacement(block, index, oldNode, newNode);
     }
   }
 
-  void _handleHeadingToTextConversion(Block block, int index, Inline newNode) {}
+  void _handleHeadingToTextConversion(
+    Block block,
+    int index,
+    Inline oldNode,
+    Inline newNode,
+  ) {
+    if (block is HeadingBlock) {
+      if (block.parentKey != null) {
+        final parentBlock = blockMap[block.parentKey];
+        if (parentBlock == null) return;
+        oldNode.insertAfter(newNode);
+        nodeLinkedList.remove(oldNode);
+        parentBlock.children[index] = newNode;
+        newNode.parentKey = parentBlock.key;
 
-  void _handleHeadingReplacement(Block block, int index, Heading newNode) {
+        for (int i = 0; i < block.children.length - 1; i++) {
+          if (i != index) {
+            final child = block.children[i];
+
+            child.parentKey = block.parentKey;
+            parentBlock.children.insert(index + 1 + i, child);
+          }
+        }
+        blockMap[block.parentKey!] = parentBlock;
+        blockMap.remove(block.key);
+      } else {
+        if (index > 0) {
+          final previousNode = block.children[index - 1];
+          previousNode.insertAfter(newNode);
+          nodeLinkedList.remove(oldNode);
+          state[index] = newNode;
+          for (int i = 0; i < block.children.length - 1; i++) {
+            if (i != index) {
+              final child = block.children[i];
+
+              state.insert(index + 1 + i, child);
+            }
+          }
+        } else {
+          // print(state);
+          // final int oldBlockIndex = state.indexOf(block);
+          // state.insert(oldBlockIndex, newNode);
+
+          // state[index] = newNode;
+          // oldNode.insertAfter(newNode);
+          // nodeLinkedList.remove(oldNode);
+          // for (int i = 0; i < block.children.length - 1; i++) {
+          //   // if (i != index) {
+          //   final child = block.children[i];
+
+          //   state.insert(index + 1 + i, child);
+          //   // }
+          // }
+          // state.removeAt(oldBlockIndex + block.children.length - 1);
+          // print(state);
+          final int oldBlockIndex = state.indexOf(block);
+          final List<Node> newContent = [];
+          newContent.add(newNode);
+          for (int i = 0; i < block.children.length; i++) {
+            if (i != index) {
+              newContent.add(block.children[i]);
+            }
+          }
+          state.removeAt(oldBlockIndex);
+          state.insertAll(oldBlockIndex, newContent);
+          oldNode.insertAfter(newNode);
+          nodeLinkedList.remove(oldNode);
+        }
+
+        blockMap.remove(block.key);
+      }
+    }
+  }
+
+  void _handleHeadingReplacement(
+    Block block,
+    int index,
+    Inline oldNode,
+    Heading newNode,
+  ) {
     final HeadingBlock newBlock = _createHeadingBlock(newNode);
     _moveChildrenToNewBlock(block, index, newBlock);
 
@@ -94,6 +171,8 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       } else {
         _replaceExistingBlock(block, index, newBlock);
       }
+      oldNode.insertAfter(newNode);
+      nodeLinkedList.remove(oldNode);
     }
   }
 
@@ -155,8 +234,8 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   void _handleSpecialBlockReplacement(
     Block block,
     int index,
-    Inline newNode,
     Inline oldNode,
+    Inline newNode,
   ) {
     newNode.isBlockStart = true;
     final Block newBlock = _createSpecialBlock(newNode);
@@ -181,8 +260,8 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   void _handleSimpleReplacement(
     Block block,
     int index,
-    Inline newNode,
     Inline oldNode,
+    Inline newNode,
   ) {
     block.children[index] = newNode;
     oldNode.insertAfter(newNode);
