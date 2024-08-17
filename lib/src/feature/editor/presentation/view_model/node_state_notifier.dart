@@ -227,45 +227,106 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     }
   }
 
-  void onSingleTapUp(TapDragUpDetails details) {
-    if (state[0] != null) {
-      final Inline node = state[0]!;
-      final EditableTextState? editableTextState =
-          node.key.currentContext!.findAncestorStateOfType<EditableTextState>();
-      if (editableTextState == null) return;
-      final RenderEditable renderEditable = editableTextState.renderEditable;
-      final TapDownDetails tapDownDetails =
-          TapDownDetails(globalPosition: details.globalPosition);
-      renderEditable.handleTapDown(tapDownDetails);
-      renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
-      editableTextState.hideToolbar();
-      editableTextState.requestKeyboard();
-    }
+  void onDragSelectionStart(TapDragStartDetails details) {
+    ref.read(nodeListStateNotifierProvider.notifier).clearSelection();
   }
 
-  void onDragSelectionStart(TapDragStartDetails details) {
+  void clearSelection() {
     if (state[0] != null) {
       final Inline node = state[0]!;
-      final RenderEditable renderEditable =
-          node.key.currentState!.renderEditable;
-      renderEditable.selectPositionAt(
-        from: details.globalPosition,
-        cause: SelectionChangedCause.drag,
-      );
+      node.controller.selection = const TextSelection.collapsed(offset: 0);
+      state = [node];
     }
   }
 
   void onDragSelectionUpdate(TapDragUpdateDetails details) {
     if (state[0] != null) {
       final Inline node = state[0]!;
-      final RenderEditable renderEditable =
-          node.key.currentState!.renderEditable;
-      renderEditable.selectPositionAt(
-        from: details.globalPosition - details.offsetFromOrigin,
-        to: details.globalPosition,
-        cause: SelectionChangedCause.drag,
-      );
-      // TODO
+      final lineNumberDiff =
+          _getLineNumberDiff(node, details.offsetFromOrigin.dy);
+      if (lineNumberDiff == -1 || lineNumberDiff == 0) {
+        final RenderEditable renderEditable =
+            node.key.currentState!.renderEditable;
+        renderEditable.selectPositionAt(
+          from: details.globalPosition - details.offsetFromOrigin,
+          to: details.globalPosition,
+          cause: SelectionChangedCause.drag,
+        );
+        return;
+      }
+
+      if (lineNumberDiff < 0) {
+        Inline currentNode = node;
+        for (int i = 0; i < -lineNumberDiff; i++) {
+          final previousNode = ref
+              .read(nodeListStateNotifierProvider.notifier)
+              .getPreviousNode(currentNode);
+          if (previousNode != null) {
+            ref
+                .read(nodeStateProvider(previousNode.key).notifier)
+                .setNodeToEditingMode();
+            previousNode.controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: i == -lineNumberDiff - 1
+                  ? previousNode.controller.selection.extentOffset
+                  : previousNode.controller.text.length,
+            );
+            currentNode = previousNode;
+          }
+        }
+      } else if (lineNumberDiff > 0) {
+        Inline currentNode = node;
+        for (int i = 0; i < lineNumberDiff; i++) {
+          final nextNode = ref
+              .read(nodeListStateNotifierProvider.notifier)
+              .getNextNode(currentNode);
+          if (nextNode != null) {
+            ref
+                .read(nodeStateProvider(nextNode.key).notifier)
+                .setNodeToEditingMode();
+            nextNode.controller.selection = TextSelection(
+              baseOffset: 0,
+              extentOffset: i == lineNumberDiff - 1
+                  ? nextNode.controller.selection.extentOffset
+                  : nextNode.controller.text.length,
+            );
+            currentNode = nextNode;
+          }
+        }
+      }
     }
+  }
+
+  int _getLineNumberDiff(Inline node, double dy) {
+    Inline currentNode = node;
+    int count = 0;
+    double height = dy;
+
+    if (height < 0) {
+      while (height < 0) {
+        final previousNode = ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .getPreviousNode(currentNode);
+        if (previousNode == null) {
+          break;
+        }
+        height += previousNode.textHeight!;
+        count--;
+        currentNode = previousNode;
+      }
+    } else {
+      while (height > 0) {
+        final nextNode = ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .getNextNode(currentNode);
+        if (nextNode == null) {
+          break;
+        }
+        height -= nextNode.textHeight!;
+        count++;
+        currentNode = nextNode;
+      }
+    }
+    return count;
   }
 }

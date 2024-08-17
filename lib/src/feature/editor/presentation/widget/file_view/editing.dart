@@ -3,7 +3,6 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:dial_editor/src/feature/editor/presentation/view_model/node_state_notifier.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +27,7 @@ class _EditingState extends ConsumerState<Editing>
   bool get forcePressEnabled => false;
 
   @override
-  bool get selectionEnabled => true;
+  bool get selectionEnabled => false;
 
   @override
   Widget build(BuildContext context) {
@@ -131,16 +130,12 @@ class _EditingState extends ConsumerState<Editing>
     nodeStateNotifier.onArrowRight(isShiftPressed);
   }
 
-  void _onSingleTapUp(TapDragUpDetails details) {
-    nodeStateNotifier.onSingleTapUp(details);
+  void _onDragSelectionUpdate(TapDragUpdateDetails details) {
+    nodeStateNotifier.onDragSelectionUpdate(details);
   }
 
   void _onDragSelectionStart(TapDragStartDetails details) {
     nodeStateNotifier.onDragSelectionStart(details);
-  }
-
-  void _onDragSelectionUpdate(TapDragUpdateDetails details) {
-    nodeStateNotifier.onDragSelectionUpdate(details);
   }
 }
 
@@ -149,15 +144,6 @@ class CustomTextSelectionGestureDetectorBuilder
   final _EditingState state;
   CustomTextSelectionGestureDetectorBuilder({required this.state})
       : super(delegate: state);
-
-  @override
-  RenderEditable get renderEditable =>
-      state.editableTextKey.currentState! as RenderEditable;
-
-  @override
-  void onSingleTapUp(TapDragUpDetails details) {
-    state._onSingleTapUp(details);
-  }
 
   @override
   void onDragSelectionStart(TapDragStartDetails details) {

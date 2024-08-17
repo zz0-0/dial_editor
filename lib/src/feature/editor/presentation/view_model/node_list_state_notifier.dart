@@ -310,6 +310,12 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     }
   }
 
+  void clearSelection() {
+    for (final node in nodeLinkedList) {
+      ref.read(nodeStateProvider(node.key).notifier).clearSelection();
+    }
+  }
+
   bool _blockExists(GlobalKey? key) {
     return key != null && blockMap[key] != null;
   }
