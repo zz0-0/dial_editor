@@ -72,12 +72,12 @@
     - [ ]  text theme
 - [ ]  **Collaborative Editing**: Real-time collaboration with others.
   - [ ]  crdt
-- [ ]  **Export Options**: Enable users to export Markdown files to PDF, HTML, etc.
+- [ ]  **Export Options**: Enable users to export Markdown files to PDF, HTML, etc. (https://github.com/zz0-0/dial_editor/issues/7)
 - [ ]  **Spell Check**: Implement functionality to ensure error-free Markdown.
 - [ ]  **Version Control**: Track changes and allow users to revert to previous versions. (https://github.com/zz0-0/dial_editor/issues/12)
 - [ ]  **Third Party Integration**: Integrate with third-party services or APIs for extended functionality.
 - [X]  **Live Preview**: See your Markdown rendered in real-time.
-- [ ]  **Syntax Highlighting**: Easily distinguish between different elements of your Markdown.
+- [ ]  **Syntax Highlighting**: Easily distinguish between different elements of your Markdown. (https://github.com/zz0-0/dial_editor/issues/41)
 - [ ]  **Keyboard Shortcuts**: Boost your productivity with handy shortcuts.
 - [ ]  **Support for Extensions**: Enhance the editor with additional functionalities.
 - [ ]  **Cross-Platform**: Ensure compatibility on both mobile and desktop platforms.

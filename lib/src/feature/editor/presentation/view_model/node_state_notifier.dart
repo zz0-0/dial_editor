@@ -1,7 +1,10 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/convert_document_line_use_case.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NodeStateNotifier extends StateNotifier<List<Inline?>> {
@@ -173,7 +176,9 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     }
   }
 
-  void handleSelectionExtension(bool isLeft) {}
+  void handleSelectionExtension(bool isLeft) {
+    // TODO: Implement selection extension
+  }
 
   void moveCursor(bool isLeft) {
     if (state[0] != null) {
@@ -219,6 +224,48 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
       }
       node.isExpanded = !node.isExpanded;
       state = [node];
+    }
+  }
+
+  void onSingleTapUp(TapDragUpDetails details) {
+    if (state[0] != null) {
+      final Inline node = state[0]!;
+      final EditableTextState? editableTextState =
+          node.key.currentContext!.findAncestorStateOfType<EditableTextState>();
+      if (editableTextState == null) return;
+      final RenderEditable renderEditable = editableTextState.renderEditable;
+      final TapDownDetails tapDownDetails =
+          TapDownDetails(globalPosition: details.globalPosition);
+      renderEditable.handleTapDown(tapDownDetails);
+      renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
+      editableTextState.hideToolbar();
+      editableTextState.requestKeyboard();
+    }
+  }
+
+  void onDragSelectionStart(TapDragStartDetails details) {
+    if (state[0] != null) {
+      final Inline node = state[0]!;
+      final RenderEditable renderEditable =
+          node.key.currentState!.renderEditable;
+      renderEditable.selectPositionAt(
+        from: details.globalPosition,
+        cause: SelectionChangedCause.drag,
+      );
+    }
+  }
+
+  void onDragSelectionUpdate(TapDragUpdateDetails details) {
+    if (state[0] != null) {
+      final Inline node = state[0]!;
+      final RenderEditable renderEditable =
+          node.key.currentState!.renderEditable;
+      renderEditable.selectPositionAt(
+        from: details.globalPosition - details.offsetFromOrigin,
+        to: details.globalPosition,
+        cause: SelectionChangedCause.drag,
+      );
+      // TODO
     }
   }
 }
