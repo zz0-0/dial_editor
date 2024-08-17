@@ -177,33 +177,66 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
   }
 
   void handleSelectionExtension(bool isLeft) {
-    // TODO: Implement selection extension
+    if (state[0] != null) {
+      final Inline node = state[0]!;
+      final selection = node.controller.selection;
+
+      if (isLeft && selection.extentOffset == 0) {
+        final previousNode = ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .getPreviousNode(node);
+        if (previousNode != null) {
+          final int newOffset = previousNode.rawText.length;
+          ref
+              .read(nodeStateProvider(previousNode.key).notifier)
+              .setNodeToEditingMode();
+          previousNode.focusNode.requestFocus();
+          previousNode.controller.selection =
+              TextSelection.collapsed(offset: newOffset);
+        }
+      } else if (!isLeft && selection.extentOffset == node.rawText.length) {
+        final nextNode =
+            ref.read(nodeListStateNotifierProvider.notifier).getNextNode(node);
+        if (nextNode != null) {
+          ref
+              .read(nodeStateProvider(nextNode.key).notifier)
+              .setNodeToEditingMode();
+          nextNode.focusNode.requestFocus();
+          nextNode.controller.selection =
+              const TextSelection.collapsed(offset: 0);
+        }
+      }
+    }
   }
 
   void moveCursor(bool isLeft) {
     if (state[0] != null) {
       final Inline node = state[0]!;
-      if (isLeft && node.controller.selection.baseOffset == 0) {
-        final Inline? previousNode = ref
+      final selection = node.controller.selection;
+
+      if (isLeft && selection.baseOffset == 0) {
+        final previousNode = ref
             .read(nodeListStateNotifierProvider.notifier)
             .getPreviousNode(node);
         if (previousNode != null) {
-          node.isEditing = false;
+          final int newOffset = previousNode.rawText.length;
           ref
               .read(nodeStateProvider(previousNode.key).notifier)
               .setNodeToEditingMode();
-          state = [node];
+          previousNode.focusNode.requestFocus();
+          previousNode.controller.selection =
+              TextSelection.collapsed(offset: newOffset);
         }
-      } else if (!isLeft &&
-          node.controller.selection.baseOffset == node.rawText.length) {
-        final Inline? nextNode =
+      } else if (!isLeft && selection.baseOffset == node.rawText.length) {
+        final nextNode =
             ref.read(nodeListStateNotifierProvider.notifier).getNextNode(node);
         if (nextNode != null) {
-          node.isEditing = false;
           ref
               .read(nodeStateProvider(nextNode.key).notifier)
               .setNodeToEditingMode();
-          state = [node];
+          nextNode.focusNode.requestFocus();
+          nextNode.controller.selection =
+              const TextSelection.collapsed(offset: 0);
         }
       }
     }
