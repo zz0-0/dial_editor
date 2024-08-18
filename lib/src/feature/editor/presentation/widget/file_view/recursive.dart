@@ -1,5 +1,6 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/attributes.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/expand.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/line_number.dart';
@@ -48,7 +49,7 @@ class Recursive extends ConsumerWidget {
               .insertNodeIntoFlatNodeList(inlineNode);
         });
       }
-      return _buildNodeContent(ref, updatedNode[0]!, currentIndex);
+      return _buildNodeContent(context, ref, updatedNode[0]!, currentIndex);
     }
     return Container();
   }
@@ -70,14 +71,43 @@ class Recursive extends ConsumerWidget {
     }
   }
 
-  Widget _buildNodeContent(WidgetRef ref, Inline inline, int currentIndex) {
+  Widget _buildNodeContent(
+    BuildContext context,
+    WidgetRef ref,
+    Inline inline,
+    int currentIndex,
+  ) {
     return _shouldExpanded(ref, inline)
         ? Row(
             children: [
               LineNumber(inline, currentIndex),
               Expand(inline),
               Expanded(
-                child: inline.isEditing ? Editing(inline) : Rendering(inline),
+                child: inline.isEditing
+                    ? Row(
+                        children: [
+                          Editing(inline),
+                          if (inline.isBlockStart)
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Attributes(inline),
+                              ),
+                            ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Rendering(inline),
+                          if (inline.isBlockStart)
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Attributes(inline),
+                              ),
+                            ),
+                        ],
+                      ),
               ),
             ],
           )

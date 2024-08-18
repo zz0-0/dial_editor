@@ -1,6 +1,7 @@
 /// library for markdown element
 library node;
 
+import 'package:dial_editor/src/feature/editor/domain/model/attribute.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 
@@ -12,14 +13,21 @@ base class Inline extends Node {
   double? textHeight;
   FocusNode focusNode = FocusNode();
   bool isEditing = false;
-  // Offset globalPosition = Offset.zero;
-  // Offset previousGlobalPosition = Offset.zero;
   bool isExpanded = true;
   bool isBlockStart = false;
   int depth = 0;
+  List<Attribute> attributes = [];
 
   Inline({required this.rawText}) {
     controller.text = rawText;
+    attributes.add(
+      Attribute(
+        key: GlobalKey(),
+        value: key
+            .toString()
+            .substring(key.toString().length - 7, key.toString().length - 1),
+      ),
+    );
   }
 
   RenderInstruction render() {
