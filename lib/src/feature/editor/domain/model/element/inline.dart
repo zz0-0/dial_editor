@@ -2,6 +2,7 @@
 library node;
 
 import 'package:dial_editor/src/feature/editor/domain/model/attribute.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,8 @@ base class Inline extends Node {
   bool isBlockStart = false;
   int depth = 0;
   List<Attribute> attributes = [];
+  List<Connection> outgoingConnections = [];
+  List<Connection> incomingConnections = [];
 
   Inline({required this.rawText}) {
     controller.text = rawText;
@@ -27,6 +30,12 @@ base class Inline extends Node {
             .toString()
             .substring(key.toString().length - 7, key.toString().length - 1),
       ),
+    );
+    attributes.add(
+      Attribute(key: GlobalKey(), value: outgoingConnections.length.toString()),
+    );
+    attributes.add(
+      Attribute(key: GlobalKey(), value: incomingConnections.length.toString()),
     );
   }
 

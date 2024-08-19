@@ -1,5 +1,6 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing_area.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/table_of_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,7 +32,12 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
         }
         return true;
       },
-      child: const EditingArea(),
+      child: const Row(
+        children: [
+          EditingArea(),
+          TableOfContent(),
+        ],
+      ),
     );
   }
 }
