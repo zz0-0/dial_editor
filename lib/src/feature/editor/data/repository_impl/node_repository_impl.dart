@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class NodeRepositoryImpl implements NodeRepository {
   @override
-  List<Node> convertDocument(List<String> lines) {
+  List<Node> convertDocument(GlobalKey key, List<String> lines) {
     final List<Node> children = [];
     OrderedListBlock? currentOrderedListBlock;
     TaskListBlock? currentTaskListBlock;
@@ -22,6 +22,7 @@ class NodeRepositoryImpl implements NodeRepository {
       } else {
         node = convert(line);
       }
+      node.documentKey = key;
       if (node is Heading) {
         if (currentHeadingBlock != null) {
           if (node.level >= currentHeadingBlock.level) {

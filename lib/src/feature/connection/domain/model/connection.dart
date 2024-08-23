@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Connection {
-  String sourceFilePath;
-  String targetFilePath;
+  GlobalKey sourceDocumentKey;
+  GlobalKey targetDocumentKey;
+  GlobalKey connectionKey;
   GlobalKey sourceFileNodeKey;
   GlobalKey targetFileNodeKey;
 
   Connection({
-    required this.sourceFilePath,
-    required this.targetFilePath,
+    required this.sourceDocumentKey,
+    required this.targetDocumentKey,
+    required this.connectionKey,
     required this.sourceFileNodeKey,
     required this.targetFileNodeKey,
   });

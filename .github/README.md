@@ -6,7 +6,7 @@
 
 ## ⚠️ Disclaimer
 
-**Warning:** I am currently pursuing a master's degree and do not have much time for development at the moment. I intend to resume work on this personal project later on.. 
+**Warning:** I am currently pursuing a master's degree and do not have much time for development at the moment. I intend to resume work on this personal project later on.
 
 **Warning:** This project is in its early stages. Use it at your own risk.
 
