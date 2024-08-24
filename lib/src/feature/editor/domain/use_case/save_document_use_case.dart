@@ -1,19 +1,19 @@
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/document_repository.dart';
 
-class SaveDocumentUseCase {
+class SaveDocumentToFileUseCase {
   String input = '';
   final DocumentRepository _documentRepository;
 
-  SaveDocumentUseCase(this._documentRepository);
+  SaveDocumentToFileUseCase(this._documentRepository);
 
-  void saveDocument(String input) {
-    _documentRepository.save(input);
+  void saveDocumentToFile(String input) {
+    _documentRepository.saveDocumentToFile(input);
   }
 
   void saveNodeList(List<Node> nodeList) {
     _flattenString(nodeList, input);
-    saveDocument(input);
+    saveDocumentToFile(input);
   }
 
   void _flattenString(List<Node> nodeList, String input) {

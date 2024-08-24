@@ -14,8 +14,7 @@ class Attributes extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         itemCount: node.attributes.length,
         itemBuilder: (context, index) {
-          final attribute = node.attributes[index];
-          return SizedBox(width: 50, child: Text(attribute.value));
+          return const SizedBox(width: 50, child: Text(""));
         },
       ),
     );

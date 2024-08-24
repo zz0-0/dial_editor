@@ -1,3 +1,4 @@
+import 'package:dial_editor/src/feature/editor/data/data_source/database_local_data_source.dart';
 import 'package:dial_editor/src/feature/editor/data/data_source/file_local_data_source.dart';
 import 'package:dial_editor/src/feature/editor/data/repository_impl/document_repository_impl.dart';
 import 'package:dial_editor/src/feature/editor/data/repository_impl/node_repository_impl.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final documentRepositoryProvider = Provider<DocumentRepository>((ref) {
   return DocumentRepositoryImpl(
     fileLocalDataSource: FileLocalDataSourceImpl(ref),
+    databaseLocalDataSource: DatabaseLocalDataSourceImpl(ref),
   );
 });
 
@@ -26,9 +28,10 @@ final getDocumentChildrenUseCaseProvider =
   return GetDocumentChildrenUseCase(repository);
 });
 
-final saveDocumentUseCaseProvider = Provider<SaveDocumentUseCase>((ref) {
+final saveDocumentToFileUseCaseProvider =
+    Provider<SaveDocumentToFileUseCase>((ref) {
   final repository = ref.watch(documentRepositoryProvider);
-  return SaveDocumentUseCase(repository);
+  return SaveDocumentToFileUseCase(repository);
 });
 
 final nodeRepositoryProvider = Provider<NodeRepository>((ref) {

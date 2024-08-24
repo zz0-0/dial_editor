@@ -1,19 +1,20 @@
-import 'package:dial_editor/src/feature/connection/data/data_source/connection_local_data_source.dart';
-import 'package:dial_editor/src/feature/connection/domain/model/connection.dart';
-import 'package:dial_editor/src/feature/connection/domain/repository/connection_repository.dart';
+import 'package:dial_editor/src/feature/editor/data/data_source/database_local_data_source.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/node.dart';
+import 'package:dial_editor/src/feature/editor/domain/repository/connection_repository.dart';
 import 'package:sembast/sembast.dart';
 
 class ConnectionRepositoryImpl implements ConnectionRepository {
-  ConnectionLocalDataSource connectionLocalDataSource;
+  final DatabaseLocalDataSource databaseLocalDataSource;
 
-  ConnectionRepositoryImpl(this.connectionLocalDataSource);
+  ConnectionRepositoryImpl(this.databaseLocalDataSource);
 
   @override
   Future<List<Connection>> getConnections() async {
-    final db = connectionLocalDataSource.openDatabase();
+    final db = databaseLocalDataSource.openDatabase();
     final store = StoreRef.main();
-    return (await store.record("metadata").get(await db))! as List<Connection>;
+    return (await store.record("connection").get(await db))!
+        as List<Connection>;
   }
 
   @override
