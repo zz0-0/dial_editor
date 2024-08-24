@@ -4,8 +4,8 @@ import 'package:dial_editor/src/core/provider/ui/file_branch_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 abstract class FileLocalDataSource {
-  File getFile();
-  void saveFile(String content);
+  File readFile();
+  void writeFile(String content);
 }
 
 class FileLocalDataSourceImpl implements FileLocalDataSource {
@@ -14,12 +14,12 @@ class FileLocalDataSourceImpl implements FileLocalDataSource {
   FileLocalDataSourceImpl(this.ref);
 
   @override
-  File getFile() {
+  File readFile() {
     return ref.read(fileProvider)!;
   }
 
   @override
-  void saveFile(String content) {
+  void writeFile(String content) {
     ref.read(fileProvider)!.writeAsStringSync(content);
   }
 }

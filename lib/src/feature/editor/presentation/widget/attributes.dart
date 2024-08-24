@@ -12,7 +12,7 @@ class Attributes extends ConsumerWidget {
       height: 19,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: node.attributes.length,
+        itemCount: node.attributeMap.length,
         itemBuilder: (context, index) {
           return const SizedBox(width: 50, child: Text(""));
         },
