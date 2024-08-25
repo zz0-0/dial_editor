@@ -6,7 +6,8 @@ class GetDocumentChildrenUseCase {
 
   GetDocumentChildrenUseCase(this._documentRepository);
 
-  List<Node> getChildren() {
-    return _documentRepository.encode().children;
+  Future<List<Node>> getChildren() async {
+    final document = await _documentRepository.encode();
+    return document.getNodesInOrder();
   }
 }

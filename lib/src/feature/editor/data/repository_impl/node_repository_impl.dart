@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class NodeRepositoryImpl implements NodeRepository {
   @override
-  List<Node> convertDocument(GlobalKey key, List<String> lines) {
-    final List<Node> children = [];
+  (List<GlobalKey>, Map<GlobalKey, Node>) convertDocument(List<String> lines) {
+    final List<GlobalKey> nodeKeyList = [];
+    final Map<GlobalKey, Node> nodeMap = {};
     OrderedListBlock? currentOrderedListBlock;
     TaskListBlock? currentTaskListBlock;
     UnorderedListBlock? currentUnorderedListBlock;
@@ -18,16 +19,20 @@ class NodeRepositoryImpl implements NodeRepository {
     for (final line in lines) {
       final Node node;
       if (isCodeBlock) {
-        node = CodeLine(rawText: line);
+        node = CodeLine(rawText: line, key: GlobalKey());
       } else {
         node = convert(line);
       }
-      node.documentKey = key;
       if (node is Heading) {
         if (currentHeadingBlock != null) {
           if (node.level >= currentHeadingBlock.level) {
-            children.add(currentHeadingBlock);
-            currentHeadingBlock = HeadingBlock(level: node.level);
+            // children.add(currentHeadingBlock);
+            nodeKeyList.add(currentHeadingBlock.key);
+            nodeMap[currentHeadingBlock.key] = currentHeadingBlock;
+            currentHeadingBlock = HeadingBlock(
+              level: node.level,
+              key: GlobalKey(),
+            );
             currentHeadingBlock.key = GlobalKey();
             node.isBlockStart = true;
             node.parentKey = currentHeadingBlock.key;
@@ -37,7 +42,10 @@ class NodeRepositoryImpl implements NodeRepository {
             currentHeadingBlock.children.add(node);
           }
         } else {
-          currentHeadingBlock = HeadingBlock(level: node.level);
+          currentHeadingBlock = HeadingBlock(
+            level: node.level,
+            key: GlobalKey(),
+          );
           currentHeadingBlock.key = GlobalKey();
           node.isBlockStart = true;
           node.parentKey = currentHeadingBlock.key;
@@ -49,7 +57,9 @@ class NodeRepositoryImpl implements NodeRepository {
             node.parentKey = currentOrderedListBlock.key;
             currentOrderedListBlock.children.add(node);
           } else {
-            currentOrderedListBlock = OrderedListBlock();
+            currentOrderedListBlock = OrderedListBlock(
+              key: GlobalKey(),
+            );
             currentOrderedListBlock.key = GlobalKey();
             node.isBlockStart = true;
             node.parentKey = currentOrderedListBlock.key;
@@ -61,7 +71,9 @@ class NodeRepositoryImpl implements NodeRepository {
             node.parentKey = currentTaskListBlock.key;
             currentTaskListBlock.children.add(node);
           } else {
-            currentTaskListBlock = TaskListBlock();
+            currentTaskListBlock = TaskListBlock(
+              key: GlobalKey(),
+            );
             currentTaskListBlock.key = GlobalKey();
             node.isBlockStart = true;
             node.parentKey = currentTaskListBlock.key;
@@ -73,7 +85,9 @@ class NodeRepositoryImpl implements NodeRepository {
             node.parentKey = currentUnorderedListBlock.key;
             currentUnorderedListBlock.children.add(node);
           } else {
-            currentUnorderedListBlock = UnorderedListBlock();
+            currentUnorderedListBlock = UnorderedListBlock(
+              key: GlobalKey(),
+            );
             currentUnorderedListBlock.key = GlobalKey();
             node.isBlockStart = true;
             node.parentKey = currentUnorderedListBlock.key;
@@ -85,7 +99,9 @@ class NodeRepositoryImpl implements NodeRepository {
             node.parentKey = currentMathBlock.key;
             currentMathBlock.children.add(node);
           } else {
-            currentMathBlock = MathBlock();
+            currentMathBlock = MathBlock(
+              key: GlobalKey(),
+            );
             currentMathBlock.key = GlobalKey();
             node.isBlockStart = true;
             node.parentKey = currentMathBlock.key;
@@ -97,7 +113,9 @@ class NodeRepositoryImpl implements NodeRepository {
             node.parentKey = currentQuoteBlock.key;
             currentQuoteBlock.children.add(node);
           } else {
-            currentQuoteBlock = QuoteBlock();
+            currentQuoteBlock = QuoteBlock(
+              key: GlobalKey(),
+            );
             currentQuoteBlock.key = GlobalKey();
             node.isBlockStart = true;
             node.parentKey = currentQuoteBlock.key;
@@ -112,7 +130,9 @@ class NodeRepositoryImpl implements NodeRepository {
                 match!.groupCount >= 1 && match.group(1) != null
                     ? match.group(1)!
                     : 'c';
-            currentCodeBlock = CodeBlock();
+            currentCodeBlock = CodeBlock(
+              key: GlobalKey(),
+            );
             currentCodeBlock.key = GlobalKey();
             currentCodeBlock.language = language;
             node.language = language;
@@ -122,7 +142,8 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             isCodeBlock = false;
             currentHeadingBlock.children.add(node);
-            children.add(currentCodeBlock!);
+            nodeKeyList.add(currentCodeBlock!.key);
+            nodeMap[currentCodeBlock.key] = currentCodeBlock;
             currentCodeBlock = null;
           }
         } else if (node is CodeLine) {
@@ -131,77 +152,122 @@ class NodeRepositoryImpl implements NodeRepository {
             currentCodeBlock.children.add(node);
           }
         } else if (node is CodeBlockMarker && currentCodeBlock != null) {
-          children.add(currentCodeBlock);
+          nodeKeyList.add(currentCodeBlock.key);
+          nodeMap[currentCodeBlock.key] = currentCodeBlock;
           currentCodeBlock = null;
         } else {
           (node as Inline).parentKey = currentHeadingBlock.key;
           currentHeadingBlock.children.add(node);
         }
       } else {
-        children.add(node);
+        nodeKeyList.add(node.key);
+        nodeMap[node.key] = node;
       }
     }
     if (currentHeadingBlock != null) {
-      children.add(currentHeadingBlock);
+      nodeKeyList.add(currentHeadingBlock.key);
+      nodeMap[currentHeadingBlock.key] = currentHeadingBlock;
     }
-    // if (currentTaskListBlock != null) {
-    //   children.add(currentTaskListBlock);
-    // }
-    // if (currentUnorderedListBlock != null) {
-    //   children.add(currentUnorderedListBlock);
-    // }
-    // if (currentCodeBlock != null) {
-    //   children.add(currentCodeBlock);
-    // }
-    // if (currentMathBlock != null) {
-    //   children.add(currentMathBlock);
-    // }
-    // if (currentQuoteBlock != null) {
-    //   children.add(currentQuoteBlock);
-    // }
-    return children;
+    return (nodeKeyList, nodeMap);
   }
 
   @override
   Inline convert(String input) {
     if (codeBlockRegex.hasMatch(input)) {
-      return CodeBlockMarker(rawText: input);
+      return CodeBlockMarker(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (taskListRegex.hasMatch(input)) {
-      return TaskListNode(rawText: input);
+      return TaskListNode(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (orderListRegex.hasMatch(input)) {
-      return OrderedListNode(rawText: input);
+      return OrderedListNode(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (unorderedListRegex.hasMatch(input)) {
-      return UnorderedListNode(rawText: input);
+      return UnorderedListNode(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (headingRegex.hasMatch(input)) {
-      return Heading(rawText: input);
+      return Heading(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (inlineMathRegex.hasMatch(input)) {
-      return Math(rawText: input);
+      return Math(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (quoteRegex.hasMatch(input)) {
-      return Quote(rawText: input);
+      return Quote(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (boldItalicRegex.hasMatch(input)) {
-      return BoldItalic(rawText: input);
+      return BoldItalic(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (boldRegex.hasMatch(input)) {
-      return Bold(rawText: input);
+      return Bold(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (italicRegex.hasMatch(input)) {
-      return Italic(rawText: input);
+      return Italic(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (highlightRegex.hasMatch(input)) {
-      return Highlight(rawText: input);
+      return Highlight(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (strikethroughRegex.hasMatch(input)) {
-      return Strikethrough(rawText: input);
+      return Strikethrough(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (imageRegex.hasMatch(input) || imageUrlRegex.hasMatch(input)) {
-      return ImageNode(rawText: input);
+      return ImageNode(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (linkRegex.hasMatch(input) || urlRegex.hasMatch(input)) {
-      return Link(rawText: input);
+      return Link(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (subscriptRegex.hasMatch(input)) {
-      return Subscript(rawText: input);
+      return Subscript(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (superscriptRegex.hasMatch(input)) {
-      return Superscript(rawText: input);
+      return Superscript(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (horizontalRuleRegex.hasMatch(input)) {
-      return HorizontalRule(rawText: input);
+      return HorizontalRule(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else if (emojiRegex.hasMatch(input)) {
-      return Emoji(rawText: input);
+      return Emoji(
+        rawText: input,
+        key: GlobalKey(),
+      );
     } else {
-      return TextNode(rawText: input);
+      return TextNode(
+        rawText: input,
+        key: GlobalKey(),
+      );
     }
   }
 }

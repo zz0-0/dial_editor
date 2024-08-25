@@ -143,7 +143,7 @@ class RenderAdapter {
           fontSize: fontSize,
           decoration: TextDecoration.lineThrough,
         );
-      case MarkdownElement.subscipt:
+      case MarkdownElement.subscript:
         return TextStyle(fontSize: fontSize);
       case MarkdownElement.superscript:
         return TextStyle(fontSize: fontSize);

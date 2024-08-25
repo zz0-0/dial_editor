@@ -16,6 +16,7 @@ abstract class DatabaseLocalDataSource {
 
 class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
   Ref ref;
+  late Database _database;
 
   DatabaseLocalDataSourceImpl(this.ref);
 
@@ -25,25 +26,30 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
     final String fileName = file.path.split('/').last;
     final appDir = await getApplicationDocumentsDirectory();
     final dbPath = '${appDir.path}/$fileName.db';
-    final database = await databaseFactoryIo.openDatabase(dbPath);
-    return database;
+    return _database = await databaseFactoryIo.openDatabase(dbPath);
   }
 
   @override
-  Future<void> deleteDocument() {
-    // TODO: implement deleteDocument
-    throw UnimplementedError();
+  Future<Document> fetchDocument() async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    final recordSnapshot = await store.record('document').get(_database);
+
+    if (recordSnapshot != null) {
+      return Document.fromMap(recordSnapshot);
+    } else {
+      throw Exception('Document not found');
+    }
   }
 
   @override
-  Future<Document> fetchDocument() {
-    // TODO: implement fetchDocument
-    throw UnimplementedError();
+  Future<void> saveDocument(Document document) async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    await store.record('document').put(_database, document.toMap());
   }
 
   @override
-  Future<void> saveDocument(Document document) {
-    // TODO: implement saveDocument
-    throw UnimplementedError();
+  Future<void> deleteDocument() async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    await store.record('document').delete(_database);
   }
 }

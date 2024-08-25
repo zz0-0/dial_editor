@@ -10,10 +10,10 @@ class StringToDocumentConverter extends Converter<String, Document> {
   Document convert(String input) {
     final NodeRepository nodeRepository = NodeRepositoryImpl();
     final lines = input.split("\n");
-    final key = GlobalKey();
-    return Document(
-      key: key,
-      children: nodeRepository.convertDocument(key, lines),
-    );
+    final (nodeKeyList, nodeMap) = nodeRepository.convertDocument(lines);
+    final document = Document(key: GlobalKey());
+    document.nodeKeyList = nodeKeyList;
+    document.nodeMap = nodeMap;
+    return document;
   }
 }

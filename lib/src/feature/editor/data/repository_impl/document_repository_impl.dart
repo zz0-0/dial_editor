@@ -16,21 +16,23 @@ class DocumentRepositoryImpl implements DocumentRepository {
   });
 
   @override
-  String decode(Document input) {
+  Future<String> decode(Document input) async {
     final String content = DocumentCodec().decode(input);
     return content;
   }
 
   @override
-  Document encode() {
-    final File file = fileLocalDataSource.readFile();
-    final String input = file.readAsStringSync();
-    return DocumentCodec().encode(input);
+  Future<Document> encode() {
+    final Future<File> file = fileLocalDataSource.readFile();
+    return file.then((value) {
+      final String input = value.readAsStringSync();
+      return DocumentCodec().encode(input);
+    });
   }
 
   @override
-  void saveDocumentToFile(String input) {
-    fileLocalDataSource.writeFile(input);
+  Future<void> saveDocumentToFile(String input) {
+    return fileLocalDataSource.writeFile(input);
   }
 
   @override

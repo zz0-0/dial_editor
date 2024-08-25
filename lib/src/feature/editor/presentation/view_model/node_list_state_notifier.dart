@@ -19,11 +19,9 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     final GetDocumentChildrenUseCase getDocumentChildren =
         ref.watch(getDocumentChildrenUseCaseProvider);
     final newList = getDocumentChildren.getChildren();
-    if (state != newList) {
-      state = newList;
-    } else {
-      // print('State not updated, list is the same');
-    }
+    newList.then((value) {
+      state = value;
+    });
   }
 
   void updateList() {
@@ -165,7 +163,8 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
 
   HeadingBlock _createHeadingBlock(Heading newNode) {
     newNode.isBlockStart = true;
-    final HeadingBlock newBlock = HeadingBlock(level: newNode.level);
+    final HeadingBlock newBlock =
+        HeadingBlock(level: newNode.level, key: GlobalKey());
     newBlock.children.add(newNode);
     newNode.parentKey = newBlock.key;
     return newBlock;
@@ -237,12 +236,20 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   Block _createSpecialBlock(Inline newNode) {
-    if (newNode is CodeBlockMarker) return CodeBlock();
-    if (newNode is OrderedListNode) return OrderedListBlock();
-    if (newNode is TaskListNode) return TaskListBlock();
-    if (newNode is UnorderedListNode) return UnorderedListBlock();
-    if (newNode is Math) return MathBlock();
-    return QuoteBlock();
+    if (newNode is CodeBlockMarker) {
+      return CodeBlock(key: GlobalKey());
+    }
+    if (newNode is OrderedListNode) {
+      return OrderedListBlock(key: GlobalKey());
+    }
+    if (newNode is TaskListNode) {
+      return TaskListBlock(key: GlobalKey());
+    }
+    if (newNode is UnorderedListNode) {
+      return UnorderedListBlock(key: GlobalKey());
+    }
+    if (newNode is Math) return MathBlock(key: GlobalKey());
+    return QuoteBlock(key: GlobalKey());
   }
 
   void _handleSpecialBlockNodeToTextReplacement(
