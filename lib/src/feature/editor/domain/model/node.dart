@@ -12,17 +12,9 @@ base class Node extends LinkedListEntry<Node> {
 
   GlobalKey<EditableTextState> key = GlobalKey<EditableTextState>();
   GlobalKey<EditableTextState>? parentKey;
-  final Map<String, Attribute> attributeMap = {};
+  Attribute attribute = Attribute();
 
   Node({required this.key, this.parentKey});
-
-  void setAttribute(String key, Attribute value) {
-    attributeMap[key] = value;
-  }
-
-  Attribute? getAttribute(String key) {
-    return attributeMap[key];
-  }
 
   factory Node.fromMap(Map<String, dynamic> map) => Node(
         key: map['key'] as GlobalKey<EditableTextState>,

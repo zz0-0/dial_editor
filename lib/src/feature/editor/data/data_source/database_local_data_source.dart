@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dial_editor/src/core/provider/ui/file_branch_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/document.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
@@ -9,9 +10,9 @@ import 'package:sembast/sembast_io.dart';
 
 abstract class DatabaseLocalDataSource {
   Future<Database> openDatabase();
-  Future<Document> fetchDocument();
+  Future<Document> fetchDocument(GlobalKey key);
   Future<void> saveDocument(Document document);
-  Future<void> deleteDocument();
+  Future<void> deleteDocument(GlobalKey key);
 }
 
 class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
@@ -30,9 +31,9 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
   }
 
   @override
-  Future<Document> fetchDocument() async {
+  Future<Document> fetchDocument(GlobalKey key) async {
     final store = StoreRef<String, Map<String, dynamic>>.main();
-    final recordSnapshot = await store.record('document').get(_database);
+    final recordSnapshot = await store.record(key.toString()).get(_database);
 
     if (recordSnapshot != null) {
       return Document.fromMap(recordSnapshot);
@@ -44,12 +45,14 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
   @override
   Future<void> saveDocument(Document document) async {
     final store = StoreRef<String, Map<String, dynamic>>.main();
-    await store.record('document').put(_database, document.toMap());
+    await store
+        .record(document.key.toString())
+        .put(_database, document.toMap());
   }
 
   @override
-  Future<void> deleteDocument() async {
+  Future<void> deleteDocument(GlobalKey key) async {
     final store = StoreRef<String, Map<String, dynamic>>.main();
-    await store.record('document').delete(_database);
+    await store.record(key.toString()).delete(_database);
   }
 }

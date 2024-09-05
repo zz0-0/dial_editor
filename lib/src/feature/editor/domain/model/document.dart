@@ -1,3 +1,4 @@
+import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 
@@ -57,5 +58,36 @@ class Document {
       'key': key,
       'nodeMap': nodeMap,
     };
+  }
+
+  void addBidirectionalLink(
+    GlobalKey targetDocumentKey,
+    GlobalKey sourceNodeKey,
+    GlobalKey targetNodeKey,
+  ) {
+    final sourceNode = getNode(sourceNodeKey);
+    final targetNode = getNode(targetNodeKey);
+
+    if (sourceNode != null && targetNode != null) {
+      final connectionKey = GlobalKey();
+      sourceNode.attribute.connections[connectionKey] = Connection(
+        targetNodeKey: targetNodeKey,
+        targetDocumentKey: targetDocumentKey,
+        sourceDocumentKey: key,
+        connectionKey: connectionKey,
+        sourceNodeKey: sourceNodeKey,
+      );
+    }
+  }
+
+  void removeBidirectionalLink(
+    GlobalKey sourceNodeKey,
+    GlobalKey connectionKey,
+  ) {
+    final sourceNode = getNode(sourceNodeKey);
+
+    if (sourceNode != null) {
+      sourceNode.attribute.connections.remove(connectionKey);
+    }
   }
 }

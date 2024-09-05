@@ -8,15 +8,16 @@ class Attributes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      height: 19,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: node.attributeMap.length,
-        itemBuilder: (context, index) {
-          return const SizedBox(width: 50, child: Text(""));
-        },
-      ),
-    );
+    // return SizedBox(
+    //   height: 19,
+    //   child: ListView.builder(
+    //     scrollDirection: Axis.horizontal,
+    //     itemCount: node.attributeMap.length,
+    //     itemBuilder: (context, index) {
+    //       return const SizedBox(width: 50, child: Text(""));
+    //     },
+    //   ),
+    // );
+    return Container();
   }
 }
