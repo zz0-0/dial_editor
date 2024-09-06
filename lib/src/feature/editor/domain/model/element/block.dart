@@ -5,12 +5,11 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:flutter/material.dart';
 
 base class Block extends Node {
-  List<Node> children;
+  final List<Node> children;
 
   Block({
     required super.key,
-    this.children = const [],
-  }) {
+  }) : children = [] {
     type = MarkdownElement.block.type;
   }
 
@@ -35,6 +34,6 @@ base class Block extends Node {
     }
     return Block(
       key: map['key'] as GlobalKey<EditableTextState>,
-    )..children = children;
+    );
   }
 }

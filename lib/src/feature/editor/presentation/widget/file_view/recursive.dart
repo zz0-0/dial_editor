@@ -1,6 +1,5 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
-import 'package:dial_editor/src/feature/editor/presentation/widget/attributes.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/expand.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/line_number.dart';
@@ -8,42 +7,63 @@ import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/ren
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Recursive extends ConsumerWidget {
+class Recursive extends ConsumerStatefulWidget {
   final Node node;
   final int index;
-  const Recursive(
-    this.node,
-    this.index, {
-    super.key,
-  });
+  const Recursive(this.node, this.index, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    int currentIndex = index;
-    if (node is Block) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _RecursiveState();
+}
+
+class _RecursiveState extends ConsumerState<Recursive> {
+  bool isHovering = false;
+  @override
+  Widget build(BuildContext context) {
+    int currentIndex = widget.index;
+    if (widget.node is Block) {
       ref
           .read(nodeListStateNotifierProvider.notifier)
-          .insertBlockNodeIntoMap(node.key, node as Block);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: (node as Block).children.map((child) {
-          final widget = Recursive(child, currentIndex);
-          if (child is Block) {
-            currentIndex += child.children.length;
-          } else {
-            currentIndex++;
-          }
-          return widget;
-        }).toList(),
+          .insertBlockNodeIntoMap(widget.node.key, widget.node as Block);
+      return InkWell(
+        onTap: () {},
+        onHover: (value) {
+          setState(() {
+            isHovering = value;
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeInOut,
+          padding: EdgeInsets.all(isHovering ? 4 : 0),
+          decoration: BoxDecoration(
+            color: isHovering ? Colors.black12 : null,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: (widget.node as Block).children.map((child) {
+              final widget = Recursive(child, currentIndex);
+              if (child is Block) {
+                currentIndex += child.children.length;
+              } else {
+                currentIndex++;
+              }
+              return widget;
+            }).toList(),
+          ),
+        ),
       );
-    } else if (node is Inline) {
-      final inlineNode = node as Inline;
+    } else if (widget.node is Inline) {
+      final inlineNode = widget.node as Inline;
       final List<Inline?> updatedNode =
           ref.watch(nodeStateProvider(inlineNode.key));
       if (updatedNode.isEmpty) {
         updatedNode.add(inlineNode);
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(nodeStateProvider(node.key).notifier).initialize(inlineNode);
+          ref
+              .read(nodeStateProvider(widget.node.key).notifier)
+              .initialize(inlineNode);
           ref
               .read(nodeListStateNotifierProvider.notifier)
               .insertNodeIntoFlatNodeList(inlineNode);
@@ -86,26 +106,26 @@ class Recursive extends ConsumerWidget {
                 child: inline.isEditing
                     ? Row(
                         children: [
-                          Editing(inline),
-                          if (inline.isBlockStart)
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Attributes(inline),
-                              ),
-                            ),
+                          Expanded(child: Editing(inline)),
+                          // if (inline.isBlockStart)
+                          //   Expanded(
+                          //     child: Padding(
+                          //       padding: const EdgeInsets.only(left: 8),
+                          //       child: Attributes(inline),
+                          //     ),
+                          //   ),
                         ],
                       )
                     : Row(
                         children: [
-                          Rendering(inline),
-                          if (inline.isBlockStart)
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Attributes(inline),
-                              ),
-                            ),
+                          Expanded(child: Rendering(inline)),
+                          // if (inline.isBlockStart)
+                          //   Expanded(
+                          //     child: Padding(
+                          //       padding: const EdgeInsets.only(left: 8),
+                          //       child: Attributes(inline),
+                          //     ),
+                          //   ),
                         ],
                       ),
               ),

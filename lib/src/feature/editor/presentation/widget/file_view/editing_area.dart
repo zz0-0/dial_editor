@@ -4,11 +4,16 @@ import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/rec
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditingArea extends ConsumerWidget {
+class EditingArea extends ConsumerStatefulWidget {
   const EditingArea({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditingAreaState();
+}
+
+class _EditingAreaState extends ConsumerState<EditingArea> {
+  @override
+  Widget build(BuildContext context) {
     final List<Node> nodeList = ref.watch(nodeListStateNotifierProvider);
     final scrollController3 = ref.watch(scrollController3Provider);
     int index = 0;
