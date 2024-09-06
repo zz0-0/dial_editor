@@ -1,5 +1,6 @@
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+import 'package:dial_editor/src/feature/editor/presentation/widget/attribute_button.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/expand.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/line_number.dart';
@@ -107,25 +108,33 @@ class _RecursiveState extends ConsumerState<Recursive> {
                     ? Row(
                         children: [
                           Expanded(child: Editing(inline)),
-                          // if (inline.isBlockStart)
-                          //   Expanded(
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.only(left: 8),
-                          //       child: Attributes(inline),
-                          //     ),
-                          //   ),
                         ],
                       )
                     : Row(
                         children: [
-                          Expanded(child: Rendering(inline)),
-                          // if (inline.isBlockStart)
-                          //   Expanded(
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.only(left: 8),
-                          //       child: Attributes(inline),
-                          //     ),
-                          //   ),
+                          Rendering(inline),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                children: [
+                                  AttributeButton(
+                                    inline.attribute.key.toString().substring(
+                                          inline.attribute.key
+                                                  .toString()
+                                                  .length -
+                                              7,
+                                          inline.attribute.key
+                                                  .toString()
+                                                  .length -
+                                              1,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
               ),
