@@ -5,7 +5,6 @@ import 'package:dial_editor/src/feature/editor/data/data_source/file_local_data_
 import 'package:dial_editor/src/feature/editor/data/repository_impl/document_codec.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/document_repository.dart';
-import 'package:flutter/material.dart';
 
 class DocumentRepositoryImpl implements DocumentRepository {
   final FileLocalDataSource fileLocalDataSource;
@@ -18,16 +17,25 @@ class DocumentRepositoryImpl implements DocumentRepository {
 
   @override
   Future<String> decode(Document input) async {
-    final String content = DocumentCodec().decode(input);
+    final String content = DocumentCodec(input.uuid).decode(input);
     return content;
   }
 
   @override
   Future<Document> encode() {
     final Future<File> file = fileLocalDataSource.readFile();
+
     return file.then((value) {
-      final String input = value.readAsStringSync();
-      return DocumentCodec().encode(input);
+      final Future<(String, bool)> uuid =
+          databaseLocalDataSource.getOrCreateUuidForFile(value);
+      return uuid.then((value2) {
+        if (value2.$2) {
+          return databaseLocalDataSource.fetchDocument(value2.$1);
+        } else {
+          final String input = value.readAsStringSync();
+          return DocumentCodec(value2.$1).encode(input);
+        }
+      });
     });
   }
 
@@ -37,8 +45,8 @@ class DocumentRepositoryImpl implements DocumentRepository {
   }
 
   @override
-  Future<Document> fetchDocumentFromDatabase(GlobalKey key) async {
-    return databaseLocalDataSource.fetchDocument(key);
+  Future<Document> fetchDocumentFromDatabase(String uuid) async {
+    return databaseLocalDataSource.fetchDocument(uuid);
   }
 
   @override

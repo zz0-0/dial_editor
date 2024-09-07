@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 class NodeRepositoryImpl implements NodeRepository {
   @override
-  (List<GlobalKey>, Map<GlobalKey, Node>) convertDocument(List<String> lines) {
-    final List<GlobalKey> nodeKeyList = [];
-    final Map<GlobalKey, Node> nodeMap = {};
+  (List<String>, Map<String, Node>) convertDocument(List<String> lines) {
+    final List<String> nodeKeyList = [];
+    final Map<String, Node> nodeMap = {};
     OrderedListBlock? currentOrderedListBlock;
     TaskListBlock? currentTaskListBlock;
     UnorderedListBlock? currentUnorderedListBlock;
@@ -27,8 +27,8 @@ class NodeRepositoryImpl implements NodeRepository {
         if (currentHeadingBlock != null) {
           if (node.level >= currentHeadingBlock.level) {
             // children.add(currentHeadingBlock);
-            nodeKeyList.add(currentHeadingBlock.key);
-            nodeMap[currentHeadingBlock.key] = currentHeadingBlock;
+            nodeKeyList.add(currentHeadingBlock.key.toString());
+            nodeMap[currentHeadingBlock.key.toString()] = currentHeadingBlock;
             currentHeadingBlock = HeadingBlock(
               level: node.level,
               key: GlobalKey(),
@@ -142,8 +142,8 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             isCodeBlock = false;
             currentHeadingBlock.children.add(node);
-            nodeKeyList.add(currentCodeBlock!.key);
-            nodeMap[currentCodeBlock.key] = currentCodeBlock;
+            nodeKeyList.add(currentCodeBlock!.key.toString());
+            nodeMap[currentCodeBlock.key.toString()] = currentCodeBlock;
             currentCodeBlock = null;
           }
         } else if (node is CodeLine) {
@@ -152,21 +152,21 @@ class NodeRepositoryImpl implements NodeRepository {
             currentCodeBlock.children.add(node);
           }
         } else if (node is CodeBlockMarker && currentCodeBlock != null) {
-          nodeKeyList.add(currentCodeBlock.key);
-          nodeMap[currentCodeBlock.key] = currentCodeBlock;
+          nodeKeyList.add(currentCodeBlock.key.toString());
+          nodeMap[currentCodeBlock.key.toString()] = currentCodeBlock;
           currentCodeBlock = null;
         } else {
           (node as Inline).parentKey = currentHeadingBlock.key;
           currentHeadingBlock.children.add(node);
         }
       } else {
-        nodeKeyList.add(node.key);
-        nodeMap[node.key] = node;
+        nodeKeyList.add(node.key.toString());
+        nodeMap[node.key.toString()] = node;
       }
     }
     if (currentHeadingBlock != null) {
-      nodeKeyList.add(currentHeadingBlock.key);
-      nodeMap[currentHeadingBlock.key] = currentHeadingBlock;
+      nodeKeyList.add(currentHeadingBlock.key.toString());
+      nodeMap[currentHeadingBlock.key.toString()] = currentHeadingBlock;
     }
     return (nodeKeyList, nodeMap);
   }

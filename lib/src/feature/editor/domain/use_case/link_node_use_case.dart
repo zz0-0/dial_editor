@@ -1,5 +1,4 @@
 import 'package:dial_editor/src/feature/editor/domain/repository/document_repository.dart';
-import 'package:flutter/material.dart';
 
 class LinkNodesUseCase {
   final DocumentRepository documentRepository;
@@ -7,15 +6,15 @@ class LinkNodesUseCase {
   LinkNodesUseCase(this.documentRepository);
 
   Future<void> linkNodes(
-    GlobalKey sourceDocumentKey,
-    GlobalKey targetDocumentKey,
-    GlobalKey sourceNodeKey,
-    GlobalKey targetNodeKey,
+    String sourceDocumentUuid,
+    String targetDocumentUuid,
+    String sourceNodeKey,
+    String targetNodeKey,
   ) async {
     final document =
-        await documentRepository.fetchDocumentFromDatabase(sourceDocumentKey);
+        await documentRepository.fetchDocumentFromDatabase(sourceDocumentUuid);
     document.addBidirectionalLink(
-      targetDocumentKey,
+      targetDocumentUuid,
       sourceNodeKey,
       targetNodeKey,
     );
@@ -23,12 +22,12 @@ class LinkNodesUseCase {
   }
 
   Future<void> unlinkNodes(
-    GlobalKey sourceDocumentKey,
-    GlobalKey sourceNodeKey,
-    GlobalKey connectionKey,
+    String sourceDocumentUuid,
+    String sourceNodeKey,
+    String connectionKey,
   ) async {
     final document =
-        await documentRepository.fetchDocumentFromDatabase(sourceDocumentKey);
+        await documentRepository.fetchDocumentFromDatabase(sourceDocumentUuid);
     document.removeBidirectionalLink(sourceNodeKey, connectionKey);
     await documentRepository.saveDocumentToDatabase(document);
   }

@@ -11,7 +11,7 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
 
   @override
   Future<List<Connection>> getConnections() async {
-    final db = databaseLocalDataSource.openDatabase();
+    final db = databaseLocalDataSource.openDatabaseDocument();
     final store = StoreRef.main();
     return (await store.record("connection").get(await db))!
         as List<Connection>;

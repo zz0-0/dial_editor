@@ -1,39 +1,79 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/core/provider/ui/file_branch_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/document.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class DatabaseLocalDataSource {
-  Future<Database> openDatabase();
-  Future<Document> fetchDocument(GlobalKey key);
+  Future<Database> openDatabaseMetadata();
+  Future<Database> openDatabaseDocument();
+  Future<(String, bool)> getOrCreateUuidForFile(File file);
+  Future<Document> fetchDocument(String uuid);
   Future<void> saveDocument(Document document);
-  Future<void> deleteDocument(GlobalKey key);
+  Future<void> deleteDocument(String uuid);
+  Future<void> updateFilePath(String uuid, String filePath);
 }
 
 class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
   Ref ref;
-  late Database _database;
+  late Database _databaseMetadata;
+  late Database _databaseDocument;
 
-  DatabaseLocalDataSourceImpl(this.ref);
-
-  @override
-  Future<Database> openDatabase() async {
-    final File file = ref.read(fileProvider)!;
-    final String fileName = file.path.split('/').last;
-    final appDir = await getApplicationDocumentsDirectory();
-    final dbPath = '${appDir.path}/$fileName.db';
-    return _database = await databaseFactoryIo.openDatabase(dbPath);
+  DatabaseLocalDataSourceImpl(this.ref) {
+    openDatabaseMetadata();
+    openDatabaseDocument();
   }
 
   @override
-  Future<Document> fetchDocument(GlobalKey key) async {
+  Future<Database> openDatabaseMetadata() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final dbPath = '${appDir.path}/metadata.db';
+    return _databaseMetadata = await databaseFactoryIo.openDatabase(dbPath);
+  }
+
+  @override
+  Future<Database> openDatabaseDocument() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final dbPath = '${appDir.path}/document.db';
+    return _databaseDocument = await databaseFactoryIo.openDatabase(dbPath);
+  }
+
+  @override
+  Future<(String, bool)> getOrCreateUuidForFile(File file) async {
     final store = StoreRef<String, Map<String, dynamic>>.main();
-    final recordSnapshot = await store.record(key.toString()).get(_database);
+    final result = await store.find(
+      _databaseMetadata,
+      finder: Finder(filter: Filter.equals('filePath', file.path)),
+    );
+    if (result.isNotEmpty) {
+      return (result.first.key, true);
+    } else {
+      final uuid = const Uuid().v4();
+      final fileMetadata = await _getFileMetadata(file);
+      await store.record(uuid).put(
+        _databaseMetadata,
+        {'filePath': file.path, 'metadata': fileMetadata},
+      );
+      return (uuid, false);
+    }
+  }
+
+  Future<Map<String, dynamic>> _getFileMetadata(File file) async {
+    final stat = await file.stat();
+    return {
+      'size': stat.size,
+      'created': stat.changed.toIso8601String(),
+      'modified': stat.modified.toIso8601String(),
+    };
+  }
+
+  @override
+  Future<Document> fetchDocument(String uuid) async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    final recordSnapshot = await store.record(uuid).get(_databaseDocument);
 
     if (recordSnapshot != null) {
       return Document.fromMap(recordSnapshot);
@@ -45,14 +85,23 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
   @override
   Future<void> saveDocument(Document document) async {
     final store = StoreRef<String, Map<String, dynamic>>.main();
-    await store
-        .record(document.key.toString())
-        .put(_database, document.toMap());
+    await store.record(document.uuid).put(_databaseDocument, document.toMap());
   }
 
   @override
-  Future<void> deleteDocument(GlobalKey key) async {
+  Future<void> deleteDocument(String uuid) async {
     final store = StoreRef<String, Map<String, dynamic>>.main();
-    await store.record(key.toString()).delete(_database);
+    await store.record(uuid).delete(_databaseDocument);
+  }
+
+  @override
+  Future<void> updateFilePath(String uuid, String filePath) async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    final existingRecord = await store.record(uuid).get(_databaseMetadata);
+
+    if (existingRecord != null) {
+      existingRecord['filePath'] = filePath;
+      await store.record(uuid).put(_databaseMetadata, existingRecord);
+    }
   }
 }

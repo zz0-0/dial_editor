@@ -3,5 +3,5 @@ import 'package:flutter/material.dart';
 
 class Attribute {
   final key = GlobalKey<EditableTextState>();
-  Map<GlobalKey, Connection> connections = {};
+  Map<String, Connection> connections = {};
 }

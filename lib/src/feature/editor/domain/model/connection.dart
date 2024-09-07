@@ -1,15 +1,13 @@
-import 'package:flutter/material.dart';
-
 class Connection {
-  GlobalKey sourceDocumentKey;
-  GlobalKey targetDocumentKey;
-  GlobalKey connectionKey;
-  GlobalKey sourceNodeKey;
-  GlobalKey targetNodeKey;
+  String sourceDocumentUuid;
+  String targetDocumentUuid;
+  String connectionKey;
+  String sourceNodeKey;
+  String targetNodeKey;
 
   Connection({
-    required this.sourceDocumentKey,
-    required this.targetDocumentKey,
+    required this.sourceDocumentUuid,
+    required this.targetDocumentUuid,
     required this.connectionKey,
     required this.sourceNodeKey,
     required this.targetNodeKey,

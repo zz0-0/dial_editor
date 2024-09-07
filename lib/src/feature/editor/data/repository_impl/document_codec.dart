@@ -5,11 +5,12 @@ import 'package:dial_editor/src/feature/editor/data/repository_impl/string_to_do
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 
 class DocumentCodec extends Codec<String, Document> {
-  DocumentCodec();
+  String uuid;
+  DocumentCodec(this.uuid);
 
   @override
   Converter<Document, String> get decoder => DocumentToStringConverter();
 
   @override
-  Converter<String, Document> get encoder => StringToDocumentConverter();
+  Converter<String, Document> get encoder => StringToDocumentConverter(uuid);
 }

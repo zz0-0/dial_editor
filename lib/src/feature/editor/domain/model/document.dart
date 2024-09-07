@@ -3,19 +3,19 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:flutter/material.dart';
 
 class Document {
+  String uuid;
   String type = MarkdownElement.document.type;
-  GlobalKey key;
-  List<GlobalKey> nodeKeyList = [];
-  Map<GlobalKey, Node> nodeMap = {};
+  List<String> nodeKeyList = [];
+  Map<String, Node> nodeMap = {};
 
-  Document({required this.key});
+  Document({required this.uuid});
 
   void addNode(Node node) {
-    nodeKeyList.add(node.key);
-    nodeMap[node.key] = node;
+    nodeKeyList.add(node.key.toString());
+    nodeMap[node.key.toString()] = node;
   }
 
-  Node? getNode(GlobalKey key) {
+  Node? getNode(String key) {
     return nodeMap[key];
   }
 
@@ -24,11 +24,11 @@ class Document {
   }
 
   void insertNodeAt(int index, Node node) {
-    nodeKeyList.insert(index, node.key);
-    nodeMap[node.key] = node;
+    nodeKeyList.insert(index, node.key.toString());
+    nodeMap[node.key.toString()] = node;
   }
 
-  void removeNode(GlobalKey key) {
+  void removeNode(String key) {
     nodeKeyList.remove(key);
     nodeMap.remove(key);
   }
@@ -39,50 +39,50 @@ class Document {
   }
 
   factory Document.fromMap(Map<String, dynamic> map) {
-    final document = Document(key: GlobalKey());
-    final nodeMap = map['nodeMap'] as Map<String, dynamic>;
-    nodeMap.forEach((key, value) {
-      final node = Node.fromMap(value as Map<String, dynamic>);
+    final document = Document(uuid: map['uuid'] as String);
+    final List<String> nodeKeyListData = map['nodeKeyList'] as List<String>;
+    final Map<String, dynamic> nodeMapData =
+        map['nodeMap'] as Map<String, dynamic>;
+    for (final nodeKeyItem in nodeKeyListData) {
+      final nodeData = nodeMapData[nodeKeyItem] as Map<String, dynamic>;
+      final node = Node.fromMap(nodeData);
       document.addNode(node);
-    });
+    }
     return document;
   }
 
   Map<String, dynamic> toMap() {
-    final nodeMap = <GlobalKey, Node>{};
-    nodeMap.addEntries(
-      nodeMap.entries.map((e) => MapEntry(e.key, e.value.toMap() as Node)),
-    );
     return {
       'type': type,
-      'key': key,
-      'nodeMap': nodeMap,
+      'uuid': uuid,
+      'nodeMap': nodeMap.map((key, value) => MapEntry(key, value)),
+      'nodeKeyList': nodeKeyList,
     };
   }
 
   void addBidirectionalLink(
-    GlobalKey targetDocumentKey,
-    GlobalKey sourceNodeKey,
-    GlobalKey targetNodeKey,
+    String targetDocumentUuid,
+    String sourceNodeKey,
+    String targetNodeKey,
   ) {
     final sourceNode = getNode(sourceNodeKey);
     final targetNode = getNode(targetNodeKey);
 
     if (sourceNode != null && targetNode != null) {
       final connectionKey = GlobalKey();
-      sourceNode.attribute.connections[connectionKey] = Connection(
+      sourceNode.attribute.connections[connectionKey.toString()] = Connection(
         targetNodeKey: targetNodeKey,
-        targetDocumentKey: targetDocumentKey,
-        sourceDocumentKey: key,
-        connectionKey: connectionKey,
+        targetDocumentUuid: targetDocumentUuid,
+        sourceDocumentUuid: uuid,
+        connectionKey: connectionKey.toString(),
         sourceNodeKey: sourceNodeKey,
       );
     }
   }
 
   void removeBidirectionalLink(
-    GlobalKey sourceNodeKey,
-    GlobalKey connectionKey,
+    String sourceNodeKey,
+    String connectionKey,
   ) {
     final sourceNode = getNode(sourceNodeKey);
 
