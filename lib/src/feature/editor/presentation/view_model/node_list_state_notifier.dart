@@ -71,15 +71,20 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
 
     if (oldNode is Heading && newNode is! Heading) {
       _handleHeadingToTextConversion(block, index, oldNode, newNode);
+      _updateDocumentToDatabase();
     } else if (newNode is Heading) {
       _handleHeadingReplacement(block, index, oldNode, newNode);
+      _updateDocumentToDatabase();
     } else if (_isSpecialBlockNode(newNode)) {
       _handleSpecialBlockReplacement(block, index, oldNode, newNode);
+      _updateDocumentToDatabase();
     } else if (_isSpecialBlockNode(oldNode) &&
         newNode.runtimeType != oldNode.runtimeType) {
       _handleSpecialBlockNodeToTextReplacement(block, index, oldNode, newNode);
+      _updateDocumentToDatabase();
     } else {
       _handleSimpleReplacement(block, index, oldNode, newNode);
+      _updateChunkToDatabase();
     }
   }
 
@@ -333,7 +338,6 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void _toggleChildren(Block block, bool isExpanded, [bool nested = false]) {
-    // print(block.children);
     for (final child in block.children) {
       if (child is Inline) {
         if (!child.isBlockStart) {
@@ -347,4 +351,10 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       }
     }
   }
+
+  void _updateDocumentToDatabase() {
+    // ref.read(documentRepositoryProvider).saveDocumentToDatabase();
+  }
+
+  void _updateChunkToDatabase() {}
 }

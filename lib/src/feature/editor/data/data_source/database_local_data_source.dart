@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dial_editor/src/feature/editor/domain/model/document.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
@@ -15,6 +15,7 @@ abstract class DatabaseLocalDataSource {
   Future<void> saveDocument(Document document);
   Future<void> deleteDocument(String uuid);
   Future<void> updateFilePath(String uuid, String filePath);
+  Future<void> saveChunk(Document document, Node oldNode, Node newNode);
 }
 
 class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
@@ -43,22 +44,23 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
 
   @override
   Future<(String, bool)> getOrCreateUuidForFile(File file) async {
-    final store = StoreRef<String, Map<String, dynamic>>.main();
-    final result = await store.find(
-      _databaseMetadata,
-      finder: Finder(filter: Filter.equals('filePath', file.path)),
-    );
-    if (result.isNotEmpty) {
-      return (result.first.key, true);
-    } else {
-      final uuid = const Uuid().v4();
-      final fileMetadata = await _getFileMetadata(file);
-      await store.record(uuid).put(
-        _databaseMetadata,
-        {'filePath': file.path, 'metadata': fileMetadata},
-      );
-      return (uuid, false);
-    }
+    // final store = StoreRef<String, Map<String, dynamic>>.main();
+    // final result = await store.find(
+    //   _databaseMetadata,
+    //   finder: Finder(filter: Filter.equals('filePath', file.path)),
+    // );
+    // if (result.isNotEmpty) {
+    //   return (result.first.key, true);
+    // } else {
+    //   final uuid = const Uuid().v4();
+    //   final fileMetadata = await _getFileMetadata(file);
+    //   await store.record(uuid).put(
+    //     _databaseMetadata,
+    //     {'filePath': file.path, 'metadata': fileMetadata},
+    //   );
+    //   return (uuid, false);
+    // }
+    return (Uuid().v4(), false);
   }
 
   Future<Map<String, dynamic>> _getFileMetadata(File file) async {
@@ -103,5 +105,12 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
       existingRecord['filePath'] = filePath;
       await store.record(uuid).put(_databaseMetadata, existingRecord);
     }
+  }
+
+  @override
+  Future<void> saveChunk(Document document, Node oldNode, Node newNode) async {
+    // final store = StoreRef<String, Map<String, dynamic>>.main();
+    // final existingRecord =
+    //     await store.record(document.uuid).get(_databaseMetadata);
   }
 }

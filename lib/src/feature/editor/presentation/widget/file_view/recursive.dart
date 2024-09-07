@@ -120,6 +120,7 @@ class _RecursiveState extends ConsumerState<Recursive> {
                               child: Row(
                                 children: [
                                   AttributeButton(
+                                    AttributeType.key,
                                     inline.attribute.key.toString().substring(
                                           inline.attribute.key
                                                   .toString()
