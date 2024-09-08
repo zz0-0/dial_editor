@@ -60,7 +60,8 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
       finder: Finder(filter: Filter.equals('filePath', file.path)),
     );
     if (result.isNotEmpty) {
-      return (result.first.key, true);
+      // TODO: change back to true
+      return (result.first.key, false);
     } else {
       final uuid = const Uuid().v4();
       final fileMetadata = await _getFileMetadata(file);
