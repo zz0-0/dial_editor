@@ -15,22 +15,36 @@ import 'package:dial_editor/src/feature/editor/presentation/view_model/node_stat
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final documentRepositoryProvider = Provider<DocumentRepository>((ref) {
+final databaseLocalDataSourceProvider =
+    FutureProvider<DatabaseLocalDataSource>((ref) async {
+  return await DatabaseLocalDataSourceImpl.create(ref);
+});
+
+final fileLocalDataSourceProvider = Provider<FileLocalDataSource>((ref) {
+  return FileLocalDataSourceImpl(ref);
+});
+
+final documentRepositoryProvider =
+    FutureProvider<DocumentRepository>((ref) async {
+  final databaseLocalDataSource =
+      await ref.watch(databaseLocalDataSourceProvider.future);
+  final fileLocalDataSource = ref.watch(fileLocalDataSourceProvider);
+
   return DocumentRepositoryImpl(
-    fileLocalDataSource: FileLocalDataSourceImpl(ref),
-    databaseLocalDataSource: DatabaseLocalDataSourceImpl(ref),
+    fileLocalDataSource: fileLocalDataSource,
+    databaseLocalDataSource: databaseLocalDataSource,
   );
 });
 
 final getDocumentChildrenUseCaseProvider =
-    Provider<GetDocumentChildrenUseCase>((ref) {
-  final repository = ref.watch(documentRepositoryProvider);
+    FutureProvider<GetDocumentChildrenUseCase>((ref) async {
+  final repository = await ref.watch(documentRepositoryProvider.future);
   return GetDocumentChildrenUseCase(repository);
 });
 
 final saveDocumentToFileUseCaseProvider =
-    Provider<SaveDocumentToFileUseCase>((ref) {
-  final repository = ref.watch(documentRepositoryProvider);
+    FutureProvider<SaveDocumentToFileUseCase>((ref) async {
+  final repository = await ref.watch(documentRepositoryProvider.future);
   return SaveDocumentToFileUseCase(repository);
 });
 

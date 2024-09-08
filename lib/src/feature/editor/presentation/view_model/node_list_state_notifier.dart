@@ -16,11 +16,13 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
   }
 
   void getList() {
-    final GetDocumentChildrenUseCase getDocumentChildren =
-        ref.watch(getDocumentChildrenUseCaseProvider);
-    final newList = getDocumentChildren.getChildren();
-    newList.then((value) {
-      state = value;
+    GetDocumentChildrenUseCase getDocumentChildren;
+    ref.watch(getDocumentChildrenUseCaseProvider).whenData((value) {
+      getDocumentChildren = value;
+      final newList = getDocumentChildren.getChildren();
+      newList.then((value) {
+        state = value;
+      });
     });
   }
 
@@ -71,20 +73,20 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
 
     if (oldNode is Heading && newNode is! Heading) {
       _handleHeadingToTextConversion(block, index, oldNode, newNode);
-      _updateDocumentToDatabase();
+      // _updateDocumentToDatabase();
     } else if (newNode is Heading) {
       _handleHeadingReplacement(block, index, oldNode, newNode);
-      _updateDocumentToDatabase();
+      // _updateDocumentToDatabase();
     } else if (_isSpecialBlockNode(newNode)) {
       _handleSpecialBlockReplacement(block, index, oldNode, newNode);
-      _updateDocumentToDatabase();
+      // _updateDocumentToDatabase();
     } else if (_isSpecialBlockNode(oldNode) &&
         newNode.runtimeType != oldNode.runtimeType) {
       _handleSpecialBlockNodeToTextReplacement(block, index, oldNode, newNode);
-      _updateDocumentToDatabase();
+      // _updateDocumentToDatabase();
     } else {
       _handleSimpleReplacement(block, index, oldNode, newNode);
-      _updateChunkToDatabase();
+      // _updateChunkToDatabase();
     }
   }
 
@@ -351,10 +353,4 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       }
     }
   }
-
-  void _updateDocumentToDatabase() {
-    // ref.read(documentRepositoryProvider).saveDocumentToDatabase();
-  }
-
-  void _updateChunkToDatabase() {}
 }

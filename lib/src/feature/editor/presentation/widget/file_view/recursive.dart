@@ -119,18 +119,34 @@ class _RecursiveState extends ConsumerState<Recursive> {
                                   const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Row(
                                 children: [
-                                  AttributeButton(
-                                    AttributeType.key,
-                                    inline.attribute.key.toString().substring(
-                                          inline.attribute.key
-                                                  .toString()
-                                                  .length -
-                                              7,
-                                          inline.attribute.key
-                                                  .toString()
-                                                  .length -
-                                              1,
-                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 2.0,
+                                      vertical: 1,
+                                    ),
+                                    child: AttributeButton(
+                                      AttributeType.key,
+                                      inline.attribute.key.toString().substring(
+                                            inline.attribute.key
+                                                    .toString()
+                                                    .length -
+                                                7,
+                                            inline.attribute.key
+                                                    .toString()
+                                                    .length -
+                                                1,
+                                          ),
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 2.0,
+                                      vertical: 1,
+                                    ),
+                                    child: AttributeButton(
+                                      AttributeType.incoming,
+                                      "",
+                                    ),
                                   ),
                                 ],
                               ),

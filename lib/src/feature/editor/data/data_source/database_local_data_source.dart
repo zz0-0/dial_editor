@@ -23,44 +23,54 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
   late Database _databaseMetadata;
   late Database _databaseDocument;
 
-  DatabaseLocalDataSourceImpl(this.ref) {
-    openDatabaseMetadata();
-    openDatabaseDocument();
+  DatabaseLocalDataSourceImpl._create(this.ref);
+
+  static Future<DatabaseLocalDataSourceImpl> create(Ref ref) async {
+    final instance = DatabaseLocalDataSourceImpl._create(ref);
+    await instance._initializeDatabases();
+    return instance;
+  }
+
+  Future<void> _initializeDatabases() async {
+    _databaseMetadata = await openDatabaseMetadata();
+    _databaseDocument = await openDatabaseDocument();
   }
 
   @override
   Future<Database> openDatabaseMetadata() async {
     final appDir = await getApplicationDocumentsDirectory();
     final dbPath = '${appDir.path}/metadata.db';
-    return _databaseMetadata = await databaseFactoryIo.openDatabase(dbPath);
+    return _databaseMetadata =
+        await databaseFactoryIo.openDatabase(dbPath, mode: DatabaseMode.create);
   }
 
   @override
   Future<Database> openDatabaseDocument() async {
     final appDir = await getApplicationDocumentsDirectory();
     final dbPath = '${appDir.path}/document.db';
-    return _databaseDocument = await databaseFactoryIo.openDatabase(dbPath);
+    return _databaseDocument =
+        await databaseFactoryIo.openDatabase(dbPath, mode: DatabaseMode.create);
   }
 
   @override
   Future<(String, bool)> getOrCreateUuidForFile(File file) async {
-    // final store = StoreRef<String, Map<String, dynamic>>.main();
-    // final result = await store.find(
-    //   _databaseMetadata,
-    //   finder: Finder(filter: Filter.equals('filePath', file.path)),
-    // );
-    // if (result.isNotEmpty) {
-    //   return (result.first.key, true);
-    // } else {
-    //   final uuid = const Uuid().v4();
-    //   final fileMetadata = await _getFileMetadata(file);
-    //   await store.record(uuid).put(
-    //     _databaseMetadata,
-    //     {'filePath': file.path, 'metadata': fileMetadata},
-    //   );
-    //   return (uuid, false);
-    // }
-    return (Uuid().v4(), false);
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    final result = await store.find(
+      _databaseMetadata,
+      finder: Finder(filter: Filter.equals('filePath', file.path)),
+    );
+    if (result.isNotEmpty) {
+      return (result.first.key, true);
+    } else {
+      final uuid = const Uuid().v4();
+      final fileMetadata = await _getFileMetadata(file);
+      await store.record(uuid).put(
+        _databaseMetadata,
+        {'filePath': file.path, 'metadata': fileMetadata},
+      );
+      return (uuid, false);
+    }
+    // return (const Uuid().v4(), false);
   }
 
   Future<Map<String, dynamic>> _getFileMetadata(File file) async {
