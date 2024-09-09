@@ -1,3 +1,6 @@
+import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,8 +8,8 @@ enum AttributeType { key, incoming, outgoing }
 
 class AttributeButton extends ConsumerStatefulWidget {
   final AttributeType type;
-  final String content;
-  const AttributeButton(this.type, this.content, {super.key});
+  final Node node;
+  const AttributeButton(this.type, this.node, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -17,13 +20,19 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
   @override
   Widget build(BuildContext context) {
     late final IconData icon;
-    final List<String> items = ['a', 'b', 'c'];
+    final List<Connection> items =
+        ref.watch(nodeIncomingConnectionProvider(widget.node.key));
 
     if (widget.type == AttributeType.key) {
       icon = Icons.outlined_flag;
       return Chip(
         avatar: Icon(icon),
-        label: Text(widget.content),
+        label: Text(
+          widget.node.attribute.key.toString().substring(
+                widget.node.attribute.key.toString().length - 7,
+                widget.node.attribute.key.toString().length - 1,
+              ),
+        ),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       );
     } else if (widget.type == AttributeType.incoming) {
@@ -32,13 +41,20 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
         menuChildren: [
           ...items.map(
             (item) => MenuItemButton(
-              child: Text(item),
+              child: Text(item.targetNodeKey),
               onPressed: () {},
             ),
           ),
           MenuItemButton(
             child: const Text('Add item'),
-            onPressed: () {},
+            onPressed: () {
+              Scaffold.of(context).showBottomSheet(
+                (context) => Container(
+                  height: 200,
+                  color: Colors.red,
+                ),
+              );
+            },
           ),
         ],
         builder:

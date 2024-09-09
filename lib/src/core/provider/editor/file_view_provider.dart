@@ -2,6 +2,7 @@ import 'package:dial_editor/src/feature/editor/data/data_source/database_local_d
 import 'package:dial_editor/src/feature/editor/data/data_source/file_local_data_source.dart';
 import 'package:dial_editor/src/feature/editor/data/repository_impl/document_repository_impl.dart';
 import 'package:dial_editor/src/feature/editor/data/repository_impl/node_repository_impl.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/document_repository.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
@@ -82,3 +83,14 @@ final scrollController2Provider = Provider((ref) => ScrollController());
 final scrollController3Provider = Provider((ref) => ScrollController());
 
 final toggleNodeExpansionKeyProvider = StateProvider<GlobalKey?>((ref) => null);
+
+final nodeIncomingConnectionProvider =
+    Provider.family<List<Connection>, GlobalKey>((ref, key) {
+  if (ref.watch(nodeStateProvider(key)).isEmpty) return [];
+  return ref
+      .watch(nodeStateProvider(key))[0]!
+      .attribute
+      .connections
+      .values
+      .toList();
+});

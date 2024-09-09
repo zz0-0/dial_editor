@@ -20,6 +20,8 @@ class Recursive extends ConsumerStatefulWidget {
 class _RecursiveState extends ConsumerState<Recursive> {
   bool isHovering = false;
   bool isInlineHovering = false;
+  final controller = OverlayPortalController();
+  final inlineController = OverlayPortalController();
   @override
   Widget build(BuildContext context) {
     int currentIndex = widget.index;
@@ -27,40 +29,30 @@ class _RecursiveState extends ConsumerState<Recursive> {
       ref
           .read(nodeListStateNotifierProvider.notifier)
           .insertBlockNodeIntoMap(widget.node.key, widget.node as Block);
-      return InkWell(
-        onTap: () {},
-        onHover: (value) {
-          setState(() {
-            isHovering = value;
-          });
+      return MouseRegion(
+        onEnter: (_) {
+          setState(() => isHovering = true);
+          controller.show();
         },
-        child: Stack(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
-              curve: Curves.easeInOut,
-              padding: EdgeInsets.all(isHovering ? 4 : 0),
-              decoration: BoxDecoration(
-                color: isHovering ? Colors.black12 : null,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: (widget.node as Block).children.map((child) {
-                  final widget = Recursive(child, currentIndex);
-                  if (child is Block) {
-                    currentIndex += child.children.length;
-                  } else {
-                    currentIndex++;
-                  }
-                  return widget;
-                }).toList(),
-              ),
-            ),
-            if (isHovering)
-              Positioned(
-                top: 10,
-                right: 10,
+        onExit: (_) {
+          setState(() => isHovering = false);
+          controller.hide();
+        },
+        child: OverlayPortal(
+          controller: controller,
+          overlayChildBuilder: (context1) {
+            final RenderBox? renderBox =
+                context.findRenderObject() as RenderBox?;
+            final Offset position =
+                renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+            return Positioned(
+              top: position.dy - 10,
+              right: 10,
+              child: MouseRegion(
+                onEnter: (_) {
+                  setState(() => isHovering = true);
+                  controller.show();
+                },
                 child: Row(
                   children: [
                     Padding(
@@ -70,26 +62,45 @@ class _RecursiveState extends ConsumerState<Recursive> {
                       ),
                       child: AttributeButton(
                         AttributeType.key,
-                        widget.node.attribute.key.toString().substring(
-                              widget.node.attribute.key.toString().length - 7,
-                              widget.node.attribute.key.toString().length - 1,
-                            ),
+                        widget.node,
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 2.0,
                         vertical: 1,
                       ),
                       child: AttributeButton(
                         AttributeType.incoming,
-                        "",
+                        widget.node,
                       ),
                     ),
                   ],
                 ),
               ),
-          ],
+            );
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeInOut,
+            padding: EdgeInsets.all(isHovering ? 4 : 0),
+            decoration: BoxDecoration(
+              color: isHovering ? Colors.black12 : null,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: (widget.node as Block).children.map((child) {
+                final widget = Recursive(child, currentIndex);
+                if (child is Block) {
+                  currentIndex += child.children.length;
+                } else {
+                  currentIndex++;
+                }
+                return widget;
+              }).toList(),
+            ),
+          ),
         ),
       );
     } else if (widget.node is Inline) {
@@ -136,74 +147,70 @@ class _RecursiveState extends ConsumerState<Recursive> {
     int currentIndex,
   ) {
     return _shouldExpanded(ref, inline)
-        ? InkWell(
-            onTap: () {},
-            onHover: (value) {
-              setState(() {
-                isInlineHovering = value;
-              });
+        ? MouseRegion(
+            hitTestBehavior: HitTestBehavior.translucent,
+            onEnter: (_) {
+              setState(() => isInlineHovering = true);
+              inlineController.show();
             },
-            child: Row(
-              children: [
-                LineNumber(inline, currentIndex),
-                Expand(inline),
-                Expanded(
-                  child: inline.isEditing
-                      ? Row(
-                          children: [
-                            Expanded(child: Editing(inline)),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            Rendering(inline),
-                            if (isInlineHovering)
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 2.0,
-                                          vertical: 1,
-                                        ),
-                                        child: AttributeButton(
-                                          AttributeType.key,
-                                          inline.attribute.key
-                                              .toString()
-                                              .substring(
-                                                inline.attribute.key
-                                                        .toString()
-                                                        .length -
-                                                    7,
-                                                inline.attribute.key
-                                                        .toString()
-                                                        .length -
-                                                    1,
-                                              ),
-                                        ),
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 2.0,
-                                          vertical: 1,
-                                        ),
-                                        child: AttributeButton(
-                                          AttributeType.incoming,
-                                          "",
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                          ],
+            onExit: (_) {
+              setState(() => isInlineHovering = false);
+              inlineController.hide();
+            },
+            child: OverlayPortal(
+              controller: inlineController,
+              overlayChildBuilder: (context1) {
+                final RenderBox? renderBox =
+                    context.findRenderObject() as RenderBox?;
+                final size = renderBox?.size;
+                final Offset position =
+                    renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+                return Positioned(
+                  top: position.dy + (size!.height / 2) - 35,
+                  right: 200,
+                  child: MouseRegion(
+                    hitTestBehavior: HitTestBehavior.translucent,
+                    onEnter: (_) {
+                      setState(() => isInlineHovering = true);
+                      inlineController.show();
+                    },
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2.0,
+                            vertical: 1,
+                          ),
+                          child: AttributeButton(
+                            AttributeType.key,
+                            inline,
+                          ),
                         ),
-                ),
-              ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 2.0,
+                            vertical: 1,
+                          ),
+                          child: AttributeButton(
+                            AttributeType.incoming,
+                            inline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Row(
+                children: [
+                  LineNumber(inline, currentIndex),
+                  Expand(inline),
+                  Expanded(
+                    child:
+                        inline.isEditing ? Editing(inline) : Rendering(inline),
+                  ),
+                ],
+              ),
             ),
           )
         : const SizedBox.shrink();
