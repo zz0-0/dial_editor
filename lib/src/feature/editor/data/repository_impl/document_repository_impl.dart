@@ -52,6 +52,11 @@ class DocumentRepositoryImpl implements DocumentRepository {
   }
 
   @override
+  Future<List<Document>> fetchAllDocumentsFromDatabase() async {
+    return databaseLocalDataSource.fetchAllDocuments();
+  }
+
+  @override
   Future<void> saveDocumentToDatabase(Document input) {
     return databaseLocalDataSource.saveDocument(input);
   }

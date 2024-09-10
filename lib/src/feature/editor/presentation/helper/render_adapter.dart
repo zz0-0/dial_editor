@@ -21,7 +21,7 @@ class RenderAdapter {
       final TextStyle newStyle =
           _getTextStyle(instruction.text, instruction.formatting);
 
-      ref.read(updateNodeStyleUseCaseProvider).update(node, newStyle);
+      ref.read(updateNodeStyleUseCaseProvider)(node, newStyle);
       final double newHeight = _calculateHeight(node, context);
       if (node.textHeight != newHeight) {
         WidgetsBinding.instance.addPostFrameCallback((_) {

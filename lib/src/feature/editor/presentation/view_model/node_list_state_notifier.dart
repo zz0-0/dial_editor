@@ -19,7 +19,7 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     GetDocumentChildrenUseCase getDocumentChildren;
     ref.watch(getDocumentChildrenUseCaseProvider).whenData((value) {
       getDocumentChildren = value;
-      final newList = getDocumentChildren.getChildren();
+      final newList = getDocumentChildren();
       newList.then((value) {
         state = value;
       });

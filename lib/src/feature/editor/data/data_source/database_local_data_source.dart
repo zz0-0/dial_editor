@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dial_editor/src/feature/editor/domain/model/file_metadata.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +13,8 @@ abstract class DatabaseLocalDataSource {
   Future<Database> openDatabaseDocument();
   Future<(String, bool)> getOrCreateUuidForFile(File file);
   Future<Document> fetchDocument(String uuid);
+  Future<List<Document>> fetchAllDocuments();
+  Future<FileMetadata> fetchFileMetadata(String uuid);
   Future<void> saveDocument(Document document);
   Future<void> deleteDocument(String uuid);
   Future<void> updateFilePath(String uuid, String filePath);
@@ -65,20 +68,22 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
       final uuid = const Uuid().v4();
       final fileMetadata = await _getFileMetadata(file);
       await store.record(uuid).put(
-        _databaseMetadata,
-        {'filePath': file.path, 'metadata': fileMetadata},
-      );
+            _databaseMetadata,
+            fileMetadata.toMap(),
+          );
       return (uuid, false);
     }
   }
 
-  Future<Map<String, dynamic>> _getFileMetadata(File file) async {
+  Future<FileMetadata> _getFileMetadata(File file) async {
     final stat = await file.stat();
-    return {
-      'size': stat.size,
-      'created': stat.changed.toIso8601String(),
-      'modified': stat.modified.toIso8601String(),
-    };
+    return FileMetadata(
+      size: stat.size,
+      path: file.path,
+      name: file.path.split('/').last,
+      created: stat.changed.toIso8601String(),
+      modified: stat.modified.toIso8601String(),
+    );
   }
 
   @override
@@ -90,6 +95,25 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
       return Document.fromMap(recordSnapshot);
     } else {
       throw Exception('Document not found');
+    }
+  }
+
+  @override
+  Future<List<Document>> fetchAllDocuments() async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    final recordSnapshot = await store.find(_databaseDocument);
+    return recordSnapshot.map((e) => Document.fromMap(e.value)).toList();
+  }
+
+  @override
+  Future<FileMetadata> fetchFileMetadata(String uuid) async {
+    final store = StoreRef<String, Map<String, dynamic>>.main();
+    final recordSnapshot = await store.record(uuid).get(_databaseMetadata);
+
+    if (recordSnapshot != null) {
+      return FileMetadata.fromMap(recordSnapshot);
+    } else {
+      throw Exception('File Metadata not found');
     }
   }
 

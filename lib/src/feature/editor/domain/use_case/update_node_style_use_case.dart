@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class UpdateNodeStyleUseCase {
   UpdateNodeStyleUseCase();
 
-  void update(Inline node, TextStyle newStyle) {
+  void call(Inline node, TextStyle newStyle) {
     node.style = newStyle;
   }
 }

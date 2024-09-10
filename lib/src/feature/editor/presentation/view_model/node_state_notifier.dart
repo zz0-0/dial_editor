@@ -65,7 +65,7 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     final ConvertStringToLineUseCase convertStringToLineUseCase =
         ref.read(convertStringToLineUseCaseProvider);
     final int cursorPosition = node.controller.selection.baseOffset;
-    final Inline newNode = convertStringToLineUseCase.convertLine(value);
+    final Inline newNode = convertStringToLineUseCase(value);
     newNode.key = node.key;
     newNode.parentKey = node.parentKey;
     ref

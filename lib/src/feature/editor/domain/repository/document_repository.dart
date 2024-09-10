@@ -5,5 +5,6 @@ abstract class DocumentRepository {
   Future<String> decode(Document input);
   Future<void> saveDocumentToFile(String input);
   Future<Document> fetchDocumentFromDatabase(String uuid);
+  Future<List<Document>> fetchAllDocumentsFromDatabase();
   Future<void> saveDocumentToDatabase(Document input);
 }

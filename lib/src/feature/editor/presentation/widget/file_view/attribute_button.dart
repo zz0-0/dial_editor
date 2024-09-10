@@ -27,8 +27,10 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
   @override
   Widget build(BuildContext context) {
     late final IconData icon;
-    final List<Connection> items =
+    final List<Connection> incomingConnectionList =
         ref.watch(nodeIncomingConnectionProvider(widget.node.key));
+    final List<Document> documentList =
+        ref.watch(documentListStateNotifierProvider);
     final Set<NodeType> filters = {};
 
     if (widget.type == AttributeType.key) {
@@ -47,9 +49,9 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
       icon = Icons.arrow_circle_left_outlined;
       return MenuAnchor(
         menuChildren: [
-          ...items.map(
-            (item) => MenuItemButton(
-              child: Text(item.targetNodeKey),
+          ...incomingConnectionList.map(
+            (connection) => MenuItemButton(
+              child: Text(connection.targetNodeKey),
               onPressed: () {},
             ),
           ),
@@ -92,6 +94,29 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
                           )
                           .toList(),
                     ),
+                    Expanded(
+                      child: documentList.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: documentList.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  title: Text(
+                                    ref
+                                        .watch(
+                                          fileMetadataStateNotiferProvider(
+                                            documentList[index].uuid,
+                                          ),
+                                        )[0]
+                                        .name,
+                                  ),
+                                  onTap: () {},
+                                );
+                              },
+                            )
+                          : const Center(
+                              child: Text('No items found'),
+                            ),
+                    ),
                   ],
                 ),
               );
@@ -102,7 +127,7 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
             (BuildContext context, MenuController controller, Widget? child) {
           return ActionChip.elevated(
             avatar: Icon(icon),
-            label: Text(items.length.toString()),
+            label: Text(incomingConnectionList.length.toString()),
             onPressed: () {
               if (controller.isOpen) {
                 controller.close();

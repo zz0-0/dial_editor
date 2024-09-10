@@ -6,7 +6,7 @@ class ConvertStringToLineUseCase {
 
   ConvertStringToLineUseCase(this._nodeRepository);
 
-  Inline convertLine(String value) {
+  Inline call(String value) {
     return _nodeRepository.convert(value);
   }
 }
