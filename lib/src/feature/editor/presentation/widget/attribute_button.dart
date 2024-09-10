@@ -6,10 +6,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum AttributeType { key, incoming, outgoing }
 
+enum NodeType { all, file, block, inline }
+
 class AttributeButton extends ConsumerStatefulWidget {
   final AttributeType type;
   final Node node;
-  const AttributeButton(this.type, this.node, {super.key});
+
+  const AttributeButton(
+    this.type,
+    this.node, {
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -22,6 +29,7 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
     late final IconData icon;
     final List<Connection> items =
         ref.watch(nodeIncomingConnectionProvider(widget.node.key));
+    final Set<NodeType> filters = {};
 
     if (widget.type == AttributeType.key) {
       icon = Icons.outlined_flag;
@@ -49,9 +57,42 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
             child: const Text('Add item'),
             onPressed: () {
               Scaffold.of(context).showBottomSheet(
-                (context) => Container(
-                  height: 200,
-                  color: Colors.red,
+                (context) => Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(labelText: 'Search'),
+                          ),
+                        ),
+                        ElevatedButton(
+                          child: const Text('Close'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 5,
+                      children: NodeType.values
+                          .map(
+                            (type) => FilterChip(
+                              label: Text(type.toString().split('.').last),
+                              selected: filters.contains(type),
+                              onSelected: (selected) {
+                                if (selected) {
+                                  filters.add(type);
+                                } else {
+                                  filters.remove(type);
+                                }
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
                 ),
               );
             },

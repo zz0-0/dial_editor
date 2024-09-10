@@ -7,22 +7,27 @@ import 'package:flutter/material.dart';
 base class HeadingBlock extends Block {
   int level;
 
-  HeadingBlock({required super.key, required this.level}) {
+  HeadingBlock({
+    required super.key,
+    super.parentKey,
+    required this.level,
+  }) {
     type = MarkdownElement.headingBlock.type;
   }
 
   factory HeadingBlock.fromMap(Map<String, dynamic> map) {
-    return HeadingBlock(
-      key: map['key'] as GlobalKey<EditableTextState>,
-      level: map['level'] as int,
+    final block = HeadingBlock(
+      key: GlobalKey(debugLabel: map['key'] as String),
+      parentKey: map['parentKey'] != null
+          ? GlobalKey(debugLabel: map['parentKey'] as String)
+          : null,
+      level: map['level'] as int? ?? 1,
     );
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'type': type,
-    };
+    block.children = map['children'] != null
+        ? (map['children'] as List)
+            .map((child) => Node.fromMap(child as Map<String, dynamic>))
+            .toList()
+        : [];
+    return block;
   }
 }

@@ -2,7 +2,7 @@ enum MarkdownElement {
   document,
   node,
   block,
-  inlne,
+  inline,
   headingBlock,
   heading,
   orderedListBlock,
@@ -41,7 +41,7 @@ extension MarkdownElementExtension on MarkdownElement {
         return 'node';
       case MarkdownElement.block:
         return 'block';
-      case MarkdownElement.inlne:
+      case MarkdownElement.inline:
         return 'inline';
       case MarkdownElement.headingBlock:
         return 'heading_block';

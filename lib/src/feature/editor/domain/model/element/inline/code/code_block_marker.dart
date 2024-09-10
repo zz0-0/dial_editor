@@ -8,8 +8,15 @@ base class CodeBlockMarker extends Inline {
   String language = '';
 
   CodeBlockMarker({
-    required super.rawText,
     required super.key,
+    super.parentKey,
+    required super.rawText,
+    super.text,
+    super.textHeight,
+    super.isBlockStart,
+    super.isEditing,
+    super.isExpanded,
+    super.depth,
   }) {
     type = MarkdownElement.codeBlockMarker.type;
   }
@@ -35,8 +42,17 @@ base class CodeBlockMarker extends Inline {
 
   factory CodeBlockMarker.fromMap(Map<String, dynamic> map) {
     return CodeBlockMarker(
-      key: map['key'] as GlobalKey<EditableTextState>,
+      key: GlobalKey(debugLabel: map['key'] as String),
+      parentKey: map['parentKey'] != null
+          ? GlobalKey(debugLabel: map['parentKey'] as String)
+          : null,
       rawText: map['rawText'] as String,
+      text: map['text'] as String,
+      textHeight: map['textHeight'] as double?,
+      isBlockStart: map['isBlockStart'] as bool,
+      isEditing: map['isEditing'] as bool,
+      isExpanded: map['isExpanded'] as bool,
+      depth: map['depth'] as int,
     );
   }
 
@@ -44,7 +60,7 @@ base class CodeBlockMarker extends Inline {
   Map<String, dynamic> toMap() {
     return {
       ...super.toMap(),
-      'type': type,
+      'language': language,
     };
   }
 }

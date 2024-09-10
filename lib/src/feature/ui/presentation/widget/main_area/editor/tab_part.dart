@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dial_editor/src/core/provider/ui/editor_provder.dart';
-// import 'package:dial_editor/src/feature/editor/presentation/widget/attribute_button.dart';
 import 'package:dial_editor/src/feature/ui/presentation/widget/main_area/editor/canvas_view.dart';
 import 'package:dial_editor/src/feature/ui/presentation/widget/main_area/editor/file_view.dart';
 import 'package:flutter/material.dart';

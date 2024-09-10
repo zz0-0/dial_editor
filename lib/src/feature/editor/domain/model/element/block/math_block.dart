@@ -5,19 +5,25 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:flutter/material.dart';
 
 base class MathBlock extends Block {
-  MathBlock({required super.key}) {
+  MathBlock({
+    required super.key,
+    super.parentKey,
+  }) {
     type = MarkdownElement.mathBlock.type;
   }
 
   factory MathBlock.fromMap(Map<String, dynamic> map) {
-    return MathBlock(key: map['key'] as GlobalKey<EditableTextState>);
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'type': type,
-    };
+    final block = MathBlock(
+      key: GlobalKey(debugLabel: map['key'] as String),
+      parentKey: map['parentKey'] != null
+          ? GlobalKey(debugLabel: map['parentKey'] as String)
+          : null,
+    );
+    block.children = map['children'] != null
+        ? (map['children'] as List)
+            .map((child) => Node.fromMap(child as Map<String, dynamic>))
+            .toList()
+        : [];
+    return block;
   }
 }

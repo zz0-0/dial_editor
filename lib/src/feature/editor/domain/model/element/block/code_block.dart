@@ -5,21 +5,29 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:flutter/material.dart';
 
 base class CodeBlock extends Block {
-  String language = '';
+  String? language;
 
-  CodeBlock({required super.key}) {
+  CodeBlock({
+    required super.key,
+    super.parentKey,
+    this.language,
+  }) {
     type = MarkdownElement.codeBlock.type;
   }
 
   factory CodeBlock.fromMap(Map<String, dynamic> map) {
-    return CodeBlock(key: map['key'] as GlobalKey<EditableTextState>);
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      ...super.toMap(),
-      'type': type,
-    };
+    final block = CodeBlock(
+      key: GlobalKey(debugLabel: map['key'] as String),
+      parentKey: map['parentKey'] != null
+          ? GlobalKey(debugLabel: map['parentKey'] as String)
+          : null,
+      language: map['language'] as String?,
+    );
+    block.children = map['children'] != null
+        ? (map['children'] as List)
+            .map((child) => Node.fromMap(child as Map<String, dynamic>))
+            .toList()
+        : [];
+    return block;
   }
 }

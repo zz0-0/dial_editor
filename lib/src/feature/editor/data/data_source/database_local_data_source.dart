@@ -60,8 +60,7 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
       finder: Finder(filter: Filter.equals('filePath', file.path)),
     );
     if (result.isNotEmpty) {
-      // TODO: change back to true
-      return (result.first.key, false);
+      return (result.first.key, true);
     } else {
       final uuid = const Uuid().v4();
       final fileMetadata = await _getFileMetadata(file);
@@ -71,7 +70,6 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
       );
       return (uuid, false);
     }
-    // return (const Uuid().v4(), false);
   }
 
   Future<Map<String, dynamic>> _getFileMetadata(File file) async {

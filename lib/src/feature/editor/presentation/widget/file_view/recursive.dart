@@ -29,14 +29,16 @@ class _RecursiveState extends ConsumerState<Recursive> {
       ref
           .read(nodeListStateNotifierProvider.notifier)
           .insertBlockNodeIntoMap(widget.node.key, widget.node as Block);
-      return MouseRegion(
-        onEnter: (_) {
-          setState(() => isHovering = true);
-          controller.show();
-        },
-        onExit: (_) {
-          setState(() => isHovering = false);
-          controller.hide();
+      return InkWell(
+        onTap: () {},
+        onHover: (isHovering) {
+          if (isHovering) {
+            setState(() => isHovering = true);
+            controller.show();
+          } else {
+            setState(() => isHovering = false);
+            controller.hide();
+          }
         },
         child: OverlayPortal(
           controller: controller,
@@ -46,7 +48,7 @@ class _RecursiveState extends ConsumerState<Recursive> {
             final Offset position =
                 renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
             return Positioned(
-              top: position.dy - 10,
+              top: position.dy - 30,
               right: 10,
               child: MouseRegion(
                 onEnter: (_) {
@@ -80,26 +82,17 @@ class _RecursiveState extends ConsumerState<Recursive> {
               ),
             );
           },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
-            curve: Curves.easeInOut,
-            padding: EdgeInsets.all(isHovering ? 4 : 0),
-            decoration: BoxDecoration(
-              color: isHovering ? Colors.black12 : null,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: (widget.node as Block).children.map((child) {
-                final widget = Recursive(child, currentIndex);
-                if (child is Block) {
-                  currentIndex += child.children.length;
-                } else {
-                  currentIndex++;
-                }
-                return widget;
-              }).toList(),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: (widget.node as Block).children.map((child) {
+              final widget = Recursive(child, currentIndex);
+              if (child is Block) {
+                currentIndex += child.children.length;
+              } else {
+                currentIndex++;
+              }
+              return widget;
+            }).toList(),
           ),
         ),
       );
@@ -147,15 +140,16 @@ class _RecursiveState extends ConsumerState<Recursive> {
     int currentIndex,
   ) {
     return _shouldExpanded(ref, inline)
-        ? MouseRegion(
-            hitTestBehavior: HitTestBehavior.translucent,
-            onEnter: (_) {
-              setState(() => isInlineHovering = true);
-              inlineController.show();
-            },
-            onExit: (_) {
-              setState(() => isInlineHovering = false);
-              inlineController.hide();
+        ? InkWell(
+            onTap: () {},
+            onHover: (isInlineHovering) {
+              if (isInlineHovering) {
+                setState(() => isInlineHovering = true);
+                inlineController.show();
+              } else {
+                setState(() => isInlineHovering = false);
+                inlineController.hide();
+              }
             },
             child: OverlayPortal(
               controller: inlineController,

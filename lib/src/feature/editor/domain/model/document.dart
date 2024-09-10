@@ -40,14 +40,13 @@ class Document {
 
   factory Document.fromMap(Map<String, dynamic> map) {
     final document = Document(uuid: map['uuid'] as String);
-    final List<String> nodeKeyListData = map['nodeKeyList'] as List<String>;
     final Map<String, dynamic> nodeMapData =
         map['nodeMap'] as Map<String, dynamic>;
-    for (final nodeKeyItem in nodeKeyListData) {
-      final nodeData = nodeMapData[nodeKeyItem] as Map<String, dynamic>;
-      final node = Node.fromMap(nodeData);
+    nodeMapData.forEach((key, value) {
+      final node = Node.fromMap(value as Map<String, dynamic>);
       document.addNode(node);
-    }
+    });
+
     return document;
   }
 
@@ -55,7 +54,7 @@ class Document {
     return {
       'type': type,
       'uuid': uuid,
-      'nodeMap': nodeMap.map((key, value) => MapEntry(key, value)),
+      'nodeMap': nodeMap.map((key, value) => MapEntry(key, value.toMap())),
       'nodeKeyList': nodeKeyList,
     };
   }

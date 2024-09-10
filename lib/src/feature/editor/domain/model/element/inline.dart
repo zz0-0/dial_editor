@@ -18,6 +18,7 @@ base class Inline extends Node {
 
   Inline({
     required super.key,
+    super.parentKey,
     required this.rawText,
     this.text = '',
     this.textHeight,
@@ -27,11 +28,11 @@ base class Inline extends Node {
     this.depth = 0,
   }) {
     controller.text = rawText;
-    type = MarkdownElement.inlne.type;
+    type = MarkdownElement.inline.type;
   }
 
   RenderInstruction render() {
-    return TextRenderInstruction(rawText, MarkdownElement.inlne);
+    return TextRenderInstruction(rawText, MarkdownElement.inline);
   }
 
   Inline createNewLine() {
@@ -43,21 +44,9 @@ base class Inline extends Node {
     return "$rawText\n";
   }
 
-  factory Inline.fromMap(Map<String, dynamic> map) => Inline(
-        key: map['key'] as GlobalKey<EditableTextState>,
-        rawText: map['rawText'] as String,
-        text: map['text'] as String,
-        textHeight: map['textHeight'] as double?,
-        isBlockStart: map['isBlockStart'] as bool,
-        isEditing: map['isEditing'] as bool,
-        isExpanded: map['isExpanded'] as bool,
-        depth: map['depth'] as int,
-      );
-
   @override
   Map<String, dynamic> toMap() => {
         ...super.toMap(),
-        'type': type,
         'rawText': rawText,
         'text': text,
         'textHeight': textHeight,

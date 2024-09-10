@@ -33,7 +33,9 @@ class DocumentRepositoryImpl implements DocumentRepository {
           return databaseLocalDataSource.fetchDocument(value2.$1);
         } else {
           final String input = value.readAsStringSync();
-          return DocumentCodec(value2.$1).encode(input);
+          final document = DocumentCodec(value2.$1).encode(input);
+          databaseLocalDataSource.saveDocument(document);
+          return document;
         }
       });
     });
