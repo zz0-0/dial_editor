@@ -1,3 +1,6 @@
+// import 'package:animated_tree_view/animated_tree_view.dart';
+// import 'package:animated_tree_view/tree_view/tree_view.dart';
+import 'package:animated_tree_view/animated_tree_view.dart' as atv;
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
@@ -29,8 +32,8 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
     late final IconData icon;
     final List<Connection> incomingConnectionList =
         ref.watch(nodeIncomingConnectionProvider(widget.node.key));
-    final List<Document> documentList =
-        ref.watch(documentListStateNotifierProvider);
+    final atv.TreeNode tree =
+        ref.read(documentListStateNotifierProvider.notifier).buildTree();
     final Set<NodeType> filters = {};
 
     if (widget.type == AttributeType.key) {
@@ -95,19 +98,17 @@ class _AttributeButtonState extends ConsumerState<AttributeButton> {
                           .toList(),
                     ),
                     Expanded(
-                      child: documentList.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: documentList.length,
-                              itemBuilder: (context, index) {
+                      child: tree.children.isNotEmpty
+                          ? atv.TreeView.simple(
+                              tree: tree,
+                              builder: (context, item) {
                                 return ListTile(
+                                  leading: Checkbox(
+                                    value: false,
+                                    onChanged: (value) {},
+                                  ),
                                   title: Text(
-                                    ref
-                                        .watch(
-                                          fileMetadataStateNotiferProvider(
-                                            documentList[index].uuid,
-                                          ),
-                                        )[0]
-                                        .name,
+                                    '${item.level} ${item.key} ${item.data.runtimeType} ${item.data}',
                                   ),
                                   onTap: () {},
                                 );
