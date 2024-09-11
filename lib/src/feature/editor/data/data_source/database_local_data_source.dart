@@ -80,7 +80,7 @@ class DatabaseLocalDataSourceImpl implements DatabaseLocalDataSource {
     return FileMetadata(
       size: stat.size,
       path: file.path,
-      name: file.path.split('/').last,
+      name: file.path.split(Platform.pathSeparator).last,
       created: stat.changed.toIso8601String(),
       modified: stat.modified.toIso8601String(),
     );
