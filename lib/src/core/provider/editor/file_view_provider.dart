@@ -114,6 +114,17 @@ final nodeIncomingConnectionProvider =
       .toList();
 });
 
+final nodeOutgoingConnectionProvider =
+    Provider.family<List<Connection>, GlobalKey>((ref, key) {
+  if (ref.watch(nodeStateProvider(key)).isEmpty) return [];
+  return ref
+      .watch(nodeStateProvider(key))[0]!
+      .attribute
+      .connections
+      .values
+      .toList();
+});
+
 final fileMetaRepositoryProvider = FutureProvider((ref) async {
   final databaseLocalDataSource =
       await ref.watch(databaseLocalDataSourceProvider.future);

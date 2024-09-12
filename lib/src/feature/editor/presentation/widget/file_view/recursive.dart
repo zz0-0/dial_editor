@@ -18,10 +18,9 @@ class Recursive extends ConsumerStatefulWidget {
 }
 
 class _RecursiveState extends ConsumerState<Recursive> {
-  bool isHovering = false;
-  bool isInlineHovering = false;
-  final controller = OverlayPortalController();
-  final inlineController = OverlayPortalController();
+  bool isTapping = false;
+  bool isInlineTapping = false;
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     int currentIndex = widget.index;
@@ -30,69 +29,38 @@ class _RecursiveState extends ConsumerState<Recursive> {
           .read(nodeListStateNotifierProvider.notifier)
           .insertBlockNodeIntoMap(widget.node.key, widget.node as Block);
       return InkWell(
+        focusNode: focusNode,
         onTap: () {},
-        onHover: (isHovering) {
-          if (isHovering) {
-            setState(() => isHovering = true);
-            controller.show();
-          } else {
-            setState(() => isHovering = false);
-            controller.hide();
-          }
-        },
-        child: OverlayPortal(
-          controller: controller,
-          overlayChildBuilder: (context1) {
-            final RenderBox? renderBox =
-                context.findRenderObject() as RenderBox?;
-            final Offset position =
-                renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
-            return Positioned(
-              top: position.dy - 30,
-              right: 10,
-              child: MouseRegion(
-                onEnter: (_) {
-                  setState(() => isHovering = true);
-                  controller.show();
-                },
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2.0,
-                        vertical: 1,
-                      ),
-                      child: AttributeButton(
-                        AttributeType.key,
-                        widget.node,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2.0,
-                        vertical: 1,
-                      ),
-                      child: AttributeButton(
-                        AttributeType.incoming,
-                        widget.node,
-                      ),
-                    ),
-                  ],
+        child: TapRegion(
+          onTapInside: (event) {
+            setState(() {
+              isTapping = true;
+            });
+          },
+          onTapOutside: (event) {
+            focusNode.unfocus();
+            setState(() {
+              isTapping = false;
+            });
+          },
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: (widget.node as Block).children.map((child) {
+                    final widget = Recursive(child, currentIndex);
+                    if (child is Block) {
+                      currentIndex += child.children.length;
+                    } else {
+                      currentIndex++;
+                    }
+                    return widget;
+                  }).toList(),
                 ),
               ),
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: (widget.node as Block).children.map((child) {
-              final widget = Recursive(child, currentIndex);
-              if (child is Block) {
-                currentIndex += child.children.length;
-              } else {
-                currentIndex++;
-              }
-              return widget;
-            }).toList(),
+              if (isTapping) AttributeButton(widget.node),
+            ],
           ),
         ),
       );
@@ -142,66 +110,38 @@ class _RecursiveState extends ConsumerState<Recursive> {
     return _shouldExpanded(ref, inline)
         ? InkWell(
             onTap: () {},
-            onHover: (isInlineHovering) {
-              if (isInlineHovering) {
-                setState(() => isInlineHovering = true);
-                inlineController.show();
-              } else {
-                setState(() => isInlineHovering = false);
-                inlineController.hide();
-              }
-            },
-            child: OverlayPortal(
-              controller: inlineController,
-              overlayChildBuilder: (context1) {
-                final RenderBox? renderBox =
-                    context.findRenderObject() as RenderBox?;
-                final size = renderBox?.size;
-                final Offset position =
-                    renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
-                return Positioned(
-                  top: position.dy + (size!.height / 2) - 35,
-                  right: 200,
-                  child: MouseRegion(
-                    hitTestBehavior: HitTestBehavior.translucent,
-                    onEnter: (_) {
-                      setState(() => isInlineHovering = true);
-                      inlineController.show();
-                    },
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2.0,
-                            vertical: 1,
-                          ),
-                          child: AttributeButton(
-                            AttributeType.key,
-                            inline,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2.0,
-                            vertical: 1,
-                          ),
-                          child: AttributeButton(
-                            AttributeType.incoming,
-                            inline,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+            child: TapRegion(
+              onTapInside: (event) {
+                setState(() {
+                  isInlineTapping = true;
+                });
+              },
+              onTapOutside: (event) {
+                focusNode.unfocus();
+                setState(() {
+                  isInlineTapping = false;
+                });
               },
               child: Row(
                 children: [
                   LineNumber(inline, currentIndex),
                   Expand(inline),
                   Expanded(
-                    child:
-                        inline.isEditing ? Editing(inline) : Rendering(inline),
+                    child: inline.isEditing
+                        ? Row(
+                            children: [
+                              Expanded(
+                                child: Editing(inline),
+                              ),
+                              if (isInlineTapping) AttributeButton(inline),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(child: Rendering(inline)),
+                              if (isInlineTapping) AttributeButton(inline),
+                            ],
+                          ),
                   ),
                 ],
               ),

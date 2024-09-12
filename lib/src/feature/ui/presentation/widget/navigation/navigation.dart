@@ -104,6 +104,7 @@ class NavigationNavigation extends ConsumerWidget {
                   content: Text(NavigationEnum.file.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
+                    splashRadius: 20,
                     icon: NavigationEnum.file.selectedIcon,
                     onPressed: () {
                       navigationViewModel.openFileSidePanel(ref);
@@ -122,6 +123,7 @@ class NavigationNavigation extends ConsumerWidget {
                   content: Text(NavigationEnum.search.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
+                    splashRadius: 20,
                     icon: NavigationEnum.search.selectedIcon,
                     onPressed: () {
                       navigationViewModel.openSearchSidePanel(ref);
@@ -140,6 +142,7 @@ class NavigationNavigation extends ConsumerWidget {
                   content: Text(NavigationEnum.setting.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
+                    splashRadius: 20,
                     icon: NavigationEnum.setting.selectedIcon,
                     onPressed: () {
                       navigationViewModel.openSettingSidePanel(ref);

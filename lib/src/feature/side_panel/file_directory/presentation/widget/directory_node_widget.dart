@@ -45,6 +45,7 @@ class DirectoryNodeWidget extends ConsumerWidget {
               )
             else
               IconButton(
+                splashRadius: 20,
                 onPressed: () {
                   directoryNodeViewModel.expandNode(ref, key!);
                 },

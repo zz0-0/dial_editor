@@ -56,6 +56,7 @@ class _TabPartState extends ConsumerState<TabPart>
               children: [
                 Text(file.split(Platform.pathSeparator).last),
                 IconButton(
+                  splashRadius: 20,
                   icon: const Icon(Icons.close),
                   onPressed: () {
                     ref.read(openedFilesProvider.notifier).removeFile(file);

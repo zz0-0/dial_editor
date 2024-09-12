@@ -19,15 +19,17 @@ class TreeNodeStateNotifier extends StateNotifier<TreeNode> {
       final metadata =
           ref.read(fileMetadataStateNotiferProvider(document.uuid));
       node.addAll(buildTreeNode(document.nodeMap));
-      node.data = metadata[0].name;
-      root.add(node);
+      if (metadata.isNotEmpty) {
+        node.data = metadata[0].name;
+        root.add(node);
+      }
     }
     state = root;
   }
 
-  void updateTree(TreeNode tree) {
-    state = tree;
-  }
+  // void updateTree(TreeNode tree) {
+  //   state = tree;
+  // }
 
   Iterable<atv.Node> buildTreeNode(Map<String, Node> nodeMap) {
     return nodeMap.entries.map((entry) {

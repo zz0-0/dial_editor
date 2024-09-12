@@ -87,6 +87,7 @@ class SettingEnumSideBar extends ConsumerWidget {
                   content: Text(SettingEnum.appearance.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
+                    splashRadius: 20,
                     icon: SettingEnum.appearance.selectedIcon,
                     onPressed: () {},
                   ),
@@ -103,6 +104,7 @@ class SettingEnumSideBar extends ConsumerWidget {
                   content: Text(SettingEnum.keyboard.text),
                   preferredDirection: AxisDirection.right,
                   child: IconButton(
+                    splashRadius: 20,
                     icon: SettingEnum.keyboard.selectedIcon,
                     onPressed: () {},
                   ),
