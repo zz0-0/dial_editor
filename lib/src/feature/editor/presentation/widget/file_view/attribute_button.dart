@@ -33,8 +33,12 @@ class AttributeButton extends ConsumerWidget {
     List<Connection> incomingConnections,
     List<Connection> outgoingConnections,
   ) {
-    Scaffold.of(context).showBottomSheet(
-      (BuildContext context) {
+    showModalBottomSheet(
+      showDragHandle: true,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
         return AttributeBottomSheet(
           incomingConnections: incomingConnections,
           outgoingConnections: outgoingConnections,

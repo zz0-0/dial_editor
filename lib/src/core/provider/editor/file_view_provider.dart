@@ -98,8 +98,8 @@ final getAllDocumentElementUseCaseProvider =
   return GetAllDocumentElementUseCase(repository);
 });
 
-final documentListStateNotifierProvider =
-    StateNotifierProvider<DocumentListStateNotifier, List<Document>>((ref) {
+final documentListStateNotifierProvider = StateNotifierProvider<
+    DocumentListStateNotifier, AsyncValue<List<Document>>>((ref) {
   return DocumentListStateNotifier(ref);
 });
 
@@ -140,7 +140,9 @@ final getFileMetadataUseCaseProvider =
 });
 
 final fileMetadataStateNotiferProvider = StateNotifierProvider.family<
-    FileMetadataStateNotifer, List<FileMetadata>, String>((ref, key) {
+    FileMetadataStateNotifer,
+    AsyncValue<List<FileMetadata>>,
+    String>((ref, key) {
   return FileMetadataStateNotifer(ref, key);
 });
 
@@ -149,6 +151,7 @@ final checkboxProvider = StateProvider.family<bool?, String>((ref, key) {
 });
 
 final treeNodeProvider =
-    StateNotifierProvider<TreeNodeStateNotifier, atv.TreeNode>((ref) {
+    StateNotifierProvider<TreeNodeStateNotifier, AsyncValue<atv.TreeNode>>(
+        (ref) {
   return TreeNodeStateNotifier(ref);
 });

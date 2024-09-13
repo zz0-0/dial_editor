@@ -4,32 +4,48 @@ import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TreeNodeStateNotifier extends StateNotifier<TreeNode> {
+class TreeNodeStateNotifier extends StateNotifier<AsyncValue<TreeNode>> {
   Ref ref;
 
-  TreeNodeStateNotifier(this.ref) : super(TreeNode()) {
+  TreeNodeStateNotifier(this.ref) : super(const AsyncValue.loading()) {
     buildTree();
   }
 
   void buildTree() {
     final atv.TreeNode root = atv.TreeNode();
-    final documentList = ref.watch(documentListStateNotifierProvider);
-    for (final Document document in documentList) {
-      final atv.TreeNode node = atv.TreeNode(key: document.uuid);
-      final metadata =
-          ref.read(fileMetadataStateNotiferProvider(document.uuid));
-      node.addAll(buildTreeNode(document.nodeMap));
-      if (metadata.isNotEmpty) {
-        node.data = metadata[0].name;
-        root.add(node);
-      }
-    }
-    state = root;
+    final documentList = ref.read(documentListStateNotifierProvider);
+    documentList.when(
+      data: (data) {
+        for (final Document document in data) {
+          final atv.TreeNode node = atv.TreeNode(key: document.uuid);
+          final metadata =
+              ref.read(fileMetadataStateNotiferProvider(document.uuid));
+          node.addAll(buildTreeNode(document.nodeMap));
+          metadata.when(
+            data: (data1) {
+              if (data1.isNotEmpty) {
+                node.data = data1[0].name;
+                root.add(node);
+              }
+            },
+            error: (error, stackTrace) {
+              state = AsyncValue.error(error, stackTrace);
+            },
+            loading: () {
+              state = const AsyncValue.loading();
+            },
+          );
+        }
+        state = AsyncValue.data(root);
+      },
+      error: (error, stackTrace) {
+        state = AsyncValue.error(error, stackTrace);
+      },
+      loading: () {
+        state = const AsyncValue.loading();
+      },
+    );
   }
-
-  // void updateTree(TreeNode tree) {
-  //   state = tree;
-  // }
 
   Iterable<atv.Node> buildTreeNode(Map<String, Node> nodeMap) {
     return nodeMap.entries.map((entry) {

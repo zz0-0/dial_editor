@@ -106,36 +106,76 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
               )
               .toList(),
         ),
+
         Expanded(
-          child: tree.children.isNotEmpty
-              ? atv.TreeView.simple(
-                  tree: tree,
-                  shrinkWrap: true,
-                  showRootNode: false,
-                  builder: (BuildContext context, atv.TreeNode<dynamic> node) {
-                    // Apply filters and search
-                    if (_shouldShowNode(node)) {
-                      return ListTile(
-                        leading: Checkbox(
-                          value: ref.watch(checkboxProvider(node.key)),
-                          onChanged: (value) {
-                            ref
-                                .read(checkboxProvider(node.key).notifier)
-                                .update((state) => value);
-                          },
-                        ),
-                        title: Text(node.data.toString()),
-                        onTap: () {},
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  },
-                )
-              : const Center(
-                  child: Text('No items found'),
-                ),
+          child: tree.when(
+            data: (data) {
+              return atv.TreeView.simple(
+                tree: data,
+                shrinkWrap: true,
+                showRootNode: false,
+                builder: (BuildContext context, atv.TreeNode<dynamic> node) {
+                  if (_shouldShowNode(node)) {
+                    return ListTile(
+                      leading: Checkbox(
+                        value: ref.watch(checkboxProvider(node.key)),
+                        onChanged: (value) {
+                          ref
+                              .read(checkboxProvider(node.key).notifier)
+                              .update((state) => value);
+                        },
+                      ),
+                      title: Text(node.data.toString()),
+                      onTap: () {},
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              );
+            },
+            error: (error, stackTrace) {
+              return Center(
+                child: Text('Error: $error'),
+              );
+            },
+            loading: () {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
         ),
+        // Expanded(
+        //   child: tree.children.isNotEmpty
+        //       ? atv.TreeView.simple(
+        //           tree: tree,
+        //           shrinkWrap: true,
+        //           showRootNode: false,
+        //           builder: (BuildContext context, atv.TreeNode<dynamic> node) {
+        //             // Apply filters and search
+        //             if (_shouldShowNode(node)) {
+        //               return ListTile(
+        //                 leading: Checkbox(
+        //                   value: ref.watch(checkboxProvider(node.key)),
+        //                   onChanged: (value) {
+        //                     ref
+        //                         .read(checkboxProvider(node.key).notifier)
+        //                         .update((state) => value);
+        //                   },
+        //                 ),
+        //                 title: Text(node.data.toString()),
+        //                 onTap: () {},
+        //               );
+        //             } else {
+        //               return const SizedBox.shrink();
+        //             }
+        //           },
+        //         )
+        //       : const Center(
+        //           child: Text('No items found'),
+        //         ),
+        // ),
       ],
     );
   }
