@@ -7,44 +7,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class TreeNodeStateNotifier extends StateNotifier<AsyncValue<TreeNode>> {
   Ref ref;
 
-  TreeNodeStateNotifier(this.ref) : super(const AsyncValue.loading()) {
+  TreeNodeStateNotifier(this.ref) : super(AsyncValue.data(TreeNode())) {
     buildTree();
   }
 
-  void buildTree() {
-    final atv.TreeNode root = atv.TreeNode();
-    final documentList = ref.read(documentListStateNotifierProvider);
-    documentList.when(
-      data: (data) {
-        for (final Document document in data) {
-          final atv.TreeNode node = atv.TreeNode(key: document.uuid);
-          final metadata =
-              ref.read(fileMetadataStateNotiferProvider(document.uuid));
-          node.addAll(buildTreeNode(document.nodeMap));
-          metadata.when(
-            data: (data1) {
-              if (data1.isNotEmpty) {
-                node.data = data1[0].name;
-                root.add(node);
-              }
-            },
-            error: (error, stackTrace) {
-              state = AsyncValue.error(error, stackTrace);
-            },
-            loading: () {
-              state = const AsyncValue.loading();
-            },
-          );
-        }
-        state = AsyncValue.data(root);
-      },
-      error: (error, stackTrace) {
-        state = AsyncValue.error(error, stackTrace);
-      },
-      loading: () {
-        state = const AsyncValue.loading();
-      },
-    );
+  Future<void> buildTree() async {
+    try {
+      state = const AsyncValue.loading();
+      await ref.read(documentListStateNotifierProvider.notifier).getList();
+      final documentList = ref.read(documentListStateNotifierProvider);
+      final atv.TreeNode root = atv.TreeNode();
+      for (final Document document in documentList) {
+        final atv.TreeNode node = atv.TreeNode(key: document.uuid);
+        await ref
+            .read(fileMetadataStateNotiferProvider(document.uuid).notifier)
+            .getFileMetadata();
+        node.addAll(buildTreeNode(document.nodeMap));
+        final metadata =
+            ref.read(fileMetadataStateNotiferProvider(document.uuid));
+        node.data = metadata[0].name;
+        root.add(node);
+      }
+      state = AsyncValue.data(root);
+    } catch (error, stackTrace) {
+      state = AsyncValue.error('Error', stackTrace);
+    }
   }
 
   Iterable<atv.Node> buildTreeNode(Map<String, Node> nodeMap) {

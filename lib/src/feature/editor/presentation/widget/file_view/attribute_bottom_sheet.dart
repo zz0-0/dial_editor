@@ -1,12 +1,13 @@
 import 'package:animated_tree_view/animated_tree_view.dart' as atv;
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
+import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum AttributeType { incoming, outgoing }
 
-enum NodeType { all, file, block, inline }
+enum NodeType { file, block, inline }
 
 class AttributeBottomSheet extends ConsumerStatefulWidget {
   final List<Connection> incomingConnections;
@@ -106,7 +107,6 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
               )
               .toList(),
         ),
-
         Expanded(
           child: tree.when(
             data: (data) {
@@ -146,36 +146,26 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
             },
           ),
         ),
-        // Expanded(
-        //   child: tree.children.isNotEmpty
-        //       ? atv.TreeView.simple(
-        //           tree: tree,
-        //           shrinkWrap: true,
-        //           showRootNode: false,
-        //           builder: (BuildContext context, atv.TreeNode<dynamic> node) {
-        //             // Apply filters and search
-        //             if (_shouldShowNode(node)) {
-        //               return ListTile(
-        //                 leading: Checkbox(
-        //                   value: ref.watch(checkboxProvider(node.key)),
-        //                   onChanged: (value) {
-        //                     ref
-        //                         .read(checkboxProvider(node.key).notifier)
-        //                         .update((state) => value);
-        //                   },
-        //                 ),
-        //                 title: Text(node.data.toString()),
-        //                 onTap: () {},
-        //               );
-        //             } else {
-        //               return const SizedBox.shrink();
-        //             }
-        //           },
-        //         )
-        //       : const Center(
-        //           child: Text('No items found'),
-        //         ),
-        // ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: const Text('Add and Close'),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text('Add and Continue'),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text('Clear'),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -197,8 +187,14 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
   }
 
   NodeType _getNodeType(atv.TreeNode node) {
-    if (node.level == 1) return NodeType.file;
-    if (node.level == 2) return NodeType.block;
-    return NodeType.inline;
+    if (node.data is! Block && node.toString().contains('md')) {
+      return NodeType.file;
+    } else if (node.data is Block) {
+      return NodeType.block;
+    } else if (node.data is! Block) {
+      return NodeType.inline;
+    } else {
+      return NodeType.inline;
+    }
   }
 }

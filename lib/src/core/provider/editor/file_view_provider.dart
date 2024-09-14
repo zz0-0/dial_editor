@@ -95,11 +95,12 @@ final toggleNodeExpansionKeyProvider = StateProvider<GlobalKey?>((ref) => null);
 final getAllDocumentElementUseCaseProvider =
     FutureProvider<GetAllDocumentElementUseCase>((ref) async {
   final repository = await ref.watch(documentRepositoryProvider.future);
+
   return GetAllDocumentElementUseCase(repository);
 });
 
-final documentListStateNotifierProvider = StateNotifierProvider<
-    DocumentListStateNotifier, AsyncValue<List<Document>>>((ref) {
+final documentListStateNotifierProvider =
+    StateNotifierProvider<DocumentListStateNotifier, List<Document>>((ref) {
   return DocumentListStateNotifier(ref);
 });
 
@@ -140,9 +141,7 @@ final getFileMetadataUseCaseProvider =
 });
 
 final fileMetadataStateNotiferProvider = StateNotifierProvider.family<
-    FileMetadataStateNotifer,
-    AsyncValue<List<FileMetadata>>,
-    String>((ref, key) {
+    FileMetadataStateNotifer, List<FileMetadata>, String>((ref, key) {
   return FileMetadataStateNotifer(ref, key);
 });
 
