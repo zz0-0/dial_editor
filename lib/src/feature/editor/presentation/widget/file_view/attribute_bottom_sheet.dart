@@ -10,11 +10,13 @@ enum AttributeType { incoming, outgoing }
 enum NodeType { file, block, inline }
 
 class AttributeBottomSheet extends ConsumerStatefulWidget {
-  final List<Connection> incomingConnections;
-  final List<Connection> outgoingConnections;
+  final GlobalKey nodeKey;
+  final Set<Connection> incomingConnections;
+  final Set<Connection> outgoingConnections;
 
   const AttributeBottomSheet({
     super.key,
+    required this.nodeKey,
     required this.incomingConnections,
     required this.outgoingConnections,
   });
@@ -27,6 +29,8 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
   AttributeType _attributeType = AttributeType.incoming;
   final Set<NodeType> _filters = <NodeType>{};
   String _searchQuery = '';
+  final Set<String> _incomingSelectNodes = <String>{};
+  final Set<String> _outgoingSelectNodes = <String>{};
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +127,19 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
                           ref
                               .read(checkboxProvider(node.key).notifier)
                               .update((state) => value);
+                          if (value!) {
+                            if (_attributeType == AttributeType.incoming) {
+                              _incomingSelectNodes.add(node.key);
+                            } else {
+                              _outgoingSelectNodes.add(node.key);
+                            }
+                          } else {
+                            if (_attributeType == AttributeType.incoming) {
+                              _incomingSelectNodes.remove(node.key);
+                            } else {
+                              _outgoingSelectNodes.remove(node.key);
+                            }
+                          }
                         },
                       ),
                       title: Text(node.data.toString()),
@@ -152,7 +169,45 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // TODO: Add connections
+                  if (_attributeType == AttributeType.incoming) {
+                    for (final node in _incomingSelectNodes) {
+                      ref
+                          .read(
+                            nodeIncomingConnectionProvider(widget.nodeKey)
+                                .notifier,
+                          )
+                          .addIncomingConnection(
+                            Connection(
+                              sourceDocumentUuid: '',
+                              targetDocumentUuid: '',
+                              connectionKey: GlobalKey().toString(),
+                              sourceNodeKey: '',
+                              targetNodeKey: node,
+                            ),
+                          );
+                    }
+                  } else {
+                    for (final node in _outgoingSelectNodes) {
+                      ref
+                          .read(
+                            nodeOutgoingConnectionProvider(widget.nodeKey)
+                                .notifier,
+                          )
+                          .addOutgoingConnections(
+                            Connection(
+                              sourceDocumentUuid: '',
+                              targetDocumentUuid: '',
+                              connectionKey: GlobalKey().toString(),
+                              sourceNodeKey: node,
+                              targetNodeKey: '',
+                            ),
+                          );
+                    }
+                  }
+                  Navigator.pop(context);
+                },
                 child: const Text('Add and Close'),
               ),
               TextButton(
@@ -160,7 +215,13 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
                 child: const Text('Add and Continue'),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (_attributeType == AttributeType.incoming) {
+                    _incomingSelectNodes.clear();
+                  } else {
+                    _outgoingSelectNodes.clear();
+                  }
+                },
                 child: const Text('Clear'),
               ),
             ],

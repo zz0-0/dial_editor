@@ -18,7 +18,9 @@ import 'package:dial_editor/src/feature/editor/domain/use_case/update_node_style
 import 'package:dial_editor/src/feature/editor/presentation/helper/render_adapter.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/document_list_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/file_metadata_state_notifer.dart';
+import 'package:dial_editor/src/feature/editor/presentation/view_model/node_incoming_connection_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/node_list_state_notifier.dart';
+import 'package:dial_editor/src/feature/editor/presentation/view_model/node_outgoing_connection_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/node_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/tree_node_state_notifier.dart';
 import 'package:flutter/material.dart';
@@ -104,26 +106,40 @@ final documentListStateNotifierProvider =
   return DocumentListStateNotifier(ref);
 });
 
-final nodeIncomingConnectionProvider =
-    Provider.family<List<Connection>, GlobalKey>((ref, key) {
-  if (ref.watch(nodeStateProvider(key)).isEmpty) return [];
-  return ref
-      .watch(nodeStateProvider(key))[0]!
-      .attribute
-      .connections
-      .values
-      .toList();
+// final nodeIncomingConnectionProvider =
+//     StateProvider.family<Set<Connection>, GlobalKey>((ref, key) {
+//   if (ref.watch(nodeStateProvider(key)).isEmpty) return {};
+//   return ref
+//       .watch(nodeStateProvider(key))[0]!
+//       .attribute
+//       .connections
+//       .values
+//       .toSet();
+// });
+
+// final nodeOutgoingConnectionProvider =
+//     StateProvider.family<Set<Connection>, GlobalKey>((ref, key) {
+//   if (ref.watch(nodeStateProvider(key)).isEmpty) return {};
+//   return ref
+//       .watch(nodeStateProvider(key))[0]!
+//       .attribute
+//       .connections
+//       .values
+//       .toSet();
+// });
+
+final nodeIncomingConnectionProvider = StateNotifierProvider.family<
+    NodeIncomingConnectionStateNotifier,
+    Set<Connection>,
+    GlobalKey>((ref, key) {
+  return NodeIncomingConnectionStateNotifier(ref, key);
 });
 
-final nodeOutgoingConnectionProvider =
-    Provider.family<List<Connection>, GlobalKey>((ref, key) {
-  if (ref.watch(nodeStateProvider(key)).isEmpty) return [];
-  return ref
-      .watch(nodeStateProvider(key))[0]!
-      .attribute
-      .connections
-      .values
-      .toList();
+final nodeOutgoingConnectionProvider = StateNotifierProvider.family<
+    NodeOutgoingConnectionStateNotifier,
+    Set<Connection>,
+    GlobalKey>((ref, key) {
+  return NodeOutgoingConnectionStateNotifier(ref, key);
 });
 
 final fileMetaRepositoryProvider = FutureProvider((ref) async {

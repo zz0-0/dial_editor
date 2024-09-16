@@ -12,9 +12,9 @@ class AttributeButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Connection> incomingConnectionList =
+    final Set<Connection> incomingConnectionList =
         ref.watch(nodeIncomingConnectionProvider(node.key));
-    final List<Connection> outgoingConnectionList =
+    final Set<Connection> outgoingConnectionList =
         ref.watch(nodeOutgoingConnectionProvider(node.key));
 
     return IconButton(
@@ -22,6 +22,7 @@ class AttributeButton extends ConsumerWidget {
       icon: const Icon(Icons.arrow_circle_right_outlined),
       onPressed: () => _showAttributeBottomSheet(
         context,
+        node.key,
         incomingConnectionList,
         outgoingConnectionList,
       ),
@@ -30,8 +31,9 @@ class AttributeButton extends ConsumerWidget {
 
   void _showAttributeBottomSheet(
     BuildContext context,
-    List<Connection> incomingConnections,
-    List<Connection> outgoingConnections,
+    GlobalKey key,
+    Set<Connection> incomingConnections,
+    Set<Connection> outgoingConnections,
   ) {
     showModalBottomSheet(
       showDragHandle: true,
@@ -40,6 +42,7 @@ class AttributeButton extends ConsumerWidget {
       context: context,
       builder: (context) {
         return AttributeBottomSheet(
+          nodeKey: key,
           incomingConnections: incomingConnections,
           outgoingConnections: outgoingConnections,
         );
