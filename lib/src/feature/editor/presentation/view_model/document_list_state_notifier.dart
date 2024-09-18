@@ -10,26 +10,6 @@ class DocumentListStateNotifier extends StateNotifier<List<Document>> {
   }
 
   Future<void> getList() async {
-    //   GetAllDocumentElementUseCase getAllDocumentElementUseCase;
-    //   print('getList');
-    //   ref.read(getAllDocumentElementUseCaseProvider).when(
-    //     data: (data) {
-    //       print('getList1');
-    //       getAllDocumentElementUseCase = data;
-    //       getAllDocumentElementUseCase().then((value) {
-    //         state = AsyncValue.data(value);
-    //       });
-    //     },
-    //     error: (error, stackTrace) {
-    //       print('getList2');
-    //       state = AsyncValue.error(error, stackTrace);
-    //     },
-    //     loading: () {
-    //       print('getList3');
-    //       state = const AsyncValue.loading();
-    //     },
-    //   );
-
     final getAllDocumentElementUseCase =
         await ref.read(getAllDocumentElementUseCaseProvider.future);
     final documents = await getAllDocumentElementUseCase();

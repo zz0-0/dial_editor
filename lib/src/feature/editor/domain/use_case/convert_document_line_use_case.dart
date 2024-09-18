@@ -2,11 +2,11 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
 
 class ConvertStringToLineUseCase {
-  final NodeRepository _nodeRepository;
+  final NodeRepository repository;
 
-  ConvertStringToLineUseCase(this._nodeRepository);
+  ConvertStringToLineUseCase(this.repository);
 
   Inline call(String value) {
-    return _nodeRepository.convert(value);
+    return repository.convert(value);
   }
 }

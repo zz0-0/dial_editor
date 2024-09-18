@@ -12,10 +12,12 @@ import 'package:dial_editor/src/feature/editor/domain/repository/node_repository
 import 'package:dial_editor/src/feature/editor/domain/use_case/convert_document_line_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/get_all_document_element_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/get_document_children_use_case.dart';
+import 'package:dial_editor/src/feature/editor/domain/use_case/get_document_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/get_file_metadata_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/save_document_use_case.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/update_node_style_use_case.dart';
 import 'package:dial_editor/src/feature/editor/presentation/helper/render_adapter.dart';
+import 'package:dial_editor/src/feature/editor/presentation/view_model/current_document_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/document_list_state_notifier.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/file_metadata_state_notifer.dart';
 import 'package:dial_editor/src/feature/editor/presentation/view_model/node_incoming_connection_state_notifier.dart';
@@ -101,6 +103,17 @@ final getAllDocumentElementUseCaseProvider =
   return GetAllDocumentElementUseCase(repository);
 });
 
+final getDocumentUseCaseProvider =
+    FutureProvider<GetDocumentUseCase>((ref) async {
+  final repository = await ref.watch(documentRepositoryProvider.future);
+  return GetDocumentUseCase(repository);
+});
+
+final currentDocumentStateNotifierProvider =
+    StateNotifierProvider<CurrentDocumentStateNotifier, Document?>((ref) {
+  return CurrentDocumentStateNotifier(ref);
+});
+
 final documentListStateNotifierProvider =
     StateNotifierProvider<DocumentListStateNotifier, List<Document>>((ref) {
   return DocumentListStateNotifier(ref);
@@ -170,3 +183,5 @@ final treeNodeProvider =
         (ref) {
   return TreeNodeStateNotifier(ref);
 });
+
+final currentDocumentProvider = StateProvider<Document?>((ref) => null);

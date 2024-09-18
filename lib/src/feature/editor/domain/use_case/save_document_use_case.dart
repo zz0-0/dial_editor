@@ -3,12 +3,12 @@ import 'package:dial_editor/src/feature/editor/domain/repository/document_reposi
 
 class SaveDocumentToFileUseCase {
   String input = '';
-  final DocumentRepository _documentRepository;
+  final DocumentRepository repository;
 
-  SaveDocumentToFileUseCase(this._documentRepository);
+  SaveDocumentToFileUseCase(this.repository);
 
   void saveDocumentToFile(String input) {
-    _documentRepository.saveDocumentToFile(input);
+    repository.saveDocumentToFile(input);
   }
 
   void saveNodeList(List<Node> nodeList) {

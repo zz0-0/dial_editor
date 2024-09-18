@@ -1,9 +1,9 @@
 import 'package:dial_editor/src/feature/editor/domain/repository/document_repository.dart';
 
 class LinkNodesUseCase {
-  final DocumentRepository documentRepository;
+  final DocumentRepository repository;
 
-  LinkNodesUseCase(this.documentRepository);
+  LinkNodesUseCase(this.repository);
 
   Future<void> linkNodes(
     String sourceDocumentUuid,
@@ -12,13 +12,13 @@ class LinkNodesUseCase {
     String targetNodeKey,
   ) async {
     final document =
-        await documentRepository.fetchDocumentFromDatabase(sourceDocumentUuid);
+        await repository.fetchDocumentFromDatabase(sourceDocumentUuid);
     document.addBidirectionalLink(
       targetDocumentUuid,
       sourceNodeKey,
       targetNodeKey,
     );
-    await documentRepository.saveDocumentToDatabase(document);
+    await repository.saveDocumentToDatabase(document);
   }
 
   Future<void> unlinkNodes(
@@ -27,8 +27,8 @@ class LinkNodesUseCase {
     String connectionKey,
   ) async {
     final document =
-        await documentRepository.fetchDocumentFromDatabase(sourceDocumentUuid);
+        await repository.fetchDocumentFromDatabase(sourceDocumentUuid);
     document.removeBidirectionalLink(sourceNodeKey, connectionKey);
-    await documentRepository.saveDocumentToDatabase(document);
+    await repository.saveDocumentToDatabase(document);
   }
 }

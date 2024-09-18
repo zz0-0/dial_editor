@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:animated_tree_view/animated_tree_view.dart' as atv;
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
@@ -29,11 +31,14 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
   AttributeType _attributeType = AttributeType.incoming;
   final Set<NodeType> _filters = <NodeType>{};
   String _searchQuery = '';
-  final Set<String> _incomingSelectNodes = <String>{};
-  final Set<String> _outgoingSelectNodes = <String>{};
+  final HashMap<String, String> _incomingSelectNodes = HashMap();
+  final HashMap<String, String> _outgoingSelectNodes = HashMap();
+
+  String currentDocumentUuid = '';
 
   @override
   Widget build(BuildContext context) {
+    currentDocumentUuid = ref.watch(currentDocumentStateNotifierProvider)!.uuid;
     return Column(
       children: [
         SegmentedButton<AttributeType>(
@@ -121,6 +126,8 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
                 builder: (BuildContext context, atv.TreeNode<dynamic> node) {
                   if (_shouldShowNode(node)) {
                     return ListTile(
+                      // TODO: Checkbox should be checked if the node is already connected
+                      // Need to check if the node is already connected for current node base on document uuid
                       leading: Checkbox(
                         value: ref.watch(checkboxProvider(node.key)),
                         onChanged: (value) {
@@ -129,9 +136,9 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
                               .update((state) => value);
                           if (value!) {
                             if (_attributeType == AttributeType.incoming) {
-                              _incomingSelectNodes.add(node.key);
+                              _incomingSelectNodes[node.key] = node.root.key;
                             } else {
-                              _outgoingSelectNodes.add(node.key);
+                              _outgoingSelectNodes[node.key] = node.root.key;
                             }
                           } else {
                             if (_attributeType == AttributeType.incoming) {
@@ -170,48 +177,15 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
             children: [
               TextButton(
                 onPressed: () {
-                  // TODO: Add connections
-                  if (_attributeType == AttributeType.incoming) {
-                    for (final node in _incomingSelectNodes) {
-                      ref
-                          .read(
-                            nodeIncomingConnectionProvider(widget.nodeKey)
-                                .notifier,
-                          )
-                          .addIncomingConnection(
-                            Connection(
-                              sourceDocumentUuid: '',
-                              targetDocumentUuid: '',
-                              connectionKey: GlobalKey().toString(),
-                              sourceNodeKey: '',
-                              targetNodeKey: node,
-                            ),
-                          );
-                    }
-                  } else {
-                    for (final node in _outgoingSelectNodes) {
-                      ref
-                          .read(
-                            nodeOutgoingConnectionProvider(widget.nodeKey)
-                                .notifier,
-                          )
-                          .addOutgoingConnections(
-                            Connection(
-                              sourceDocumentUuid: '',
-                              targetDocumentUuid: '',
-                              connectionKey: GlobalKey().toString(),
-                              sourceNodeKey: node,
-                              targetNodeKey: '',
-                            ),
-                          );
-                    }
-                  }
+                  addConnections();
                   Navigator.pop(context);
                 },
                 child: const Text('Add and Close'),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  addConnections();
+                },
                 child: const Text('Add and Continue'),
               ),
               TextButton(
@@ -229,6 +203,42 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
         ),
       ],
     );
+  }
+
+  void addConnections() {
+    if (_attributeType == AttributeType.incoming) {
+      _incomingSelectNodes.forEach((key, value) {
+        ref
+            .read(
+              nodeIncomingConnectionProvider(widget.nodeKey).notifier,
+            )
+            .addIncomingConnection(
+              Connection(
+                sourceDocumentUuid: currentDocumentUuid,
+                targetDocumentUuid: value,
+                connectionKey: GlobalKey().toString(),
+                sourceNodeKey: widget.nodeKey.toString(),
+                targetNodeKey: key,
+              ),
+            );
+      });
+    } else {
+      _outgoingSelectNodes.forEach((key, value) {
+        ref
+            .read(
+              nodeOutgoingConnectionProvider(widget.nodeKey).notifier,
+            )
+            .addOutgoingConnections(
+              Connection(
+                sourceDocumentUuid: currentDocumentUuid,
+                targetDocumentUuid: value,
+                connectionKey: GlobalKey().toString(),
+                sourceNodeKey: widget.nodeKey.toString(),
+                targetNodeKey: key,
+              ),
+            );
+      });
+    }
   }
 
   bool _shouldShowNode(atv.TreeNode node) {
