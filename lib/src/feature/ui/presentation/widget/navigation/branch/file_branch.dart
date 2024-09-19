@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dial_editor/src/core/provider/router/router_provider.dart';
 import 'package:dial_editor/src/core/provider/side_panel/directory_provider.dart';
+import 'package:dial_editor/src/core/provider/ui/editor_provder.dart';
 import 'package:dial_editor/src/core/provider/ui/file_branch_provider.dart';
 import 'package:dial_editor/src/core/provider/ui/top_bar_provider.dart';
 import 'package:dial_editor/src/feature/ui/presentation/widget/main_area/editor/tab_part.dart';
@@ -73,6 +74,7 @@ class FileBranch extends ConsumerWidget {
                       ref
                           .read(openFolderProvider.notifier)
                           .update((state) => true);
+                      ref.read(openedFilesProvider.notifier).addFile(file.path);
                     },
                     child: const Text("Open File"),
                   ),

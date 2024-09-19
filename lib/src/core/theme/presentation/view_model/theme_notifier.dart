@@ -25,7 +25,7 @@ class ThemeViewModel extends ChangeNotifier {
     _themeData = ThemeData.dark().copyWith(
       textTheme: ThemeData.dark()
           .textTheme
-          .customizeTextStyle(ThemeData.light().textTheme),
+          .customizeTextStyle(ThemeData.dark().textTheme),
     );
     notifyListeners();
   }
