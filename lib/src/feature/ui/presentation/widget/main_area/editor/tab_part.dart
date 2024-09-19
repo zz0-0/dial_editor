@@ -36,7 +36,6 @@ class _TabPartState extends ConsumerState<TabPart>
   Widget build(BuildContext context) {
     final openedFiles = ref.watch(openedFilesProvider);
     final String? selectedFile = ref.watch(selectedFileProvider);
-    // bool isHovering = false;
 
     if (tabController?.length != openedFiles.length) {
       tabController = TabController(length: openedFiles.length, vsync: this);

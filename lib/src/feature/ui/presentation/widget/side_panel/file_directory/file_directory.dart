@@ -7,6 +7,11 @@ class FileDirectory extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Directory();
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Directory(),
+      ],
+    );
   }
 }

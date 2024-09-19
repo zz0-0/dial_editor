@@ -15,9 +15,24 @@ class DirectoryRepositoryImpl implements DirectoryRepository {
   @override
   Future<List<DirectoryNode>> getDirectory() async {
     final List<FileSystemEntity> entities =
-        await localDataSource!.getFileSystemEntity();
+        await localDataSource!.getFileSystemEntityDirectory();
 
     return parseFileSystemEntity(entities);
+  }
+
+  @override
+  Future<List<FileSystemEntity>> getFileSystemEntityDirectory() async {
+    return localDataSource!.getFileSystemEntityDirectory();
+  }
+
+  @override
+  Future<FileSystemEntity> getFileSystemEntity() async {
+    return localDataSource!.getFileSystemEntity();
+  }
+
+  @override
+  Future<void> createNewFile() async {
+    return localDataSource!.createNewFile();
   }
 
   final uniquePaths = <String>{};

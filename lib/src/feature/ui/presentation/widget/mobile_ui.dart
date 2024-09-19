@@ -8,6 +8,19 @@ class MobileUI extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container();
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Dial Editor'),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: child,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
