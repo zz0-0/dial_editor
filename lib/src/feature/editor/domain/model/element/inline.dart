@@ -36,7 +36,7 @@ base class Inline extends Node {
   }
 
   Inline createNewLine() {
-    return TextNode(key: key, rawText: '');
+    return TextNode(key: GlobalKey(), rawText: '');
   }
 
   @override

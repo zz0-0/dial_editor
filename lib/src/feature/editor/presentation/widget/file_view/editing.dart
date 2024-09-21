@@ -57,6 +57,9 @@ class _EditingState extends ConsumerState<Editing>
                 paintCursorAboveText: true,
                 onChanged: (value) => _onChange(widget.node, value, context),
                 onEditingComplete: () => _onEditingComplete(context),
+                onSubmitted: (_) => _onEditingComplete(context),
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.newline,
               );
             },
           ),
@@ -90,6 +93,11 @@ class _EditingState extends ConsumerState<Editing>
     if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
       _onArrowRight(HardwareKeyboard.instance.isShiftPressed);
+    }
+    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
+            event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+      _onEditingComplete(context);
     }
     return KeyEventResult.ignored;
   }
