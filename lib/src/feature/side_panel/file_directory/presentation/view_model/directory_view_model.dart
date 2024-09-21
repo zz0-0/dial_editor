@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class DirectoryViewModel extends StateNotifier<List<DirectoryNode>> {
   final Ref ref;
 
-  DirectoryViewModel(this.ref) : super([]);
+  DirectoryViewModel(this.ref) : super([]) {
+    getDirectory();
+  }
 
   Future<void> getDirectory() async {
     final GetDirectoryListUseCase getDirectoryListUseCase =

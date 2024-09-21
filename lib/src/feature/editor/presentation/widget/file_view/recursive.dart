@@ -85,19 +85,15 @@ class _RecursiveState extends ConsumerState<Recursive> {
   }
 
   bool _shouldExpanded(WidgetRef ref, Inline inline) {
-    if (ref.read(toggleNodeExpansionKeyProvider) == null) {
-      if (inline.isBlockStart || (!inline.isBlockStart && inline.isExpanded)) {
+    final expansionKey = ref.watch(toggleNodeExpansionKeyProvider);
+    if (inline.isBlockStart) {
+      if (inline.key == expansionKey) {
         return true;
-      } else {
-        return false;
       }
+      return inline.isExpanded || expansionKey == null;
     } else {
-      if (inline.isBlockStart &&
-          inline.key == ref.read(toggleNodeExpansionKeyProvider)) {
-        return true;
-      } else {
-        return false;
-      }
+      return inline.isExpanded &&
+          (expansionKey == null || expansionKey != inline.parentKey);
     }
   }
 
