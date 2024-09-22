@@ -75,7 +75,10 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
     final instruction = newNode.render();
     final renderAdapter = ref.read(renderAdapterProvider);
     final widget = renderAdapter.adapt(newNode, instruction, context);
-    newNode.style = (widget as Text).style!;
+    if ((instruction as TextRenderInstruction).formatting !=
+        MarkdownElement.emoji) {
+      newNode.style = (widget as Text).style!;
+    }
     updateNodeHeight(context);
     newNode.isEditing = true;
     newNode.focusNode.requestFocus();
@@ -94,6 +97,10 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
         ref
             .read(nodeListStateNotifierProvider.notifier)
             .insertNodeToBlock(node, newNode);
+      } else {
+        ref
+            .read(nodeListStateNotifierProvider.notifier)
+            .insertNodeToRoot(node, newNode);
       }
       ref.read(nodeStateProvider(newNode.key).notifier).setNodeToEditingMode();
       node.isEditing = false;
@@ -115,9 +122,15 @@ class NodeStateNotifier extends StateNotifier<List<Inline?>> {
         final previousNode = ref
             .read(nodeListStateNotifierProvider.notifier)
             .getPreviousNode(node);
-        ref
-            .read(nodeListStateNotifierProvider.notifier)
-            .removeNodeFromBlock(node);
+        if (node.parentKey != null) {
+          ref
+              .read(nodeListStateNotifierProvider.notifier)
+              .removeNodeFromBlock(node);
+        } else {
+          ref
+              .read(nodeListStateNotifierProvider.notifier)
+              .removeNodeFromRoot(node);
+        }
         if (previousNode != null) {
           ref
               .read(nodeStateProvider(previousNode.key).notifier)

@@ -2,10 +2,12 @@ import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/core/provider/theme/theme_provider.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart' as emoji;
 import 'package:flutter_highlighter/flutter_highlighter.dart';
 import 'package:flutter_highlighter/themes/dark.dart';
 import 'package:flutter_highlighter/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latext/latext.dart';
 
 class RenderAdapter {
   Ref ref;
@@ -38,6 +40,15 @@ class RenderAdapter {
               ? darkTheme
               : githubTheme,
           textStyle: newStyle,
+        );
+      } else if (node is Emoji) {
+        return Text(
+          emoji.EmojiParser().emojify(instruction.text),
+          // style: newStyle,
+        );
+      } else if (node is Math) {
+        return LaTexT(
+          laTeXCode: Text(instruction.text),
         );
       } else {
         return Text(

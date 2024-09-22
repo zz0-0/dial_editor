@@ -65,6 +65,13 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     }
   }
 
+  void insertNodeToRoot(Node oldNode, Node newNode) {
+    final index = state.indexOf(oldNode);
+    state.insert(index + 1, newNode);
+    updateList();
+    oldNode.insertAfter(newNode);
+  }
+
   void replaceNodeInBlock(Inline oldNode, Inline newNode) {
     if (!_blockExists(oldNode.parentKey)) return;
 
@@ -322,6 +329,12 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
       _updateBlock(node.parentKey!, block);
       nodeLinkedList.remove(node);
     }
+  }
+
+  void removeNodeFromRoot(Inline node) {
+    state.remove(node);
+    updateList();
+    nodeLinkedList.remove(node);
   }
 
   void clearSelection() {
