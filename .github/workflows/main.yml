@@ -1,5 +1,5 @@
 name: my_flutter_package
-on: pull_request
+on: push
 
 jobs:
   build:
