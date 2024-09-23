@@ -2,11 +2,16 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
 import 'package:flutter/material.dart';
 
+/// Implementation of the [NodeRepository] interface.
+///
+/// This class provides the concrete implementation for the methods defined
+/// in the [NodeRepository] interface, handling the data operations related
+/// to nodes in the editor feature.
 class NodeRepositoryImpl implements NodeRepository {
   @override
   (List<String>, Map<String, Node>) convertDocument(List<String> lines) {
-    final List<String> nodeKeyList = [];
-    final Map<String, Node> nodeMap = {};
+    final nodeKeyList = <String>[];
+    final nodeMap = <String, Node>{};
     OrderedListBlock? currentOrderedListBlock;
     TaskListBlock? currentTaskListBlock;
     UnorderedListBlock? currentUnorderedListBlock;
@@ -14,7 +19,7 @@ class NodeRepositoryImpl implements NodeRepository {
     HeadingBlock? currentHeadingBlock;
     MathBlock? currentMathBlock;
     QuoteBlock? currentQuoteBlock;
-    bool isCodeBlock = false;
+    var isCodeBlock = false;
 
     for (final line in lines) {
       final Node node;
@@ -32,10 +37,10 @@ class NodeRepositoryImpl implements NodeRepository {
             currentHeadingBlock = HeadingBlock(
               level: node.level,
               key: GlobalKey(),
-            );
-            currentHeadingBlock.key = GlobalKey();
-            node.isBlockStart = true;
-            node.parentKey = currentHeadingBlock.key;
+            )..key = GlobalKey();
+            node
+              ..isBlockStart = true
+              ..parentKey = currentHeadingBlock.key;
             currentHeadingBlock.children.add(node);
           } else {
             node.parentKey = currentHeadingBlock.key;
@@ -45,10 +50,10 @@ class NodeRepositoryImpl implements NodeRepository {
           currentHeadingBlock = HeadingBlock(
             level: node.level,
             key: GlobalKey(),
-          );
-          currentHeadingBlock.key = GlobalKey();
-          node.isBlockStart = true;
-          node.parentKey = currentHeadingBlock.key;
+          )..key = GlobalKey();
+          node
+            ..isBlockStart = true
+            ..parentKey = currentHeadingBlock.key;
           currentHeadingBlock.children.add(node);
         }
       } else if (currentHeadingBlock != null) {
@@ -59,10 +64,10 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             currentOrderedListBlock = OrderedListBlock(
               key: GlobalKey(),
-            );
-            currentOrderedListBlock.key = GlobalKey();
-            node.isBlockStart = true;
-            node.parentKey = currentOrderedListBlock.key;
+            )..key = GlobalKey();
+            node
+              ..isBlockStart = true
+              ..parentKey = currentOrderedListBlock.key;
             currentOrderedListBlock.children.add(node);
             currentHeadingBlock.children.add(currentOrderedListBlock);
           }
@@ -73,10 +78,10 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             currentTaskListBlock = TaskListBlock(
               key: GlobalKey(),
-            );
-            currentTaskListBlock.key = GlobalKey();
-            node.isBlockStart = true;
-            node.parentKey = currentTaskListBlock.key;
+            )..key = GlobalKey();
+            node
+              ..isBlockStart = true
+              ..parentKey = currentTaskListBlock.key;
             currentTaskListBlock.children.add(node);
             currentHeadingBlock.children.add(currentTaskListBlock);
           }
@@ -87,10 +92,10 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             currentUnorderedListBlock = UnorderedListBlock(
               key: GlobalKey(),
-            );
-            currentUnorderedListBlock.key = GlobalKey();
-            node.isBlockStart = true;
-            node.parentKey = currentUnorderedListBlock.key;
+            )..key = GlobalKey();
+            node
+              ..isBlockStart = true
+              ..parentKey = currentUnorderedListBlock.key;
             currentUnorderedListBlock.children.add(node);
             currentHeadingBlock.children.add(currentUnorderedListBlock);
           }
@@ -101,10 +106,10 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             currentMathBlock = MathBlock(
               key: GlobalKey(),
-            );
-            currentMathBlock.key = GlobalKey();
-            node.isBlockStart = true;
-            node.parentKey = currentMathBlock.key;
+            )..key = GlobalKey();
+            node
+              ..isBlockStart = true
+              ..parentKey = currentMathBlock.key;
             currentMathBlock.children.add(node);
             currentHeadingBlock.children.add(currentMathBlock);
           }
@@ -115,10 +120,10 @@ class NodeRepositoryImpl implements NodeRepository {
           } else {
             currentQuoteBlock = QuoteBlock(
               key: GlobalKey(),
-            );
-            currentQuoteBlock.key = GlobalKey();
-            node.isBlockStart = true;
-            node.parentKey = currentQuoteBlock.key;
+            )..key = GlobalKey();
+            node
+              ..isBlockStart = true
+              ..parentKey = currentQuoteBlock.key;
             currentQuoteBlock.children.add(node);
             currentHeadingBlock.children.add(currentQuoteBlock);
           }
@@ -126,18 +131,18 @@ class NodeRepositoryImpl implements NodeRepository {
           if (isCodeBlock == false) {
             isCodeBlock = true;
             final match = codeBlockRegex.firstMatch(line);
-            final String language =
-                match!.groupCount >= 1 && match.group(1) != null
-                    ? match.group(1)!
-                    : 'c';
+            final language = match!.groupCount >= 1 && match.group(1) != null
+                ? match.group(1)!
+                : 'c';
             currentCodeBlock = CodeBlock(
               key: GlobalKey(),
-            );
-            currentCodeBlock.key = GlobalKey();
-            currentCodeBlock.language = language;
-            node.language = language;
-            node.isBlockStart = true;
-            node.parentKey = currentCodeBlock.key;
+            )
+              ..key = GlobalKey()
+              ..language = language;
+            node
+              ..language = language
+              ..isBlockStart = true
+              ..parentKey = currentCodeBlock.key;
             currentCodeBlock.children.add(node);
           } else {
             isCodeBlock = false;

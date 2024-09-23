@@ -6,16 +6,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// A stateful widget that provides editing capabilities within the file view.
+///
+/// This widget is part of the presentation layer of the editor feature.
+/// It utilizes the `ConsumerStatefulWidget` to interact with the state
+/// management
+/// solution provided by the `flutter_riverpod` package.
 class Editing extends ConsumerStatefulWidget {
-  final Inline node;
+  /// A widget that represents the editing state of a node.
+  ///
+  /// This widget is used to display and manage the editing state of a given
+  /// node.
+  ///
+  /// Parameters:
+  /// - `node`: The node that is being edited.
   const Editing(this.node, {super.key});
 
+  /// A final variable representing an inline node in the editor.
+  ///
+  /// This variable is used to hold an instance of the `Inline` class,
+  /// which represents an inline element within the editor's document structure.
+  final Inline node;
+
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _EditingState();
+  ConsumerState<ConsumerStatefulWidget> createState() => EditingState();
 }
 
-class _EditingState extends ConsumerState<Editing>
+/// A state class for the `Editing` widget that extends `ConsumerState`.
+/// 
+/// This class is responsible for managing the state of the `Editing` widget,
+/// which is part of the file view editing feature in the application.
+/// 
+/// The `EditingState` class utilizes the `ConsumerState` from the Riverpod
+/// package to listen to and react to state changes in the application.
+class EditingState extends ConsumerState<Editing>
     implements TextSelectionGestureDetectorBuilderDelegate {
+  /// A notifier for managing the state of nodes in the editor.
+  /// 
+  /// This is used to keep track of changes and updates to the nodes
+  /// within the editor, ensuring that the UI reflects the current state
+  /// of the nodes.
   late NodeStateNotifier nodeStateNotifier;
   final GlobalKey<EditableTextState> _editorKey =
       GlobalKey<EditableTextState>();
@@ -32,8 +62,7 @@ class _EditingState extends ConsumerState<Editing>
   @override
   Widget build(BuildContext context) {
     nodeStateNotifier = ref.read(nodeStateProvider(widget.node.key).notifier);
-    final CustomTextSelectionGestureDetectorBuilder
-        selectionGestureDetectorBuilder =
+    final selectionGestureDetectorBuilder =
         CustomTextSelectionGestureDetectorBuilder(state: this);
 
     return selectionGestureDetectorBuilder.buildGestureDetector(
@@ -129,11 +158,11 @@ class _EditingState extends ConsumerState<Editing>
   }
 
   void _onArrowLeft(bool isShiftPressed) {
-    nodeStateNotifier.onArrowLeft(isShiftPressed);
+    nodeStateNotifier.onArrowLeft(isShiftPressed: isShiftPressed);
   }
 
   void _onArrowRight(bool isShiftPressed) {
-    nodeStateNotifier.onArrowRight(isShiftPressed);
+    nodeStateNotifier.onArrowRight(isShiftPressed: isShiftPressed);
   }
 
   void _onDragSelectionUpdate(TapDragUpdateDetails details) {
@@ -145,11 +174,45 @@ class _EditingState extends ConsumerState<Editing>
   }
 }
 
+/// A custom gesture detector builder for handling text selection gestures
+/// in a text editing widget.
+///
+/// This class extends the default gesture detector builder to provide
+/// custom behavior for text selection, such as handling long presses,
+/// double taps, and drag gestures.
+///
+/// It is used to create a gesture detector that wraps around a text
+/// editing widget, allowing for custom handling of user interactions
+/// with the text.
+///
+/// Example usage:
+/// ```dart
+/// CustomTextSelectionGestureDetectorBuilder(
+///   // Provide necessary parameters and callbacks
+/// );
+/// ```
+///
+/// See also:
+/// - [TextSelectionGestureDetectorBuilder], which this class extends.
+/// - [TextEditingController], for controlling the text being edited.
+/// - [TextSelectionControls], for handling text selection controls.
 class CustomTextSelectionGestureDetectorBuilder
     extends TextSelectionGestureDetectorBuilder {
-  final _EditingState state;
+  /// A custom gesture detector builder for handling text selection gestures.
+  ///
+  /// This widget is used to create a custom gesture detector that can handle
+  /// text selection gestures within the editor.
+  ///
+  /// The [state] parameter is required and should be an instance of the state
+  /// that manages the text selection.
   CustomTextSelectionGestureDetectorBuilder({required this.state})
       : super(delegate: state);
+
+  /// Represents the current state of the editing process.
+  ///
+  /// This state is used to manage and track the various stages and changes
+  /// during the editing of a file in the editor.
+  final EditingState state;
 
   @override
   void onDragSelectionStart(TapDragStartDetails details) {

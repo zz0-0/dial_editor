@@ -9,22 +9,64 @@ import 'package:flutter_highlighter/themes/github.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latext/latext.dart';
 
+/// A class that serves as an adapter for rendering operations within the
+/// editor feature.
+///
+/// The `RenderAdapter` class provides methods and properties to facilitate
+/// the rendering
+/// of various components in the editor. It acts as an intermediary layer to
+/// abstract
+/// the complexities of rendering logic, making it easier to manage and extend.
+///
+/// This class is part of the `presentation` layer in the `editor` feature,
+/// which is
+/// responsible for handling the visual representation of the editor's state.
+///
+/// Example usage:
+///
+/// ```dart
+/// RenderAdapter adapter = RenderAdapter();
+/// // Use adapter to perform rendering operations
+/// ```
+///
+/// Note: This class is intended for internal use within the editor feature
+/// and should
+/// not be exposed publicly.
 class RenderAdapter {
-  Ref ref;
-
+  /// Constructs a [RenderAdapter] instance with the given reference.
+  ///
+  /// The [ref] parameter is used to initialize the adapter with a specific
+  /// reference.
   RenderAdapter(this.ref);
 
+  /// A reference to the state management object.
+  ///
+  /// This is used to access and manipulate the state within the application.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// ref.read(someProvider);
+  /// ref.watch(anotherProvider);
+  /// ```
+  Ref ref;
+
+  /// Adapts the given widget to a specific context or configuration.
+  ///
+  /// This method takes a widget and modifies it to fit the requirements
+  /// of the current environment or settings. The exact nature of the
+  /// adaptation depends on the implementation details.
+  ///
+  /// Returns the adapted widget.
   Widget adapt(
     Inline node,
     RenderInstruction instruction,
     BuildContext context,
   ) {
     if (instruction is TextRenderInstruction) {
-      final TextStyle newStyle =
-          _getTextStyle(instruction.text, instruction.formatting);
+      final newStyle = _getTextStyle(instruction.text, instruction.formatting);
 
       ref.read(updateNodeStyleUseCaseProvider)(node, newStyle);
-      final double newHeight = _calculateHeight(node, context);
+      final newHeight = _calculateHeight(node, context);
       if (node.textHeight != newHeight) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ref
@@ -57,7 +99,7 @@ class RenderAdapter {
         );
       }
     }
-    return const Text("");
+    return const Text('');
   }
 
   double _calculateHeight(Inline node, BuildContext context) {
@@ -109,7 +151,7 @@ class RenderAdapter {
         return TextStyle(fontSize: fontSize);
       case MarkdownElement.heading:
         final match = headingRegex.firstMatch(text);
-        TextStyle style = TextStyle(fontSize: fontSize);
+        var style = TextStyle(fontSize: fontSize);
         if (match != null) {
           final level = match.group(0)!.length;
           switch (level) {
@@ -172,7 +214,29 @@ class RenderAdapter {
         return TextStyle(fontSize: fontSize);
       case MarkdownElement.superscript:
         return TextStyle(fontSize: fontSize);
-      default:
+      case MarkdownElement.document:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.node:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.block:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.inline:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.headingBlock:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.orderedListBlock:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.taskListBlock:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.unorderedListBlock:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.mathBlock:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.text:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.quoteBlock:
+        return TextStyle(fontSize: fontSize);
+      case MarkdownElement.codeBlock:
         return TextStyle(fontSize: fontSize);
     }
   }

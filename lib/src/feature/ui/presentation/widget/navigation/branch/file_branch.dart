@@ -11,7 +11,38 @@ import 'package:dial_editor/src/feature/ui/presentation/widget/side_panel/file_d
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// A widget that represents a branch in the file navigation tree.
+///
+/// This widget is a part of the navigation system in the application,
+/// specifically designed to handle and display file branches.
+///
+/// It extends [ConsumerWidget] to leverage the state management
+/// capabilities provided by the Riverpod package.
+///
+/// Usage:
+/// ```dart
+/// FileBranch()
+/// ```
+///
+/// Make sure to provide the necessary dependencies and context
+/// when using this widget.
 class FileBranch extends ConsumerWidget {
+  /// A widget that represents a file branch in the navigation tree.
+  ///
+  /// This widget is used to display a file branch within the navigation
+  /// structure of the application. It is a stateless widget that takes
+  /// a key as an optional parameter.
+  ///
+  /// {@tool snippet}
+  /// ```dart
+  /// FileBranch(
+  ///   key: Key('file_branch'),
+  /// )
+  /// ```
+  /// {@end-tool}
+  ///
+  /// See also:
+  ///  * [Key], which is used to control the widget's identity.
   const FileBranch({super.key});
 
   @override
@@ -48,7 +79,7 @@ class FileBranch extends ConsumerWidget {
               if (ref.watch(fileEmptySidePanelProvider)) const EmptyDirectory(),
               if (ref.watch(fileEmptySidePanelProvider))
                 const VerticalDivider(thickness: 1, width: 1),
-              const Expanded(child: Center(child: Text("Dial Editor"))),
+              const Expanded(child: Center(child: Text('Dial Editor'))),
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -76,7 +107,7 @@ class FileBranch extends ConsumerWidget {
                           .update((state) => true);
                       ref.read(openedFilesProvider.notifier).addFile(file.path);
                     },
-                    child: const Text("Open File"),
+                    child: const Text('Open File'),
                   ),
                 ),
             ],

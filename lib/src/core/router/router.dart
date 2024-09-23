@@ -9,8 +9,32 @@ import 'package:go_router/go_router.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+/// A [GoRouter] instance that manages the routing for the application.
+/// 
+/// This router is responsible for defining the navigation paths and handling
+/// the transitions between different screens or pages within the app.
+/// 
+/// Example usage:
+/// 
+/// ```dart
+/// GoRouter router = GoRouter(
+///   routes: [
+///     GoRoute(
+///       path: '/',
+///       builder: (context, state) => HomePage(),
+///     ),
+///     GoRoute(
+///       path: '/details',
+///       builder: (context, state) => DetailsPage(),
+///     ),
+///   ],
+/// );
+/// ```
+/// 
+/// Make sure to configure the routes according to your application's 
+/// requirements.
 GoRouter router = GoRouter(
-  initialLocation: "/file",
+  initialLocation: '/file',
   navigatorKey: _rootNavigatorKey,
   routes: [
     StatefulShellRoute.indexedStack(
@@ -72,7 +96,7 @@ GoRouter router = GoRouter(
                 StatefulShellBranch(
                   routes: [
                     GoRoute(
-                      path: "/appearance",
+                      path: '/appearance',
                       pageBuilder: (context, state) {
                         return CustomTransitionPage(
                           key: state.pageKey,
@@ -97,7 +121,7 @@ GoRouter router = GoRouter(
                 StatefulShellBranch(
                   routes: [
                     GoRoute(
-                      path: "/keyboard",
+                      path: '/keyboard',
                       pageBuilder: (context, state) {
                         return CustomTransitionPage(
                           key: state.pageKey,

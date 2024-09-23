@@ -7,33 +7,143 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum AttributeType { incoming, outgoing }
+/// Enum representing the type of attribute in the file view.
+///
+/// The `AttributeType` enum has two values:
+/// - `incoming`: Represents an incoming attribute.
+/// - `outgoing`: Represents an outgoing attribute.
+enum AttributeType {
+  /// This variable represents the incoming data or state that will be used
+  /// within the attribute bottom sheet widget. It is likely to be processed
+  /// or displayed in the UI component.
+  incoming,
 
-enum NodeType { file, block, inline }
+  /// This widget represents the bottom sheet used for displaying and editing
+  /// attributes in the file view of the editor feature. It provides a user
+  /// interface for modifying various attributes associated with the file.
+  outgoing
+}
 
+/// Enum representing different types of nodes that can be used in the
+/// attribute bottom sheet within the file view of the editor feature.
+enum NodeType {
+  /// Represents a file object used within the attribute bottom sheet widget.
+  /// This object is likely used to handle file-related operations or data
+  /// within the context of the editor's attribute bottom sheet.
+  file,
+
+  /// A widget that represents the bottom sheet for displaying and editing
+  /// attributes in the file view of the editor feature.
+  ///
+  /// This widget is used to provide a user interface for modifying various
+  /// attributes related to the file being viewed or edited.
+  ///
+  /// The bottom sheet can be invoked to allow users to make changes to
+  /// attributes such as file properties, metadata, or other relevant details.
+  ///
+  /// The implementation details of this widget are defined in the
+  /// `attribute_bottom_sheet.dart` file located in the specified path.
+  block,
+
+  /// Represents an inline node used within the attribute bottom sheet widget.
+  inline
+}
+
+/// A widget that represents a bottom sheet for displaying and editing
+/// attributes.
+///
+/// This widget is a `ConsumerStatefulWidget`, which means it can listen to
+/// changes
+/// in the provider and update its state accordingly.
+///
+/// The `AttributeBottomSheet` is typically used in the context of an editor
+/// where
+/// users can view and modify various attributes.
+///
+/// Usage:
+/// ```dart
+/// showModalBottomSheet(
+///   context: context,
+///   builder: (context) => AttributeBottomSheet(),
+/// );
+/// ```
+///
+/// Note: Ensure that the necessary providers are set up in the widget tree
+/// to use this widget effectively.
 class AttributeBottomSheet extends ConsumerStatefulWidget {
-  final GlobalKey nodeKey;
-  final Set<Connection> incomingConnections;
-  final Set<Connection> outgoingConnections;
-
+  /// A widget that represents a bottom sheet for displaying and editing
+  /// attributes.
+  ///
+  /// This widget is used within the file view to allow users to interact with
+  /// and modify various attributes. It is designed to be used as a modal bottom
+  /// sheet that slides up from the bottom of the screen.
+  ///
+  /// The [AttributeBottomSheet] is a constant constructor, meaning that it can
+  /// be instantiated as a compile-time constant.
   const AttributeBottomSheet({
-    super.key,
     required this.nodeKey,
     required this.incomingConnections,
     required this.outgoingConnections,
+    super.key,
   });
 
+  /// A global key used to identify and access the widget associated with
+  /// this key.
+  /// This key can be used to retrieve the state of the widget, perform
+  /// operations
+  /// on it, or access its properties.
+  final GlobalKey nodeKey;
+
+  /// A set of incoming connections associated with the current instance.
+  ///
+  /// This set contains all the connections that are directed towards the
+  /// current instance, allowing for tracking and managing incoming data
+  /// or signals.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// final incoming = instance.incomingConnections;
+  /// ```
+  final Set<Connection> incomingConnections;
+
+  /// A set of outgoing connections associated with the current entity.
+  ///
+  /// This set contains instances of the [Connection] class, representing
+  /// the connections that originate from the current entity and lead to
+  /// other entities or nodes within the system.
+  final Set<Connection> outgoingConnections;
+
   @override
-  _AttributeBottomSheetState createState() => _AttributeBottomSheetState();
+  AttributeBottomSheetState createState() => AttributeBottomSheetState();
 }
 
-class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
+/// A state class for the `AttributeBottomSheet` widget that extends 
+/// `ConsumerState`.
+/// This class manages the state and behavior of the attribute bottom sheet in 
+/// the editor feature.
+///
+/// The `AttributeBottomSheetState` class is responsible for handling the UI 
+/// and interactions
+/// within the attribute bottom sheet, which is used to display and edit 
+/// attributes of a file.
+///
+/// This class uses the `ConsumerState` from the Riverpod package to manage 
+/// state and
+/// dependencies, allowing it to react to changes in the state of the 
+/// application.
+class AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
   AttributeType _attributeType = AttributeType.incoming;
   final Set<NodeType> _filters = <NodeType>{};
   String _searchQuery = '';
   final HashMap<String, String> _incomingSelectNodes = HashMap();
   final HashMap<String, String> _outgoingSelectNodes = HashMap();
 
+  /// A string that holds the UUID of the current document.
+  ///
+  /// This variable is used to uniquely identify the document that is
+  /// currently being edited or viewed in the application. It is initialized
+  /// to an empty string and should be assigned a valid UUID when a document
+  /// is loaded.
   String currentDocumentUuid = '';
 
   @override
@@ -74,7 +184,7 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8),
           child: Row(
             children: [
               Expanded(
@@ -126,8 +236,10 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
                 builder: (BuildContext context, atv.TreeNode<dynamic> node) {
                   if (_shouldShowNode(node)) {
                     return ListTile(
-                      // TODO: Checkbox should be checked if the node is already connected
-                      // Need to check if the node is already connected for current node base on document uuid
+                      // TODO(get): Checkbox should be checked if the node is
+                      //already connected
+                      // Need to check if the node is already connected for
+                      //current node base on document uuid
                       leading: Checkbox(
                         value: ref.watch(checkboxProvider(node.key)),
                         onChanged: (value) {
@@ -171,7 +283,7 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -183,9 +295,7 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
                 child: const Text('Add and Close'),
               ),
               TextButton(
-                onPressed: () {
-                  addConnections();
-                },
+                onPressed: addConnections,
                 child: const Text('Add and Continue'),
               ),
               TextButton(
@@ -205,6 +315,11 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
     );
   }
 
+  /// Adds connections to the current context.
+  ///
+  /// This method is responsible for establishing necessary connections
+  /// within the current context. It should be called when initializing
+  /// or updating the state that requires these connections.
   void addConnections() {
     if (_attributeType == AttributeType.incoming) {
       _incomingSelectNodes.forEach((key, value) {
@@ -241,7 +356,7 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
     }
   }
 
-  bool _shouldShowNode(atv.TreeNode node) {
+  bool _shouldShowNode(atv.TreeNode<dynamic> node) {
     if (_filters.isNotEmpty && !_filters.contains(_getNodeType(node))) {
       return false;
     }
@@ -257,7 +372,7 @@ class _AttributeBottomSheetState extends ConsumerState<AttributeBottomSheet> {
     return true;
   }
 
-  NodeType _getNodeType(atv.TreeNode node) {
+  NodeType _getNodeType(atv.TreeNode<dynamic> node) {
     if (node.data is! Block && node.toString().contains('md')) {
       return NodeType.file;
     } else if (node.data is Block) {
