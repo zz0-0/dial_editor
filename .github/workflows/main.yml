@@ -1,3 +1,5 @@
+uses: VeryGoodOpenSource/very_good_coverage@v3.0.0
+
 # A reusable workflow for Dart packages
 uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1
 
