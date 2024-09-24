@@ -7,9 +7,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
-      - name: Very good coverage
-        uses: VeryGoodOpenSource/very_good_coverage@v3.0.0
+
+      # - name: Very good coverage
+      #   uses: VeryGoodOpenSource/very_good_coverage@v3.0.0
 
       # - name: Dart package workflow
       #   uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1

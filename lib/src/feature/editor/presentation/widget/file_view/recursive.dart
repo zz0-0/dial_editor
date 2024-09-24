@@ -1,5 +1,5 @@
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/attribute_button.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/editing.dart';
 import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/expand.dart';

@@ -1,4 +1,5 @@
 import 'package:animated_tree_view/animated_tree_view.dart' as atv;
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/data/data_source/database_local_data_source.dart';
 import 'package:dial_editor/src/feature/editor/data/data_source/file_local_data_source.dart';
 import 'package:dial_editor/src/feature/editor/data/repository_impl/document_repository_impl.dart';
@@ -6,7 +7,6 @@ import 'package:dial_editor/src/feature/editor/data/repository_impl/file_metadat
 import 'package:dial_editor/src/feature/editor/data/repository_impl/node_repository_impl.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/file_metadata.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/document_repository.dart';
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
 import 'package:dial_editor/src/feature/editor/domain/use_case/convert_document_line_use_case.dart';

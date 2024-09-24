@@ -1,4 +1,4 @@
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:flutter/material.dart';
 
 base class Inline extends Node {

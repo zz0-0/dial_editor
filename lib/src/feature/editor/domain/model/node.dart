@@ -1,6 +1,7 @@
 import 'dart:collection';
+
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/attribute.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 
 base class Node extends LinkedListEntry<Node> {

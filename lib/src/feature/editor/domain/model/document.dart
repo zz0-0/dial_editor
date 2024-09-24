@@ -1,5 +1,5 @@
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:dial_editor/src/feature/editor/domain/model/connection.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 
 class Document {

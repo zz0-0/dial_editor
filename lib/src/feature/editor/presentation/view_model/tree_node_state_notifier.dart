@@ -1,7 +1,7 @@
 import 'package:animated_tree_view/animated_tree_view.dart' as atv;
 import 'package:animated_tree_view/tree_view/tree_node.dart';
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TreeNodeStateNotifier

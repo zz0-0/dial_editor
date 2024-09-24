@@ -1,6 +1,6 @@
+import 'package:dial_editor/src/core/markdown_element.dart';
 import 'package:dial_editor/src/core/provider/editor/file_view_provider.dart';
 import 'package:dial_editor/src/core/provider/theme/theme_provider.dart';
-import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart' as emoji;
 import 'package:flutter_highlighter/flutter_highlighter.dart';
