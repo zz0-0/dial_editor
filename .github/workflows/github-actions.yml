@@ -1,4 +1,4 @@
-name: my_flutter_package
+name: dial_editor
 on: push
 
 jobs:

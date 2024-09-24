@@ -2,6 +2,8 @@
 
 **Dial Editor** is a Markdown editor built using Flutter and Riverpod.
 
+[![dial_editor](https://github.com/zz0-0/dial_editor/actions/workflows/github-actions.yml/badge.svg)](https://github.com/zz0-0/dial_editor/actions/workflows/github-actions.yml)
+
 [dial_editor](https://github.com/zz0-0/dial_editor)
 
 ## ⚠️ Disclaimer
