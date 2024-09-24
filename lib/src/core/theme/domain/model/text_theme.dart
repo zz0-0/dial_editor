@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Extension on [TextTheme] to provide custom text theme properties and 
-/// methods.
-///
-/// This extension allows you to add custom text styles and other text-related
-/// properties to the existing [TextTheme] class, enabling more flexible and
-/// reusable text styling throughout your application.
 extension CustomTextTheme on TextTheme {
-  /// Customizes the given [TextTheme] by applying specific styles.
-  ///
-  /// This function takes a [TextTheme] object and modifies its properties
-  /// to apply custom styles as needed.
-  ///
-  /// Returns the modified [TextTheme] with the applied customizations.
   TextTheme customizeTextStyle(TextTheme textTheme) {
     return textTheme.copyWith(
       displayLarge: textTheme.displayLarge?.copyWith(fontSize: 64),

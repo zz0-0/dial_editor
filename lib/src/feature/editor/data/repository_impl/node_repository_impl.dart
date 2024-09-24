@@ -2,11 +2,6 @@ import 'package:dial_editor/src/feature/editor/domain/model/markdown_element.dar
 import 'package:dial_editor/src/feature/editor/domain/repository/node_repository.dart';
 import 'package:flutter/material.dart';
 
-/// Implementation of the [NodeRepository] interface.
-///
-/// This class provides the concrete implementation for the methods defined
-/// in the [NodeRepository] interface, handling the data operations related
-/// to nodes in the editor feature.
 class NodeRepositoryImpl implements NodeRepository {
   @override
   (List<String>, Map<String, Node>) convertDocument(List<String> lines) {
@@ -20,7 +15,6 @@ class NodeRepositoryImpl implements NodeRepository {
     MathBlock? currentMathBlock;
     QuoteBlock? currentQuoteBlock;
     var isCodeBlock = false;
-
     for (final line in lines) {
       final Node node;
       if (isCodeBlock) {

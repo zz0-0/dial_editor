@@ -8,46 +8,10 @@ import 'package:dial_editor/src/feature/editor/presentation/widget/file_view/ren
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// A [ConsumerStatefulWidget] that represents a recursive widget structure.
-///
-/// This widget is designed to be used within a consumer context, allowing it
-/// to listen to changes in the state and rebuild accordingly. It is typically
-/// used to display a hierarchical or nested structure of widgets.
-///
-/// Usage:
-/// ```dart
-/// Recursive(
-///   // parameters
-/// );
-/// ```
-///
-/// See also:
-///
-///  * [ConsumerStatefulWidget], which is the base class for this widget.
-///  * [ConsumerState], which provides the state management for this widget.
 class Recursive extends ConsumerStatefulWidget {
-  /// A widget that represents a recursive structure.
-  ///
-  /// This widget takes a node and an index as parameters and displays
-  /// them in a recursive manner.
-  ///
-  /// Parameters:
-  /// - `node`: The node to be displayed.
-  /// - `index`: The index of the node.
   const Recursive(this.node, this.index, {super.key});
-
-  /// A node object representing a part of the document structure.
-  /// This is used to manage and manipulate the hierarchical data within the
-  /// editor.
   final Node node;
-
-  /// The index of the current item in the list or collection.
-  ///
-  /// This integer value is used to identify the position of an item
-  /// within a list or collection, allowing for operations such as
-  /// retrieval, update, or deletion based on its position.
   final int index;
-
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _RecursiveState();
 }

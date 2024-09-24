@@ -8,19 +8,8 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-/// A [ConsumerWidget] that represents the main application widget.
-///
-/// This widget is the entry point of the application and is responsible for
-/// setting up the necessary providers and rendering the initial UI.
-///
-/// It listens to changes in the provided state and rebuilds accordingly.
 class MyApp extends ConsumerWidget {
-  /// A constant constructor for the `MyApp` class.
-  ///
-  /// The `super.key` parameter is passed to the superclass constructor,
-  /// which is typically used to manage the widget's key.
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
