@@ -44,6 +44,25 @@ void main() {
       );
     });
 
+    test('Repositories in domain layer should be abstractions', () {
+      const basePath = 'lib/src/feature'; // Base directory for all features
+
+      final folders = getDomainFolders(basePath);
+      final concreteRepositories = ['impl', 'repository_impl'];
+
+      for (final folder in folders) {
+        final dartFiles = getDartFilesInFolder(folder);
+        final offendingFiles =
+            findFilesWithImport(dartFiles, concreteRepositories.join('|'));
+        expect(
+          offendingFiles,
+          isEmpty,
+          reason: 'Domain should depend on repository interfaces, '
+              'not implementations.',
+        );
+      }
+    });
+
     test(
       "'data' folders should depend on domain layer, "
       'not depend on presentation layer',
@@ -74,6 +93,25 @@ void main() {
         );
       },
     );
+
+    test('Repositories should be implemented in data layer', () {
+      const basePath = 'lib/src/feature'; // Base directory for all features
+
+      // Act
+      final folders = getDataFolders(basePath);
+      final domainInterfaces = ['repository'];
+
+      for (final folder in folders) {
+        final dataFiles = getDartFilesInFolder(folder);
+        final offendingFiles =
+            findFilesWithImport(dataFiles, domainInterfaces.join('|'));
+        expect(
+          offendingFiles,
+          isNotEmpty,
+          reason: 'Data layer must implement domain interfaces.',
+        );
+      }
+    });
 
     test(
       "'presentation' folders should depend on domain layer, "

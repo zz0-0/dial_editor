@@ -5,6 +5,10 @@ class Background extends ConsumerWidget {
   const Background({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container();
+    return const GridPaper(
+      color: Colors.grey,
+      divisions: 1,
+      subdivisions: 1,
+    );
   }
 }

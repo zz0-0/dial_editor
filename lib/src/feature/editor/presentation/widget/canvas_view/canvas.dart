@@ -13,8 +13,9 @@ class Canvas extends ConsumerWidget {
         builder: (context, constraits) {
           return const Stack(
             children: [
-              InteractiveCanvas(),
-              MiniMap(),
+              MiniMap(
+                child: InteractiveCanvas(),
+              ),
               Menu(),
             ],
           );
