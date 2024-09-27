@@ -77,7 +77,7 @@ class _RecursiveState extends ConsumerState<Recursive> {
               .insertNodeIntoFlatNodeList(inlineNode);
         });
       }
-      return _buildNodeContent(context, ref, updatedNode[0]!, currentIndex);
+      return _buildInlineContent(context, ref, updatedNode[0]!, currentIndex);
     }
     return Container();
   }
@@ -95,7 +95,7 @@ class _RecursiveState extends ConsumerState<Recursive> {
     }
   }
 
-  Widget _buildNodeContent(
+  Widget _buildInlineContent(
     BuildContext context,
     WidgetRef ref,
     Inline inline,

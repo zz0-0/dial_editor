@@ -100,26 +100,6 @@ final documentListStateNotifierProvider =
     StateNotifierProvider<DocumentListStateNotifier, List<Document>>((ref) {
   return DocumentListStateNotifier(ref);
 });
-// final nodeIncomingConnectionProvider =
-//     StateProvider.family<Set<Connection>, GlobalKey>((ref, key) {
-//   if (ref.watch(nodeStateProvider(key)).isEmpty) return {};
-//   return ref
-//       .watch(nodeStateProvider(key))[0]!
-//       .attribute
-//       .connections
-//       .values
-//       .toSet();
-// });
-// final nodeOutgoingConnectionProvider =
-//     StateProvider.family<Set<Connection>, GlobalKey>((ref, key) {
-//   if (ref.watch(nodeStateProvider(key)).isEmpty) return {};
-//   return ref
-//       .watch(nodeStateProvider(key))[0]!
-//       .attribute
-//       .connections
-//       .values
-//       .toSet();
-// });
 final nodeIncomingConnectionProvider = StateNotifierProvider.family<
     NodeIncomingConnectionStateNotifier,
     Set<Connection>,
