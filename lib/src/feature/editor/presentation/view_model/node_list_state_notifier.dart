@@ -74,20 +74,15 @@ class NodeListStateNotifier extends StateNotifier<List<Node>> {
     final index = block.children.indexOf(oldNode);
     if (oldNode is Heading && newNode is! Heading) {
       _handleHeadingToTextConversion(block, index, oldNode, newNode);
-      // _updateDocumentToDatabase();
     } else if (newNode is Heading) {
       _handleHeadingReplacement(block, index, oldNode, newNode);
-      // _updateDocumentToDatabase();
     } else if (_isSpecialBlockNode(newNode)) {
       _handleSpecialBlockReplacement(block, index, oldNode, newNode);
-      // _updateDocumentToDatabase();
     } else if (_isSpecialBlockNode(oldNode) &&
         newNode.runtimeType != oldNode.runtimeType) {
       _handleSpecialBlockNodeToTextReplacement(block, index, oldNode, newNode);
-      // _updateDocumentToDatabase();
     } else {
       _handleSimpleReplacement(block, index, oldNode, newNode);
-      // _updateChunkToDatabase();
     }
   }
 

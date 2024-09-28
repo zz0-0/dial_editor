@@ -33,7 +33,6 @@ class _MarkdownFileState extends ConsumerState<MarkdownFile> {
       child: const Row(
         children: [
           Expanded(child: EditingArea()),
-          // TableOfContent(),
         ],
       ),
     );

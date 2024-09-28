@@ -85,11 +85,6 @@ class EditingState extends ConsumerState<Editing>
         event.logicalKey == LogicalKeyboardKey.arrowRight) {
       _onArrowRight(HardwareKeyboard.instance.isShiftPressed);
     }
-    // if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-    //         event.logicalKey == LogicalKeyboardKey.enter ||
-    //     event.logicalKey == LogicalKeyboardKey.numpadEnter) {
-    //   _onEditingComplete(context);
-    // }
     return KeyEventResult.ignored;
   }
 

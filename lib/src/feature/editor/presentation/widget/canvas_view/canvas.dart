@@ -16,7 +16,11 @@ class Canvas extends ConsumerWidget {
               MiniMap(
                 child: InteractiveCanvas(),
               ),
-              Menu(),
+              Positioned(
+                left: 20,
+                bottom: 20,
+                child: Menu(),
+              ),
             ],
           );
         },

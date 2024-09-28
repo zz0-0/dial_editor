@@ -25,7 +25,6 @@ class NodeRepositoryImpl implements NodeRepository {
       if (node is Heading) {
         if (currentHeadingBlock != null) {
           if (node.level >= currentHeadingBlock.level) {
-            // children.add(currentHeadingBlock);
             nodeKeyList.add(currentHeadingBlock.key.toString());
             nodeMap[currentHeadingBlock.key.toString()] = currentHeadingBlock;
             currentHeadingBlock = HeadingBlock(

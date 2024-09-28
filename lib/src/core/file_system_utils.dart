@@ -25,7 +25,6 @@ Iterable<File> getFiles({
   var files = Directory(directoryPath)
       .listSync(recursive: true)
       .whereType<File>()
-      // Skip files in hidden directories (e.g. `.fvm/`, `.dart_tool/`).
       .where(
         (file) => !split(file.path).any(
           (pathComponent) =>

@@ -40,7 +40,6 @@ class RenderAdapter {
       } else if (node is Emoji) {
         return Text(
           emoji.EmojiParser().emojify(instruction.text),
-          // style: newStyle,
         );
       } else if (node is Math) {
         return LaTexT(
@@ -73,8 +72,6 @@ class RenderAdapter {
   TextStyle _getTextStyle(String text, MarkdownElement formatting) {
     final theme = ref.watch(themeProvider);
     final fontSize = theme.themeData.textTheme.titleSmall!.fontSize;
-    // final textColor =
-    //     theme.themeMode == ThemeMode.dark ? Colors.black : Colors.white;
     final textTheme = theme.themeData.textTheme;
     switch (formatting) {
       case MarkdownElement.codeBlockMarker:
