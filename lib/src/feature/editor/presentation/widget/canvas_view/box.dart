@@ -12,22 +12,29 @@ class Box extends ConsumerWidget {
   final Node node;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return DottedBorder(
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            ...(node as Block).children.map(
-              (e) {
-                if (e is Block) {
-                  return card.Card(e);
-                } else if (e is Inline) {
-                  return _buildInlineContent(e);
-                }
-                return Container();
-              },
-            ),
-          ],
+    return Draggable(
+      feedback: Container(),
+      onDragUpdate: (details) {},
+      onDragEnd: (details) {},
+      childWhenDragging: Container(),
+      child: DottedBorder(
+        color: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              ...(node as Block).children.map(
+                (e) {
+                  if (e is Block) {
+                    return card.Card(e);
+                  } else if (e is Inline) {
+                    return _buildInlineContent(e);
+                  }
+                  return Container();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
