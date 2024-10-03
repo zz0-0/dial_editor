@@ -4,7 +4,7 @@
 
 [![dial_editor](https://github.com/zz0-0/dial_editor/actions/workflows/github-actions.yml/badge.svg)](https://github.com/zz0-0/dial_editor/actions/workflows/github-actions.yml)
 
-[dial_editor](https://github.com/zz0-0/dial_editor)
+![Alt](https://repobeats.axiom.co/api/embed/67f4dddccfa76c1d0463558d8dcf73e61daa6723.svg "Repobeats analytics image")
 
 ## ⚠️ Disclaimer
 
